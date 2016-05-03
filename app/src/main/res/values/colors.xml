@@ -12,4 +12,7 @@
     <color name="poor">#fec985</color>
     <color name="veryPoor">#fe9371</color>
     <color name="terrible">#fe5d5d</color>
+
+    <!-- Text color highlighting today -->
+    <color name="todayText">#ffff00</color>
 </resources>
