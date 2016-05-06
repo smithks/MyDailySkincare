@@ -9,7 +9,7 @@
     tools:context="com.smithkeegan.mydailyskincare.MainActivity"
     tools:showIn="@layout/activity_main"
     android:layout_margin="10dp">
-    
+
     <CalendarView
         android:id="@+id/calendar"
         android:layout_width="match_parent"
