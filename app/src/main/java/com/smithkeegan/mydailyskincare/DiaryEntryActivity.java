@@ -23,7 +23,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_diary_entry);
 
         Intent intent = getIntent();
-        Date date = new Date(intent.getLongExtra(MainActivity.DATE,0));
+        Date date = new Date(intent.getLongExtra(MainActivity.INTENT_DATE,0));
         DateFormat df = DateFormat.getDateInstance();
         setTitle(df.format(date)+" Entry");
 

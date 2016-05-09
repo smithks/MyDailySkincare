@@ -2,6 +2,18 @@
     <string name="app_name">My Daily Skincare</string>
     <string name="action_view_db">View Database</string>
 
+    <!-- Navigation Drawer Options -->
+    <string-array name="drawer_strings">
+        <item>Today\'s Diary Entry</item>
+        <item>Routines</item>
+        <item>Products</item>
+        <item>Ingredients</item>
+        <item>Analytics</item>
+        <item>Settings</item>
+    </string-array>
+    <string name="drawer_open">Open Drawer</string>
+    <string name="drawer_close">Close Drawer</string>
+
     <!-- Condition slider strings -->
     <string name="excellent">Excellent</string>
     <string name="very_good">Very Good</string>
@@ -11,4 +23,6 @@
     <string name="very_poor">Very Poor</string>
     <string name="terrible">Terrible</string>
     <string name="general_condition">General Condition</string>
+
+
 </resources>

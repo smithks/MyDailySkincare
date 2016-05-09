@@ -2,6 +2,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.smithkeegan.mydailyskincare.MainActivity">
+    <!-- TODO: Remove this item -->
     <item
         android:id="@+id/action_view_db"
         android:orderInCategory="100"

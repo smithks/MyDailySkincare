@@ -14,6 +14,7 @@ import java.util.ArrayList;
 /**
  * @author Keegan Smith
  * @since 5/4/2016
+ * TODO: Remove this class
  */
 public class DiaryDbHelper extends SQLiteOpenHelper {
 

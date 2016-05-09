@@ -1,16 +1,22 @@
 package com.smithkeegan.mydailyskincare;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
@@ -25,8 +31,11 @@ import java.util.Date;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private CaldroidFragment caldroidFragment;
-    public final static String DATE = "Date"; //Key for intent value
+    private CaldroidFragment mCaldroidFragment;
+    public final static String INTENT_DATE = "Date"; //Key for intent value
+
+    private String[] mDrawerStrings;
+    private ActionBarDrawerToggle mDrawerToggle;
 
 
     @Override
@@ -37,10 +46,23 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-
+        initializeDrawer();
         initializeCalendar();
 
 
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState){
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration config){
+        super.onConfigurationChanged(config);
+        mDrawerToggle.onConfigurationChanged(config);
     }
 
     @Override
@@ -57,13 +79,46 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        if(mDrawerToggle.onOptionsItemSelected(item))
+            return true;
+
+        //TODO Remove this database menu action
         if (id == R.id.action_view_db) {
             Intent intent = new Intent(this,AndroidDatabaseManager.class);
             startActivity(intent);
             return true;
         }
+
+
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Initializes the drawer, setting adapters and click listeners.
+     */
+    private void initializeDrawer(){
+        mDrawerStrings = getResources().getStringArray(R.array.drawer_strings);
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ListView drawerList = (ListView)findViewById(R.id.drawer);
+
+        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_listview_item, mDrawerStrings));
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close);
+
+    }
+
+    //Click listener for items in the drawer
+    class DrawerItemClickListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    private void selectItem(int position){
+
     }
 
     /**
@@ -71,20 +126,19 @@ public class MainActivity extends AppCompatActivity {
      * Uses a modified caldroid calendar (https://github.com/roomorama/Caldroid).
      * TODO: better way to highlight today
      * TODO: show select animation when selecting days with skin condition color
-     * TODO: only
      */
     private void initializeCalendar(){
 
-        caldroidFragment = new CaldroidFragment();
-        caldroidFragment.setCaldroidListener(listener);
+        mCaldroidFragment = new CaldroidFragment();
+        mCaldroidFragment.setCaldroidListener(listener);
         Bundle args = new Bundle();
         Calendar cal = Calendar.getInstance();
         args.putInt(CaldroidFragment.MONTH,cal.get(Calendar.MONTH)+1);
         args.putInt(CaldroidFragment.YEAR,cal.get(Calendar.YEAR));
-        caldroidFragment.setArguments(args);
+        mCaldroidFragment.setArguments(args);
 
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
-        t.replace(R.id.calendar,caldroidFragment);
+        t.replace(R.id.calendar, mCaldroidFragment);
         t.commit();
 
         testColors();
@@ -97,19 +151,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onSelectDate(Date date, View view) {
             Intent intent = new Intent(getApplicationContext(),DiaryEntryActivity.class);
-            intent.putExtra(DATE,date.getTime());
+            intent.putExtra(INTENT_DATE,date.getTime());
             startActivity(intent);
         }
 
         @Override
         public void onCaldroidViewCreated(){
-            Button leftButton = caldroidFragment.getLeftArrowButton();
-            Button rightButton = caldroidFragment.getRightArrowButton();
+            Button leftButton = mCaldroidFragment.getLeftArrowButton();
+            Button rightButton = mCaldroidFragment.getRightArrowButton();
 
             leftButton.setBackgroundResource(R.drawable.ic_keyboard_arrow_left_black_24dp);
             rightButton.setBackgroundResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
 
-            caldroidFragment.setTextColorForDate(R.color.todayText,Calendar.getInstance().getTime());
+            mCaldroidFragment.setTextColorForDate(R.color.todayText,Calendar.getInstance().getTime());
 
             /* //Creating custom weekday strings
             List<String> weekdays = new ArrayList<>();
@@ -120,9 +174,9 @@ public class MainActivity extends AppCompatActivity {
             weekdays.add("T");
             weekdays.add("F");
             weekdays.add("S");
-            caldroidFragment.getWeekdayGridView().setAdapter(new WeekdayArrayAdapter(getApplicationContext(),R.layout.grid_weekday_textfield,weekdays,R.style.AppTheme));
+            mCaldroidFragment.getWeekdayGridView().setAdapter(new WeekdayArrayAdapter(getApplicationContext(),R.layout.grid_weekday_textfield,weekdays,R.style.AppTheme));
             */
-            caldroidFragment.refreshView();
+            mCaldroidFragment.refreshView();
         }
     };
 
@@ -130,19 +184,19 @@ public class MainActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         ColorDrawable excellent = new ColorDrawable(ContextCompat.getColor(this,R.color.excellent));
-        caldroidFragment.setBackgroundDrawableForDate(excellent,calendar.getTime());
+        mCaldroidFragment.setBackgroundDrawableForDate(excellent,calendar.getTime());
         calendar.set(Calendar.DAY_OF_MONTH,3);
-        caldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.veryGood)),calendar.getTime());
+        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.veryGood)),calendar.getTime());
         calendar.set(Calendar.DAY_OF_MONTH,4);
-        caldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.good)),calendar.getTime());
+        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.good)),calendar.getTime());
         calendar.set(Calendar.DAY_OF_MONTH,5);
-        caldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.fair)),calendar.getTime());
+        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.fair)),calendar.getTime());
         calendar.set(Calendar.DAY_OF_MONTH,6);
-        caldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.poor)),calendar.getTime());
+        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.poor)),calendar.getTime());
         calendar.set(Calendar.DAY_OF_MONTH,7);
-        caldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.veryPoor)),calendar.getTime());
+        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.veryPoor)),calendar.getTime());
         calendar.set(Calendar.DAY_OF_MONTH,8);
-        caldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.terrible)),calendar.getTime());
-        caldroidFragment.refreshView();
+        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.terrible)),calendar.getTime());
+        mCaldroidFragment.refreshView();
     }
 }
