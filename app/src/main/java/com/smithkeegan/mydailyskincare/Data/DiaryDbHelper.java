@@ -198,7 +198,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_TABLES);
+        db.execSQL(SQL_INGREDIENT_TABLE);
 
     }
 

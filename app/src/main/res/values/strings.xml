@@ -24,5 +24,12 @@
     <string name="terrible">Terrible</string>
     <string name="general_condition">General Condition</string>
 
+    <!-- Ingredient Strings -->
+    <string name="ingredients">Ingredients</string>
+    <string name="ingredient_name">Name</string>
+    <string name="ingredient_irritant">Skin Irritant</string>
+    <string name="ingredient_comment">Comment</string>
+    <string name="new_ingredient">New Ingredient</string>
+
 
 </resources>
