@@ -5,12 +5,40 @@
 
     <TextView
         android:id="@+id/ingredient_name_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/ingredient_name"/>
+        style="@style/text_field_style"
+        android:text="@string/ingredient_name"
+        android:layout_alignBaseline="@+id/ingredient_name_edit"/>
 
     <EditText
+        android:id="@+id/ingredient_name_edit"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        style="@style/default_text_format"
+        android:inputType="text"
+        android:layout_alignRight="@+id/ingredient_irritant_checkbox"
+        android:layout_alignEnd="@+id/ingredient_irritant_checkbox"/>
+
+    <CheckBox
+        android:id="@+id/ingredient_irritant_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/default_text_format"
+        android:text="@string/ingredient_irritant"
+        android:layout_below="@+id/ingredient_name_text"/>
+
+    <TextView
+        android:id="@+id/ingredient_comment_name_text"
+        style="@style/text_field_style"
+        android:layout_below="@id/ingredient_irritant_checkbox"
+        android:text="@string/ingredient_comment"/>
+
+    <EditText
+        android:id="@+id/ingredient_comment_edit"
+        style="@style/default_text_format"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ingredient_comment_name_text"
+        />
 
 </RelativeLayout>
