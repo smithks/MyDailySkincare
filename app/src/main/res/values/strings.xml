@@ -27,9 +27,11 @@
     <!-- Ingredient Strings -->
     <string name="ingredients">Ingredients</string>
     <string name="ingredient_name">Name</string>
-    <string name="ingredient_irritant">Skin Irritant</string>
-    <string name="ingredient_comment">Comment</string>
-    <string name="new_ingredient">New Ingredient</string>
+    <string name="ingredient_irritant">Skin irritant</string>
+    <string name="ingredient_comment">comment</string>
+    <string name="new_ingredient">New ingredient</string>
+    <string name="delete_button">Delete</string>
+    <string name="save_button">Save</string>
 
 
 </resources>

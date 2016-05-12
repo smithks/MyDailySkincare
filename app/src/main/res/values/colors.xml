@@ -15,4 +15,7 @@
 
     <!-- Text color highlighting today -->
     <color name="todayText">#ffff00</color>
+
+    <!--Button Colors-->
+    <color name="deleteButton">#fe5d5d</color>
 </resources>

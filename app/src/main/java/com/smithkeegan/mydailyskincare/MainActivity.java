@@ -117,8 +117,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Starts appropriate activity based on item pressed in drawer.
+     * @param position item pressed in drawer
+     */
     private void selectItem(int position){
-
+        switch(position){
+            case 0: //Todays diary entry
+                break;
+            case 1: //Routines
+                break;
+            case 2: //Products
+                break;
+            case 3: //Ingredients
+                Intent intent = new Intent(this,IngredientActivity.class);
+                startActivity(intent);
+                break;
+            case 4: //Analytics
+                break;
+            case 5: //Settings
+                break;
+        }
     }
 
     /**
