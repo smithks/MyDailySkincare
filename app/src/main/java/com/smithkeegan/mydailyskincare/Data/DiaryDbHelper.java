@@ -32,7 +32,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     //Return a single instance of the db for all needs
     public static synchronized DiaryDbHelper getInstance(Context context){
         if (instance==null){
-            instance = new DiaryDbHelper(context.getApplicationContext());
+            instance = new DiaryDbHelper(context);
         }
         return instance;
     }
@@ -167,7 +167,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.Ingredient.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Ingredient.COLUMN_IRRITANT + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Ingredient.COLUMN_COMMENT + TEXT_TYPE +
-                    " );";
+                    " )";
 
     private static final String SQL_PRODUCT_INGREDIENT_TABLE =
             "CREATE TABLE " + DiaryContract.ProductIngredient.TABLE_NAME +

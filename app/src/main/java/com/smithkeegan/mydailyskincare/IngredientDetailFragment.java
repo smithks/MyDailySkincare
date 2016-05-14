@@ -6,11 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.smithkeegan.mydailyskincare.Data.DiaryDbHelper;
+
 /**
  * @author Keegan Smith
  * @since 5/10/2016
  */
 public class IngredientDetailFragment extends Fragment {
+
+    DiaryDbHelper dbHelper = DiaryDbHelper.getInstance(getContext());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
