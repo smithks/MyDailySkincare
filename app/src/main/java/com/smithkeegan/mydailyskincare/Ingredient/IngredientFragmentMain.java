@@ -1,20 +1,21 @@
-package com.smithkeegan.mydailyskincare.Ingredient;
+package com.smithkeegan.mydailyskincare.ingredient;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 
-import com.smithkeegan.mydailyskincare.Data.DiaryContract;
-import com.smithkeegan.mydailyskincare.Data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.data.DiaryContract;
+import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 /**
  * Contains the users ingredients displayed in a list view.
@@ -23,40 +24,47 @@ import com.smithkeegan.mydailyskincare.R;
  */
 public class IngredientFragmentMain extends Fragment {
 
-    DiaryDbHelper mDbHelper = DiaryDbHelper.getInstance(getContext());
-    FragmentManager mFragmentManager;
+    DiaryDbHelper mDbHelper;
+    ListView mIngredientsList;
     Button mNewIngredientButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstance){
         View rootView = inflater.inflate(R.layout.fragment_ingredient_main, container, false);
 
-        mFragmentManager = getActivity().getSupportFragmentManager();
+        mDbHelper = DiaryDbHelper.getInstance(getContext());
         mNewIngredientButton = (Button) rootView.findViewById(R.id.ingredient_main_new_button);
         setButtonListener();
-/*
-        ListView listView = (ListView)rootView.findViewById(R.id.ingredient_main_list_view);
-        ArrayList<String> list = new ArrayList<>();
-        list.add("Merp");
-        list.add("Derp");
-        list.add("herp");
 
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(),R.layout.ingredient_listview_item,list);
-        listView.setAdapter(adapter); */
+        mIngredientsList = (ListView)rootView.findViewById(R.id.ingredient_main_list_view);
+
+        refreshListView();
+
         return rootView;
     }
 
+    private void refreshListView(){
+        new FetchIngredientsTask().execute();
+    }
+
+    /**
+     * Sets listener for the new ingredient button.
+     */
     public void setButtonListener(){
         mNewIngredientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                transaction.replace(R.id.ingredient_activity_main,new IngredientFragmentDetail());
-                transaction.commit();
+                Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
+                intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,true);
+                startActivity(intent);
             }
         });
     }
 
+
+    /**
+     * Background process to fetch and populate the listview of ingredients.
+     */
     private class FetchIngredientsTask extends AsyncTask<Void,Void,Cursor>{
 
         @Override
@@ -70,7 +78,10 @@ public class IngredientFragmentMain extends Fragment {
 
         @Override
         protected void onPostExecute(final Cursor result){
-
+            String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
+            int[] toViews = {R.id.ingredient_list_view_item};
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.ingredient_listview_item,result,fromColumns,toViews,SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            mIngredientsList.setAdapter(adapter);
         }
     }
 }

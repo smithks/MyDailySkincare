@@ -23,9 +23,13 @@
                   android:parentActivityName=".MainActivity"
                   >
         </activity>
-        <activity android:name=".Ingredient.IngredientActivityMain"
+        <activity android:name=".ingredient.IngredientActivityMain"
                   android:label="Ingredients"
                   android:parentActivityName=".MainActivity">
+
+        </activity>
+        <activity android:name=".ingredient.IngredientActivityDetail"
+                  android:parentActivityName=".ingredient.IngredientActivityMain">
 
         </activity>
         <activity android:name="com.smithkeegan.mydailyskincare.AndroidDatabaseManager"

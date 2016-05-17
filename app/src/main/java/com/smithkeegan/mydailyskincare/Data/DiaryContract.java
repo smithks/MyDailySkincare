@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.Data;
+package com.smithkeegan.mydailyskincare.data;
 
 import android.provider.BaseColumns;
 
@@ -63,7 +63,7 @@ public final class DiaryContract {
         public static final String TABLE_NAME = "Product";
         public static final String COLUMN_BRAND = "Brand";
         public static final String COLUMN_NAME = "Name";
-        public static final String COLUMN_TYPE = "Name";
+        public static final String COLUMN_TYPE = "Type";
     }
 
     public static abstract class ProductIngredient implements BaseColumns{

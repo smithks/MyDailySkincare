@@ -20,7 +20,7 @@ import android.widget.ListView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
-import com.smithkeegan.mydailyskincare.Ingredient.IngredientActivityMain;
+import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityMain;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

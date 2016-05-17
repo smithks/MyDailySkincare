@@ -27,7 +27,7 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.Data.DiaryDbHelper;
+import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -1,5 +1,5 @@
 
-package com.smithkeegan.mydailyskincare.Data;
+package com.smithkeegan.mydailyskincare.data;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -106,9 +106,9 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " );";
 
     private static final String SQL_MODIFIER_TABLE =
-            "CREATE TABLE" + DiaryContract.Modifier.TABLE_NAME +
+            "CREATE TABLE " + DiaryContract.Modifier.TABLE_NAME +
                     "( " +
-                    DiaryContract.Modifier._ID + INTEGER_TYPE + " PRIMARY KEY" + NOT_NULL + AUTOINCREMENT + COMMA_SEP +
+                    DiaryContract.Modifier._ID + INTEGER_TYPE + " PRIMARY KEY" + AUTOINCREMENT + NOT_NULL + COMMA_SEP +
                     DiaryContract.Modifier.COLUMN_NAME + TEXT_TYPE + NOT_NULL +
                     " );";
 
@@ -137,7 +137,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.DiaryEntryRoutine.COLUMN_DATE + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + INTEGER_TYPE +NOT_NULL + COMMA_SEP +
                     "FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DATE + ") REFERENCES " + DiaryContract.DiaryEntry.TABLE_NAME + "(" + DiaryContract.DiaryEntry.COLUMN_DATE + ")" + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ") REFERENCES" + DiaryContract.Routine.TABLE_NAME + "(" + DiaryContract.Routine._ID + ")" + COMMA_SEP +
+                    "FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ") REFERENCES " + DiaryContract.Routine.TABLE_NAME + "(" + DiaryContract.Routine._ID + ")" + COMMA_SEP +
                     "PRIMARY KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DATE + COMMA_SEP + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ")" +
                     " );";
 
@@ -167,7 +167,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.Ingredient.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Ingredient.COLUMN_IRRITANT + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Ingredient.COLUMN_COMMENT + TEXT_TYPE +
-                    " )";
+                    " );";
 
     private static final String SQL_PRODUCT_INGREDIENT_TABLE =
             "CREATE TABLE " + DiaryContract.ProductIngredient.TABLE_NAME +
@@ -180,25 +180,21 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " );";
 
 
-    private static final String SQL_TABLES =
-            SQL_DIARY_ENTRY_TABLE +
-                    SQL_MODIFIER_TABLE +
-                    SQL_CONDITION_MODIFIER_TABLE +
-                    SQL_ROUTINE_TABLE +
-                    SQL_DIARY_ENTRY_ROUTINE_TABLE +
-                    SQL_PRODUCT_TABLE +
-                    SQL_ROUTINE_PRODUCT_TABLE +
-                    SQL_INGREDIENT_TABLE +
-                    SQL_PRODUCT_INGREDIENT_TABLE;
-
-
     public DiaryDbHelper(Context context){
         super(context,DATABASE_NAME,null,DATABASE_VERSION );
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(SQL_DIARY_ENTRY_TABLE);
+        db.execSQL(SQL_MODIFIER_TABLE);
+        db.execSQL(SQL_CONDITION_MODIFIER_TABLE);
+        db.execSQL(SQL_ROUTINE_TABLE);
+        db.execSQL(SQL_DIARY_ENTRY_ROUTINE_TABLE);
+        db.execSQL(SQL_PRODUCT_TABLE);
+        db.execSQL(SQL_ROUTINE_PRODUCT_TABLE);
         db.execSQL(SQL_INGREDIENT_TABLE);
+        db.execSQL(SQL_PRODUCT_INGREDIENT_TABLE);
 
     }
 
