@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
+import com.smithkeegan.mydailyskincare.Ingredient.IngredientActivityMain;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             case 2: //Products
                 break;
             case 3: //Ingredients
-                Intent intent = new Intent(this,IngredientActivity.class);
+                Intent intent = new Intent(this,IngredientActivityMain.class);
                 startActivity(intent);
                 break;
             case 4: //Analytics

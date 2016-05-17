@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare;
+package com.smithkeegan.mydailyskincare.Ingredient;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,12 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.smithkeegan.mydailyskincare.Data.DiaryDbHelper;
+import com.smithkeegan.mydailyskincare.R;
 
 /**
  * @author Keegan Smith
  * @since 5/10/2016
  */
-public class IngredientDetailFragment extends Fragment {
+public class IngredientFragmentDetail extends Fragment {
 
     DiaryDbHelper dbHelper = DiaryDbHelper.getInstance(getContext());
 

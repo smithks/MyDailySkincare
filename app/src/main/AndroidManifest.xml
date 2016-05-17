@@ -23,7 +23,7 @@
                   android:parentActivityName=".MainActivity"
                   >
         </activity>
-        <activity android:name=".IngredientActivity"
+        <activity android:name=".Ingredient.IngredientActivityMain"
                   android:label="Ingredients"
                   android:parentActivityName=".MainActivity">
 
