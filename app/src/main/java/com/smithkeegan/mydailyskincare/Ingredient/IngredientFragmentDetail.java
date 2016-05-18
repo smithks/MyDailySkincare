@@ -1,6 +1,7 @@
 package com.smithkeegan.mydailyskincare.ingredient;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,7 +22,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
  * @author Keegan Smith
  * @since 5/10/2016
  * TODO return to calling location, either add ingredients to product or ingredients listpage
- * TODO disable button if no changes have taken place
+ * TODO disable button if no changes have taken place, listeners for each field
  */
 public class IngredientFragmentDetail extends Fragment {
 
@@ -37,6 +38,7 @@ public class IngredientFragmentDetail extends Fragment {
     String mInitalName;
     boolean mInitialCheck;
     String mInitialComment;
+    Long mExistingId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
@@ -52,13 +54,15 @@ public class IngredientFragmentDetail extends Fragment {
 
         Bundle args = getArguments();
         mNewEntry = args.getBoolean(IngredientActivityDetail.NEW_INGREDIENT,true);
+        mExistingId = args.getLong(IngredientActivityDetail.ENTRY_ID,-1);
 
-        if (mNewEntry) {
+        if (mNewEntry || mExistingId < 0) { //New entry or error loading
             mInitalName = mIngredientName.getText().toString();
             mInitialCheck = mSkinIrritant.isChecked();
             mInitialComment = mComment.getText().toString();
-        } else{
-            //TODO Load from db
+        } else{ //Load data from existing entry
+            new LoadIngredientTask().execute(mExistingId);
+            mButtonSave.setText(R.string.update_button_text);
         }
 
         mEntryChanged = false;
@@ -91,12 +95,14 @@ public class IngredientFragmentDetail extends Fragment {
                 }else{
                     Toast.makeText(getContext(),"No changes to save!", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
     }
 
+    /**
+     * Task to save a new ingredient or save changes to an existing ingredient.
+     * Performed as a background task.
+     */
     private class SaveIngredientTask extends AsyncTask<String,Void,Long>{
 
         @Override
@@ -107,8 +113,15 @@ public class IngredientFragmentDetail extends Fragment {
             values.put(DiaryContract.Ingredient.COLUMN_NAME,params[0]);
             values.put(DiaryContract.Ingredient.COLUMN_IRRITANT,Integer.parseInt(params[1]));
             values.put(DiaryContract.Ingredient.COLUMN_COMMENT,params[2]);
+            if (mNewEntry)
+                return db.insert(DiaryContract.Ingredient.TABLE_NAME,null,values);
+            else{
+                String where = DiaryContract.Ingredient._ID + " = ?";
+                String[] whereArg = {mExistingId.toString()};
+                int rows =  db.update(DiaryContract.Ingredient.TABLE_NAME,values,where,whereArg);
+                return Long.valueOf(rows == 0? -1 : 1); //return -1 if no rows affected, error storing
+            }
 
-            return db.insert(DiaryContract.Ingredient.TABLE_NAME,null,values);
         }
 
         @Override
@@ -116,7 +129,45 @@ public class IngredientFragmentDetail extends Fragment {
             if (param == -1){
                 Toast.makeText(getContext(),"Error storing value",Toast.LENGTH_SHORT).show();
             }else {
-                Toast.makeText(getContext(),"Store successful. ID: "+param,Toast.LENGTH_SHORT).show();
+                if (mNewEntry)
+                    Toast.makeText(getContext(),"Store successful. ID: "+param,Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getContext(),"Update successful.",Toast.LENGTH_SHORT).show();
+            }
+            getActivity().finish();
+        }
+    }
+
+
+    /**
+     * Task to load ingredient data from database on fragment load. Performed in background.
+     */
+    private class LoadIngredientTask extends AsyncTask<Long,Void,Cursor>{
+
+        @Override
+        protected Cursor doInBackground(Long... params) {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String[] columns = {DiaryContract.Ingredient.COLUMN_NAME,DiaryContract.Ingredient.COLUMN_IRRITANT, DiaryContract.Ingredient.COLUMN_COMMENT};
+            String where = DiaryContract.Ingredient._ID + " = "+params[0];
+            return db.query(DiaryContract.Ingredient.TABLE_NAME,columns,where,null,null,null,null);
+        }
+
+        @Override
+        protected void onPostExecute(final Cursor result){
+            if(result.moveToFirst()) {
+                String name = result.getString(result.getColumnIndex(DiaryContract.Ingredient.COLUMN_NAME));
+                int irritantInt = result.getInt(result.getColumnIndex(DiaryContract.Ingredient.COLUMN_IRRITANT));
+                boolean isIrritant = irritantInt == 1; //boolean stored as int (1 == true, 0 == false
+                String comment = result.getString(result.getColumnIndex(DiaryContract.Ingredient.COLUMN_COMMENT));
+
+                mIngredientName.setText(name);
+                mInitalName = name;
+
+                mSkinIrritant.setChecked(isIrritant);
+                mInitialCheck = isIrritant;
+
+                mComment.setText(comment);
+                mInitialComment = comment;
             }
         }
     }

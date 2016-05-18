@@ -10,6 +10,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -38,9 +39,13 @@ public class IngredientFragmentMain extends Fragment {
 
         mIngredientsList = (ListView)rootView.findViewById(R.id.ingredient_main_list_view);
 
-        refreshListView();
-
         return rootView;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        refreshListView();
     }
 
     private void refreshListView(){
@@ -82,6 +87,20 @@ public class IngredientFragmentMain extends Fragment {
             int[] toViews = {R.id.ingredient_list_view_item};
             SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.ingredient_listview_item,result,fromColumns,toViews,SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             mIngredientsList.setAdapter(adapter);
+            mIngredientsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                /*
+                 * Called when a user clicks on an entry in the ingredient listview. Opens the ingredient detail
+                 * for that ingredient.
+                 */
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
+                    intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false); //Not a new ingredient
+                    intent.putExtra(IngredientActivityDetail.ENTRY_ID,id); //ID of ingredient
+                    startActivity(intent);
+                }
+            });
         }
     }
 }

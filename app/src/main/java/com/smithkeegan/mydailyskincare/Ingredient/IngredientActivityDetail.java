@@ -1,5 +1,6 @@
 package com.smithkeegan.mydailyskincare.ingredient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import com.smithkeegan.mydailyskincare.R;
 public class IngredientActivityDetail extends AppCompatActivity {
 
     public final static String NEW_INGREDIENT = "NEW_INGREDIENT";
+    public final static String ENTRY_ID = "ID";
 
     @Override
     public void onCreate(Bundle savedInstance){
@@ -25,11 +27,14 @@ public class IngredientActivityDetail extends AppCompatActivity {
         //Set flags to send up to fragment. Existing ingredient id and new ingredient status.
         //TODO: check for and send existing ingredient to/from intent/bundle
         Bundle bundle = new Bundle();
-        if (getIntent().hasExtra(NEW_INGREDIENT)){
-            if (getIntent().getBooleanExtra(NEW_INGREDIENT,true)){
+        Intent thisIntent = getIntent();
+        if (thisIntent.hasExtra(NEW_INGREDIENT)){
+            //Check new ingredient flag and entry id flag. Error occurred if new_ingredient is false and entry_id is -1. Open new ingredient.
+            if (thisIntent.getBooleanExtra(NEW_INGREDIENT,true) || thisIntent.getLongExtra(ENTRY_ID,-1) < 0){
                 bundle.putBoolean(NEW_INGREDIENT,true);
             }else{
                 bundle.putBoolean(NEW_INGREDIENT,false);
+                bundle.putLong(ENTRY_ID,thisIntent.getLongExtra(ENTRY_ID,-1));
             }
             fragmentDetail.setArguments(bundle);
         }

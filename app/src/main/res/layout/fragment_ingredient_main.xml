@@ -6,8 +6,11 @@
     <ListView
         android:id="@+id/ingredient_main_list_view"
         android:layout_width="wrap_content"
-        android:layout_height="350dp"
-        android:padding="20dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ingredient_main_new_button"
+        android:layout_margin="10dp"
+        android:background="@drawable/rectangle_border"
+        android:layout_alignParentTop="true"
         >
 
     </ListView>
@@ -16,11 +19,13 @@
         android:id="@+id/ingredient_main_new_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ingredient_main_list_view"
         android:layout_centerHorizontal="true"
         android:text="@string/new_ingredient"
         android:background="@color/colorPrimary"
+        android:textColor="#ffffff"
         android:padding="10dp"
-        android:textColor="#ffffff"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"/>
 
 </RelativeLayout>
