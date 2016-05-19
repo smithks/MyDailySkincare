@@ -45,12 +45,31 @@ public class IngredientFragmentMain extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        refreshListView();
+        refreshListView(); //Move this if highlighting from detail fragment
     }
 
-    private void refreshListView(){
-        new FetchIngredientsTask().execute();
+    /**
+     * Called from the ingredient fragment detail when the user updates an existing entry or creates a new entry.
+     * Scrolls the listview to the edited entry.
+     * TODO: uncomment if using
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        /*if (requestCode == IngredientActivityMain.INGREDIENT_FINISHED){
+            if (resultCode == AppCompatActivity.RESULT_OK){
+                if(data.hasExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID)){
+                    Long newIngId = data.getLongExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID,-1);
+                    refreshListView(newIngId.intValue());
+                }
+            }
+        }*/
     }
+
+    //Called on initial load
+    private void refreshListView(){ new FetchIngredientsTask().execute();}
+
+    //Called when a new entry has been added or updated, scrolls the listview to the entry
+    private void refreshListView(int highlightId){ new FetchIngredientsTask(highlightId).execute(); }
 
     /**
      * Sets listener for the new ingredient button.
@@ -61,7 +80,7 @@ public class IngredientFragmentMain extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
                 intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,true);
-                startActivity(intent);
+                startActivityForResult(intent,IngredientActivityMain.INGREDIENT_FINISHED);
             }
         });
     }
@@ -71,6 +90,16 @@ public class IngredientFragmentMain extends Fragment {
      * Background process to fetch and populate the listview of ingredients.
      */
     private class FetchIngredientsTask extends AsyncTask<Void,Void,Cursor>{
+
+        int highlightId;
+
+        public FetchIngredientsTask(){
+            highlightId = -1;
+        }
+
+        public FetchIngredientsTask(int highlightId){
+            this.highlightId =  highlightId;
+        }
 
         @Override
         protected Cursor doInBackground(Void... params) {
@@ -101,6 +130,21 @@ public class IngredientFragmentMain extends Fragment {
                     startActivity(intent);
                 }
             });
+            //TODO highlight edited field on return from detail activity.
+            /*if (highlightId > -1) {
+                int highlightPosition = -1;
+                boolean done = false;
+                result.moveToFirst();
+                do {
+                    if (highlightId == result.getInt(result.getColumnIndex(DiaryContract.Ingredient._ID))){
+                        highlightPosition = result.getPosition();
+                        done = true;
+                    }
+                } while (result.moveToNext() || !done);
+                if (highlightPosition > -1){
+                    mIngredientsList.setSelection(highlightPosition); //Find way to highlight selected row
+                }
+            }*/
         }
     }
 }

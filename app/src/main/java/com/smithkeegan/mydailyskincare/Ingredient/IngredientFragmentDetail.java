@@ -1,11 +1,14 @@
 package com.smithkeegan.mydailyskincare.ingredient;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.smithkeegan.mydailyskincare.NewEntryTextChangeListener;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
@@ -57,27 +61,45 @@ public class IngredientFragmentDetail extends Fragment {
         mExistingId = args.getLong(IngredientActivityDetail.ENTRY_ID,-1);
 
         if (mNewEntry || mExistingId < 0) { //New entry or error loading
+            mIngredientName.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
+            mComment.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
             mInitalName = mIngredientName.getText().toString();
             mInitialCheck = mSkinIrritant.isChecked();
             mInitialComment = mComment.getText().toString();
+            mButtonDelete.setVisibility(View.GONE);
         } else{ //Load data from existing entry
             new LoadIngredientTask().execute(mExistingId);
             mButtonSave.setText(R.string.update_button_text);
         }
 
         mEntryChanged = false;
-        setButtonListeners();
+        setListeners();
         return rootView;
     }
 
     /**
      *Sets listeners for delete and save buttons.
      */
-    private void setButtonListeners(){
+    private void setListeners(){
         mButtonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Are you sure you want to delete this ingredient?")
+                        .setTitle("Delete ingredient?")
+                        .setIcon(R.drawable.ic_warning_black_24dp)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new DeleteIngredientTask().execute();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
             }
         });
 
@@ -97,6 +119,9 @@ public class IngredientFragmentDetail extends Fragment {
                 }
             }
         });
+
+        mIngredientName.addTextChangedListener(new NewEntryTextChangeListener(getContext(),mIngredientName,mNewEntry));
+        mComment.addTextChangedListener(new NewEntryTextChangeListener(getContext(),mComment,mNewEntry));
     }
 
     /**
@@ -133,6 +158,34 @@ public class IngredientFragmentDetail extends Fragment {
                     Toast.makeText(getContext(),"Store successful. ID: "+param,Toast.LENGTH_SHORT).show();
                 else
                     Toast.makeText(getContext(),"Update successful.",Toast.LENGTH_SHORT).show();
+            }
+            //TODO uncomment if using highlight
+            //Intent intent = new Intent();
+            //intent.putExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID,param);
+            //getActivity().setResult(AppCompatActivity.RESULT_OK,intent);
+            getActivity().finish();
+        }
+    }
+
+    /**
+     * Task to delete the currently open ingredient.
+     */
+    private class DeleteIngredientTask extends AsyncTask<Void,Void,Integer>{
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            String where = DiaryContract.Ingredient._ID + " = ?";
+            String[] whereArgs = {mExistingId.toString()};
+            return db.delete(DiaryContract.Ingredient.TABLE_NAME,where,whereArgs);
+        }
+
+        @Override
+        protected void onPostExecute(final Integer param){
+            if(param == 1){
+                Toast.makeText(getContext(),"Ingredient deleted.",Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(getContext(),"Error deleting ingredient.",Toast.LENGTH_SHORT).show();
             }
             getActivity().finish();
         }

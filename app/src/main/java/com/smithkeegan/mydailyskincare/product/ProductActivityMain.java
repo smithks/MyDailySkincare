@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.ingredient;
+package com.smithkeegan.mydailyskincare.product;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -8,20 +8,17 @@ import com.smithkeegan.mydailyskincare.R;
 
 /**
  * @author Keegan Smith
- * @since 5/6/2016
+ * @since 5/19/2016
  */
-public class IngredientActivityMain extends AppCompatActivity {
-
-    public static final int INGREDIENT_FINISHED = 1;
-    public static final String INGREDIENT_FINISHED_ID = "INGREDIENT_FINISHED_ID";
+public class ProductActivityMain extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-        setContentView(R.layout.activity_ingredient_main);
+        setContentView(R.layout.activity_product_main);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.ingredient_activity_main,new IngredientFragmentMain());
+        transaction.add(R.id.product_activity_main, new ProductFragmentMain());
         transaction.commit();
     }
 }
