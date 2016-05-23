@@ -25,9 +25,9 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
  */
 public class IngredientFragmentMain extends Fragment {
 
-    DiaryDbHelper mDbHelper;
-    ListView mIngredientsList;
-    Button mNewIngredientButton;
+    private DiaryDbHelper mDbHelper;
+    private ListView mIngredientsList;
+    private Button mNewIngredientButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstance){
@@ -106,7 +106,7 @@ public class IngredientFragmentMain extends Fragment {
 
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             String[] columns = {DiaryContract.Ingredient._ID,DiaryContract.Ingredient.COLUMN_NAME};
-            String sortOrder = DiaryContract.Ingredient.COLUMN_NAME + " DESC";
+            String sortOrder = DiaryContract.Ingredient.COLUMN_NAME + " ASC";
             return db.query(DiaryContract.Ingredient.TABLE_NAME,columns,null,null,null,null,sortOrder);
         }
 
@@ -114,7 +114,7 @@ public class IngredientFragmentMain extends Fragment {
         protected void onPostExecute(final Cursor result){
             String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
             int[] toViews = {R.id.ingredient_list_view_item};
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.ingredient_listview_item,result,fromColumns,toViews,SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.ingredient_listview_item,result,fromColumns,toViews,0);
             mIngredientsList.setAdapter(adapter);
             mIngredientsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -127,7 +127,7 @@ public class IngredientFragmentMain extends Fragment {
                     Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
                     intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false); //Not a new ingredient
                     intent.putExtra(IngredientActivityDetail.ENTRY_ID,id); //ID of ingredient
-                    startActivity(intent);
+                    startActivity(intent); //TODO use startActivityForResult if highlighting
                 }
             });
             //TODO highlight edited field on return from detail activity.

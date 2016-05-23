@@ -11,6 +11,9 @@ import com.smithkeegan.mydailyskincare.R;
  */
 public class ProductActivityDetail extends AppCompatActivity{
 
+    public final static String NEW_PRODUCT = "NEW_PRODUCT";
+    public final static String ENTRY_ID = "ID";
+
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);

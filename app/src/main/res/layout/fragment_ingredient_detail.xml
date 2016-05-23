@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         style="@style/edit_text_format"
         android:background="@color/textBoxBackground"
-        android:text="@string/ingredient_name"
+        android:text="@string/name_string"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
         />
@@ -51,7 +51,7 @@
             android:id="@+id/ingredient_delete_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/delete_button"
+            android:text="@string/delete_button_string"
             android:backgroundTint="@color/deleteButton"
             android:textColor="#ffffff"
             />
@@ -60,7 +60,7 @@
             android:id="@+id/ingredient_save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/save_button"
+            android:text="@string/save_button_string"
             android:backgroundTint="@color/colorPrimary"
             android:textColor="#ffffff"/>
     </LinearLayout>

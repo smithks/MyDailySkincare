@@ -69,7 +69,7 @@ public class IngredientFragmentDetail extends Fragment {
             mButtonDelete.setVisibility(View.GONE);
         } else{ //Load data from existing entry
             new LoadIngredientTask().execute(mExistingId);
-            mButtonSave.setText(R.string.update_button_text);
+            mButtonSave.setText(R.string.update_button_string);
         }
 
         mEntryChanged = false;

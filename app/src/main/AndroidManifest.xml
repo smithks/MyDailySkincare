@@ -23,6 +23,15 @@
                   android:parentActivityName=".MainActivity"
                   >
         </activity>
+        <activity android:name=".product.ProductActivityMain"
+                  android:label="@string/products"
+                  android:parentActivityName=".MainActivity">
+
+        </activity>
+        <activity android:name=".product.ProductActivityDetail"
+                  android:parentActivityName=".product.ProductActivityMain">
+
+        </activity>
         <activity android:name=".ingredient.IngredientActivityMain"
                   android:label="Ingredients"
                   android:parentActivityName=".MainActivity">

@@ -12,6 +12,9 @@ import com.smithkeegan.mydailyskincare.R;
  */
 public class ProductActivityMain extends AppCompatActivity {
 
+    public static final int PRODUCT_FINISHED = 1;
+    public static final String PRODUCT_FINISHED_ID = "PRODUCT_FINISHED_ID";
+
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);

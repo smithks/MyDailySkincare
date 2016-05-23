@@ -24,15 +24,22 @@
     <string name="terrible">Terrible</string>
     <string name="general_condition">General Condition</string>
 
+    <!-- General Strings -->
+    <string name="name_string">Name</string>
+    <string name="delete_button_string">Delete</string>
+    <string name="save_button_string">Save</string>
+    <string name="update_button_string">Update</string>
+
+
     <!-- Ingredient Strings -->
     <string name="ingredients">Ingredients</string>
-    <string name="ingredient_name">Name</string>
     <string name="ingredient_irritant">Skin irritant</string>
     <string name="ingredient_comment">comment</string>
     <string name="new_ingredient">New ingredient</string>
-    <string name="delete_button">Delete</string>
-    <string name="save_button">Save</string>
-    <string name="update_button_text">Update</string>
+
+    <!-- Product Strings -->
+    <string name="products">Products</string>
+    <string name="new_product">New product</string>
 
 
 </resources>
