@@ -1,5 +1,6 @@
 package com.smithkeegan.mydailyskincare.product;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -30,7 +31,7 @@ public class ProductFragmentDetail extends Fragment {
     private Long mExistingId;
     private String mInitialName;
     private String mInitialBrand;
-    //TODO add type
+    //TODO add field for product type
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
         View rootView = inflater.inflate(R.layout.fragment_product_detail, container, false);
@@ -54,7 +55,9 @@ public class ProductFragmentDetail extends Fragment {
     }
 
 
-
+    /**
+     * Task to load a product and its ingredients from the database.
+     */
     //TODO load from product_ingredients table as well to fill ingredients list view
     private class LoadProductTask extends AsyncTask<Long,Void,Cursor[]>{
 
@@ -80,6 +83,40 @@ public class ProductFragmentDetail extends Fragment {
                 mNameEditText.setText(name);
                 mBrandEditText.setText(brand);
             }
+        }
+    }
+
+    /**
+     * Task to save a product and its ingredients to the database.
+     */
+    private class SaveProductTask extends AsyncTask<String,Void,Long>{
+
+        @Override
+        protected Long doInBackground(String... params) {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(final Long result){
+
+        }
+    }
+
+    /**
+     * Task to delete a product and its ingredients from the database.
+     */
+    private class DeleteProductTask extends AsyncTask<Void,Void,Integer>{
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(final Integer result){
+
         }
     }
 }
