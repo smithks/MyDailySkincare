@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
-import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
 
 /**
  * @author Keegan Smith
@@ -131,7 +130,7 @@ public class ProductFragmentMain extends Fragment{
                  */
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
+                    Intent intent = new Intent(getContext(),ProductActivityDetail.class);
                     intent.putExtra(ProductActivityDetail.NEW_PRODUCT,false); //Not a new ingredient
                     intent.putExtra(ProductActivityDetail.ENTRY_ID,id); //ID of ingredient
                     startActivity(intent); //TODO use startActivityForResult if highlighting

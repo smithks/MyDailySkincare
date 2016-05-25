@@ -1,6 +1,8 @@
 package com.smithkeegan.mydailyskincare.product;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.smithkeegan.mydailyskincare.R;
@@ -18,5 +20,26 @@ public class ProductActivityDetail extends AppCompatActivity{
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_product_detail);
+
+        ProductFragmentDetail fragmentDetail = new ProductFragmentDetail();
+        //Set flags to send up to fragment. Existing product id or new status.
+        //TODO: check for and send existing product to/from intent/bundle
+        Bundle bundle = new Bundle();
+        Intent thisIntent = getIntent();
+        if (thisIntent.hasExtra(NEW_PRODUCT)){
+            //Check new ingredient flag and entry id flag. Error occurred if new_ingredient is false and entry_id is -1. Open new ingredient.
+            if (thisIntent.getBooleanExtra(NEW_PRODUCT,true) || thisIntent.getLongExtra(ENTRY_ID,-1) < 0){
+                bundle.putBoolean(NEW_PRODUCT,true);
+            }else{
+                bundle.putBoolean(NEW_PRODUCT,false);
+                bundle.putLong(ENTRY_ID,thisIntent.getLongExtra(ENTRY_ID,-1));
+            }
+            fragmentDetail.setArguments(bundle);
+        }
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.product_activity_detail,fragmentDetail);
+        transaction.commit();
+
     }
 }

@@ -26,32 +26,32 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
  * @author Keegan Smith
  * @since 5/10/2016
  * TODO return to calling location, either add ingredients to product or ingredients listpage
- * TODO disable button if no changes have taken place, listeners for each field
+ * TODO disable button if no changes have taken place, listeners for each field, change "update" text to "save"
  */
 public class IngredientFragmentDetail extends Fragment {
 
-    private DiaryDbHelper dbHelper;
+    private DiaryDbHelper mDbHelper;
     private Boolean mNewEntry;
     private Boolean mEntryChanged;
-    private EditText mIngredientName;
-    private EditText mComment;
-    private CheckBox mSkinIrritant;
+    private EditText mNameEditText;
+    private EditText mCommentEditText;
+    private CheckBox mIrritantCheckbox;
     private Button mButtonDelete;
     private Button mButtonSave;
 
-    String mInitalName;
-    boolean mInitialCheck;
-    String mInitialComment;
-    Long mExistingId;
+    private String mInitialName;
+    private boolean mInitialCheck;
+    private String mInitialComment;
+    private Long mExistingId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
         View rootView =  inflater.inflate(R.layout.fragment_ingredient_detail,container,false);
-        dbHelper = DiaryDbHelper.getInstance(getContext());
+        mDbHelper = DiaryDbHelper.getInstance(getContext());
 
-        mIngredientName = (EditText) rootView.findViewById(R.id.ingredient_name_edit);
-        mComment = (EditText) rootView.findViewById(R.id.ingredient_comment_edit);
-        mSkinIrritant = (CheckBox) rootView.findViewById(R.id.ingredient_irritant_checkbox);
+        mNameEditText = (EditText) rootView.findViewById(R.id.ingredient_name_edit);
+        mCommentEditText = (EditText) rootView.findViewById(R.id.ingredient_comment_edit);
+        mIrritantCheckbox = (CheckBox) rootView.findViewById(R.id.ingredient_irritant_checkbox);
         mButtonDelete = (Button) rootView.findViewById(R.id.ingredient_delete_button);
         mButtonSave = (Button) rootView.findViewById(R.id.ingredient_save_button);
 
@@ -61,11 +61,11 @@ public class IngredientFragmentDetail extends Fragment {
         mExistingId = args.getLong(IngredientActivityDetail.ENTRY_ID,-1);
 
         if (mNewEntry || mExistingId < 0) { //New entry or error loading
-            mIngredientName.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
-            mComment.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
-            mInitalName = mIngredientName.getText().toString();
-            mInitialCheck = mSkinIrritant.isChecked();
-            mInitialComment = mComment.getText().toString();
+            mNameEditText.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
+            mCommentEditText.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
+            mInitialName = mNameEditText.getText().toString();
+            mInitialCheck = mIrritantCheckbox.isChecked();
+            mInitialComment = mCommentEditText.getText().toString();
             mButtonDelete.setVisibility(View.GONE);
         } else{ //Load data from existing entry
             new LoadIngredientTask().execute(mExistingId);
@@ -106,11 +106,11 @@ public class IngredientFragmentDetail extends Fragment {
         mButtonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = mIngredientName.getText().toString().trim();
-                boolean isIrritant = mSkinIrritant.isChecked();
+                String name = mNameEditText.getText().toString().trim();
+                boolean isIrritant = mIrritantCheckbox.isChecked();
                 String irritant = isIrritant ? "1" : "0";
-                String comment = mComment.getText().toString().trim();
-                mEntryChanged = (!name.equals(mInitalName)) || (!isIrritant == mInitialCheck) || (!comment.equals(mInitialComment));
+                String comment = mCommentEditText.getText().toString().trim();
+                mEntryChanged = (!name.equals(mInitialName)) || (!isIrritant == mInitialCheck) || (!comment.equals(mInitialComment));
                 if (mEntryChanged){
                     String[] params = {name,irritant,comment};
                     new SaveIngredientTask().execute(params);
@@ -120,8 +120,8 @@ public class IngredientFragmentDetail extends Fragment {
             }
         });
 
-        mIngredientName.addTextChangedListener(new NewEntryTextChangeListener(getContext(),mIngredientName,mNewEntry));
-        mComment.addTextChangedListener(new NewEntryTextChangeListener(getContext(),mComment,mNewEntry));
+        mNameEditText.addTextChangedListener(new NewEntryTextChangeListener(getContext(), mNameEditText,mNewEntry));
+        mCommentEditText.addTextChangedListener(new NewEntryTextChangeListener(getContext(), mCommentEditText,mNewEntry));
     }
 
     /**
@@ -132,7 +132,7 @@ public class IngredientFragmentDetail extends Fragment {
 
         @Override
         protected Long doInBackground(String... params) {
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
 
             values.put(DiaryContract.Ingredient.COLUMN_NAME,params[0]);
@@ -174,7 +174,7 @@ public class IngredientFragmentDetail extends Fragment {
 
         @Override
         protected Integer doInBackground(Void... params) {
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
             String where = DiaryContract.Ingredient._ID + " = ?";
             String[] whereArgs = {mExistingId.toString()};
             return db.delete(DiaryContract.Ingredient.TABLE_NAME,where,whereArgs);
@@ -199,7 +199,7 @@ public class IngredientFragmentDetail extends Fragment {
 
         @Override
         protected Cursor doInBackground(Long... params) {
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            SQLiteDatabase db = mDbHelper.getReadableDatabase();
             String[] columns = {DiaryContract.Ingredient.COLUMN_NAME,DiaryContract.Ingredient.COLUMN_IRRITANT, DiaryContract.Ingredient.COLUMN_COMMENT};
             String where = DiaryContract.Ingredient._ID + " = "+params[0];
             return db.query(DiaryContract.Ingredient.TABLE_NAME,columns,where,null,null,null,null);
@@ -213,13 +213,13 @@ public class IngredientFragmentDetail extends Fragment {
                 boolean isIrritant = irritantInt == 1; //boolean stored as int (1 == true, 0 == false
                 String comment = result.getString(result.getColumnIndex(DiaryContract.Ingredient.COLUMN_COMMENT));
 
-                mIngredientName.setText(name);
-                mInitalName = name;
+                mNameEditText.setText(name);
+                mInitialName = name;
 
-                mSkinIrritant.setChecked(isIrritant);
+                mIrritantCheckbox.setChecked(isIrritant);
                 mInitialCheck = isIrritant;
 
-                mComment.setText(comment);
+                mCommentEditText.setText(comment);
                 mInitialComment = comment;
             }
         }

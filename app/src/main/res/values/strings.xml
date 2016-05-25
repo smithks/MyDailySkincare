@@ -38,6 +38,8 @@
     <string name="new_ingredient">New ingredient</string>
 
     <!-- Product Strings -->
+    <string name="product_name_string">Product Name</string>
+    <string name="brand_string">Brand</string>
     <string name="products">Products</string>
     <string name="new_product">New product</string>
 

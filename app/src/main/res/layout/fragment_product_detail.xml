@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:padding="20dp"
+                android:focusableInTouchMode="true">
+
+    <EditText
+        android:id="@+id/product_name_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/edit_text_format"
+        android:background="@color/textBoxBackground"
+        android:text="@string/product_name_string"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        />
+
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/product_name_edit">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/brand_string"
+            android:layout_weight="1"
+            style="@style/default_text_format"/>
+
+        <EditText
+            android:id="@+id/product_brand_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            style="@style/edit_text_format"
+            android:background="@color/textBoxBackground"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
