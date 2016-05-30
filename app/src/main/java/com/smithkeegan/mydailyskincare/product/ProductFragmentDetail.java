@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.smithkeegan.mydailyskincare.R;
@@ -26,6 +27,8 @@ public class ProductFragmentDetail extends Fragment {
 
     private EditText mNameEditText;
     private EditText mBrandEditText;
+    private Button mSaveButton;
+    private Button mDeleteButton;
 
     private Boolean mNewEntry;
     private Long mExistingId;
@@ -39,6 +42,8 @@ public class ProductFragmentDetail extends Fragment {
         mDbHelper = DiaryDbHelper.getInstance(getContext());
         mNameEditText = (EditText) rootView.findViewById(R.id.product_name_edit);
         mBrandEditText = (EditText) rootView.findViewById(R.id.product_brand_edit);
+        mSaveButton = (Button) rootView.findViewById(R.id.product_save_button);
+        mDeleteButton = (Button) rootView.findViewById(R.id.product_delete_button);
 
         Bundle args = getArguments();
         mNewEntry = args.getBoolean(ProductActivityDetail.NEW_PRODUCT,true);

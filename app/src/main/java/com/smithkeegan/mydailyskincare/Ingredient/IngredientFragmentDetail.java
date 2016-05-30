@@ -69,7 +69,6 @@ public class IngredientFragmentDetail extends Fragment {
             mButtonDelete.setVisibility(View.GONE);
         } else{ //Load data from existing entry
             new LoadIngredientTask().execute(mExistingId);
-            mButtonSave.setText(R.string.update_button_string);
         }
 
         mEntryChanged = false;
@@ -85,16 +84,16 @@ public class IngredientFragmentDetail extends Fragment {
             @Override
             public void onClick(View v) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Are you sure you want to delete this ingredient?")
-                        .setTitle("Delete ingredient?")
+                builder.setMessage(R.string.alert_delete_message)
+                        .setTitle(R.string.alert_delete_title)
                         .setIcon(R.drawable.ic_warning_black_24dp)
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 new DeleteIngredientTask().execute();
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -115,7 +114,7 @@ public class IngredientFragmentDetail extends Fragment {
                     String[] params = {name,irritant,comment};
                     new SaveIngredientTask().execute(params);
                 }else{
-                    Toast.makeText(getContext(),"No changes to save!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),R.string.no_changes_string, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -152,12 +151,12 @@ public class IngredientFragmentDetail extends Fragment {
         @Override
         protected void onPostExecute(final Long param){
             if (param == -1){
-                Toast.makeText(getContext(),"Error storing value",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
             }else {
                 if (mNewEntry)
-                    Toast.makeText(getContext(),"Store successful. ID: "+param,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
                 else
-                    Toast.makeText(getContext(),"Update successful.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),R.string.toast_update_success,Toast.LENGTH_SHORT).show();
             }
             //TODO uncomment if using highlight
             //Intent intent = new Intent();
@@ -183,9 +182,9 @@ public class IngredientFragmentDetail extends Fragment {
         @Override
         protected void onPostExecute(final Integer param){
             if(param == 1){
-                Toast.makeText(getContext(),"Ingredient deleted.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),R.string.toast_delete_successful,Toast.LENGTH_SHORT).show();
             }else{
-                Toast.makeText(getContext(),"Error deleting ingredient.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),R.string.toast_delete_failed,Toast.LENGTH_SHORT).show();
             }
             getActivity().finish();
         }

@@ -7,16 +7,23 @@
     android:focusableInTouchMode="true">
 
 
-    <EditText
-        android:id="@+id/ingredient_name_edit"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/layout_name_text_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/edit_text_format"
-        android:background="@color/textBoxBackground"
-        android:text="@string/name_string"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal"
-        />
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/ingredient_name_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/edit_text_format"
+            android:background="@color/textBoxBackground"
+            android:hint="@string/ingredient_name_string"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            />
+
+    </android.support.design.widget.TextInputLayout>
 
     <CheckBox
         android:id="@+id/ingredient_irritant_checkbox"
@@ -25,20 +32,27 @@
         style="@style/default_text_format"
         android:textSize="20sp"
         android:text="@string/ingredient_irritant"
-        android:layout_below="@+id/ingredient_name_edit"
+        android:layout_below="@+id/layout_name_text_input"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp"/>
 
 
-    <EditText
-        android:id="@+id/ingredient_comment_edit"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/layout_comment_text_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/edit_text_format"
-        android:textSize="20sp"
-        android:text="@string/ingredient_comment"
-        android:layout_below="@id/ingredient_irritant_checkbox"
-        />
+        android:layout_below="@id/ingredient_irritant_checkbox">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/ingredient_comment_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/edit_text_format"
+            android:hint="@string/ingredient_comment"
+            android:textSize="20sp"
+            />
+
+    </android.support.design.widget.TextInputLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
