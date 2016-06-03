@@ -29,7 +29,7 @@
         android:id="@+id/ingredient_irritant_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/default_text_format"
+        style="@style/default_name_text_format"
         android:textSize="20sp"
         android:text="@string/ingredient_irritant"
         android:layout_below="@+id/layout_name_text_input"

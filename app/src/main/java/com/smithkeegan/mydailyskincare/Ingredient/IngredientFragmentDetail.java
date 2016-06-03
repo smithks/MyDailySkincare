@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,8 +60,6 @@ public class IngredientFragmentDetail extends Fragment {
         mExistingId = args.getLong(IngredientActivityDetail.ENTRY_ID,-1);
 
         if (mNewEntry || mExistingId < 0) { //New entry or error loading
-            mNameEditText.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
-            mCommentEditText.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
             mInitialName = mNameEditText.getText().toString();
             mInitialCheck = mIrritantCheckbox.isChecked();
             mInitialComment = mCommentEditText.getText().toString();

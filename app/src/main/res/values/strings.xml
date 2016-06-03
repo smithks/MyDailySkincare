@@ -52,6 +52,21 @@
     <string name="brand_string">Brand</string>
     <string name="products">Products</string>
     <string name="new_product">New product</string>
+    <string name="product_type">Type</string>
+    <string-array name="product_types_array">
+        <item>Cleanser</item>
+        <item>Toner</item>
+        <item>Serum</item>
+        <item>Moisturizer</item>
+        <item>Exfoliator</item>
+        <item>Treatment</item>
+        <item>Mask</item>
+        <item>Sun Care</item>
+        <item>Eye Care</item>
+        <item>Lip Care</item>
+        <item>Self Tanner</item>
+        <item>Other</item>
+    </string-array>
 
 
 </resources>

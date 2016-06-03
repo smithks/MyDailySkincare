@@ -6,12 +6,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
@@ -25,8 +26,11 @@ public class ProductFragmentDetail extends Fragment {
 
     private DiaryDbHelper mDbHelper;
 
+    private View mProgressLayout;
+    private View mDetailLayout;
     private EditText mNameEditText;
     private EditText mBrandEditText;
+    private Spinner mTypeSpinner;
     private Button mSaveButton;
     private Button mDeleteButton;
 
@@ -44,19 +48,37 @@ public class ProductFragmentDetail extends Fragment {
         mBrandEditText = (EditText) rootView.findViewById(R.id.product_brand_edit);
         mSaveButton = (Button) rootView.findViewById(R.id.product_save_button);
         mDeleteButton = (Button) rootView.findViewById(R.id.product_delete_button);
+        mTypeSpinner = (Spinner) rootView.findViewById(R.id.product_type_spinner);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(),R.array.product_types_array,R.layout.spinner_layout);
+        spinnerAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        mTypeSpinner.setAdapter(spinnerAdapter);
+
+        mProgressLayout = rootView.findViewById(R.id.product_loading_layout);
+        mDetailLayout = rootView.findViewById(R.id.product_fragment_detail_layout);
+        showLoadingLayout();
 
         Bundle args = getArguments();
         mNewEntry = args.getBoolean(ProductActivityDetail.NEW_PRODUCT,true);
         mExistingId = args.getLong(ProductActivityDetail.ENTRY_ID,-1);
 
         if (mNewEntry || mExistingId < 0) { //New entry or error loading
-            mNameEditText.setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
+            //TODO on new entry, save to databse to get id to use for storing product-ingredient relationship
             mInitialName = mNameEditText.getText().toString();
             mInitialBrand = mBrandEditText.getText().toString();
         } else{ //Load data from existing entry
             new LoadProductTask().execute(mExistingId);
         }
         return rootView;
+    }
+
+    private void showLoadingLayout(){
+        mProgressLayout.setVisibility(View.VISIBLE);
+        mDetailLayout.setVisibility(View.INVISIBLE);
+    }
+
+    private void hideLoadingLayout(){
+        mProgressLayout.setVisibility(View.INVISIBLE);
+        mDetailLayout.setVisibility(View.VISIBLE);
     }
 
 
@@ -87,6 +109,7 @@ public class ProductFragmentDetail extends Fragment {
 
                 mNameEditText.setText(name);
                 mBrandEditText.setText(brand);
+                hideLoadingLayout();
             }
         }
     }
