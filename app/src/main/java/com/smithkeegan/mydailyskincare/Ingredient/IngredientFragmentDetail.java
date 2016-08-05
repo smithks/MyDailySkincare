@@ -16,7 +16,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.NewEntryTextChangeListener;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
@@ -60,9 +59,9 @@ public class IngredientFragmentDetail extends Fragment {
         mExistingId = args.getLong(IngredientActivityDetail.ENTRY_ID,-1);
 
         if (mNewEntry || mExistingId < 0) { //New entry or error loading
-            mInitialName = mNameEditText.getText().toString();
+            mInitialName = mNameEditText.getText().toString().trim();
             mInitialCheck = mIrritantCheckbox.isChecked();
-            mInitialComment = mCommentEditText.getText().toString();
+            mInitialComment = mCommentEditText.getText().toString().trim();
             mButtonDelete.setVisibility(View.GONE);
         } else{ //Load data from existing entry
             new LoadIngredientTask().execute(mExistingId);
@@ -73,6 +72,54 @@ public class IngredientFragmentDetail extends Fragment {
         return rootView;
     }
 
+
+    /*
+      * Method called by parent activity when the user presses the home button or the physical back button.
+      * Asks the user if they want to save changes if there are changes to save.
+     */
+    public void onBackButtonPressed(){
+        if(entryHasChanged()) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Save changes made to this ingredient?")
+                    .setTitle("Save changes?")
+                    .setIcon(R.drawable.ic_warning_black_24dp)
+                    .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saveCurrentIngredient();
+                        }
+                    })
+                    .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            getActivity().finish();
+                        }
+                    }).show();
+        }
+        else{
+            getActivity().finish();
+        }
+    }
+
+    //Returns whether this entry has changed values.
+    private boolean entryHasChanged(){
+        String name = mNameEditText.getText().toString().trim();
+        boolean isIrritant = mIrritantCheckbox.isChecked();
+        String irritant = isIrritant ? "1" : "0";
+        String comment = mCommentEditText.getText().toString().trim();
+        return (!name.equals(mInitialName)) || (!isIrritant == mInitialCheck) || (!comment.equals(mInitialComment));
+    }
+
+    public void saveCurrentIngredient(){
+        String name = mNameEditText.getText().toString().trim();
+        boolean isIrritant = mIrritantCheckbox.isChecked();
+        String irritant = isIrritant ? "1" : "0";
+        String comment = mCommentEditText.getText().toString().trim();
+        String[] params = {name,irritant,comment};
+        new SaveIngredientTask().execute(params);
+    }
+
     /**
      *Sets listeners for delete and save buttons.
      */
@@ -81,8 +128,8 @@ public class IngredientFragmentDetail extends Fragment {
             @Override
             public void onClick(View v) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(R.string.alert_delete_message)
-                        .setTitle(R.string.alert_delete_title)
+                builder.setMessage(R.string.alert_delete_ingredient_message)
+                        .setTitle(R.string.alert_delete_ingredient_title)
                         .setIcon(R.drawable.ic_warning_black_24dp)
                         .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
                             @Override
@@ -102,22 +149,12 @@ public class IngredientFragmentDetail extends Fragment {
         mButtonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = mNameEditText.getText().toString().trim();
-                boolean isIrritant = mIrritantCheckbox.isChecked();
-                String irritant = isIrritant ? "1" : "0";
-                String comment = mCommentEditText.getText().toString().trim();
-                mEntryChanged = (!name.equals(mInitialName)) || (!isIrritant == mInitialCheck) || (!comment.equals(mInitialComment));
-                if (mEntryChanged){
-                    String[] params = {name,irritant,comment};
-                    new SaveIngredientTask().execute(params);
-                }else{
+                if(entryHasChanged())
+                    saveCurrentIngredient();
+                else
                     Toast.makeText(getContext(),R.string.no_changes_string, Toast.LENGTH_SHORT).show();
-                }
             }
         });
-
-        mNameEditText.addTextChangedListener(new NewEntryTextChangeListener(getContext(), mNameEditText,mNewEntry));
-        mCommentEditText.addTextChangedListener(new NewEntryTextChangeListener(getContext(), mCommentEditText,mNewEntry));
     }
 
     /**
@@ -150,10 +187,7 @@ public class IngredientFragmentDetail extends Fragment {
             if (param == -1){
                 Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
             }else {
-                if (mNewEntry)
-                    Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(getContext(),R.string.toast_update_success,Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
             }
             //TODO uncomment if using highlight
             //Intent intent = new Intent();
@@ -218,6 +252,7 @@ public class IngredientFragmentDetail extends Fragment {
                 mCommentEditText.setText(comment);
                 mInitialComment = comment;
             }
+
         }
     }
 }

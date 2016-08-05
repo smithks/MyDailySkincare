@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
+import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityMain;
 import com.smithkeegan.mydailyskincare.product.ProductActivityMain;
 
@@ -141,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
             case 4: //Analytics
                 break;
             case 5: //Settings
+                DiaryDbHelper helper = DiaryDbHelper.getInstance(this);
+                helper.dropTables(helper.getWritableDatabase());
                 break;
         }
     }

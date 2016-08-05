@@ -31,6 +31,8 @@ public final class DiaryContract {
 
     public static abstract class ConditionModifier implements BaseColumns{
         public static final String TABLE_NAME = "ConditionModifier";
+        public static final String CONSTRAINT_FK_DATE = "fk_date";
+        public static final String CONSTRAINT_FK_MODIFIER_ID = "fk_modifier_id";
         public static final String COLUMN_DATE = "Date";
         public static final String COLUMN_MODIFIER_ID = "ModifierID";
         public static final String COLUMN_LOCATION = "Location";
@@ -43,6 +45,8 @@ public final class DiaryContract {
 
     public static abstract class DiaryEntryRoutine implements BaseColumns{
         public static final String TABLE_NAME = "DiaryEntryRoutine";
+        public static final String CONSTRAINT_FK_DATE = "fk_date";
+        public static final String CONSTRAINT_FK_ROUTINE_ID = "fk_routine_id";
         public static final String COLUMN_DATE = "Date";
         public static final String COLUMN_ROUTINE_ID = "RoutineID";
     }
@@ -55,6 +59,8 @@ public final class DiaryContract {
 
     public static abstract class RoutineProduct implements BaseColumns{
         public static final String TABLE_NAME = "RoutineProduct";
+        public static final String CONSTRAINT_FK_ROUTINE_ID = "fk_routine_id";
+        public static final String CONSTRAINT_FK_PRODUCT_ID = "fk_product_id";
         public static final String COLUMN_ROUTINE_ID = "RoutineID";
         public static final String COLUMN_PRODUCT_ID = "Product";
     }
@@ -68,12 +74,14 @@ public final class DiaryContract {
 
     public static abstract class ProductIngredient implements BaseColumns{
         public static final String TABLE_NAME = "ProductIngredient";
+        public static final String CONSTRAINT_FK_INGREDIENT_ID = "fk_ingredient_id";
+        public static final String CONSTRAINT_FK_PRODUCT_ID = "fk_product_id";
         public static final String COLUMN_PRODUCT_ID = "ProductID";
         public static final String COLUMN_INGREDIENT_ID = "IngredientID";
     }
 
     public static abstract class Ingredient implements BaseColumns{
-        public static final String TABLE_NAME = "Ingredients";
+        public static final String TABLE_NAME = "Ingredient";
         public static final String COLUMN_NAME = "Name";
         public static final String COLUMN_IRRITANT = "Irritant";
         public static final String COLUMN_COMMENT = "Comment";

@@ -17,13 +17,14 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="edit_text_format" parent="default_name_text_format">
+    <style name="default_edit_text_style">
         <item name="android:selectAllOnFocus">true</item>
         <item name="android:imeOptions">actionDone</item>
         <item name="android:inputType">text</item>
+        <item name="android:singleLine">true</item>
     </style>
     
-    <style name="default_name_text_format">
+    <style name="header_name_text_style" parent="default_edit_text_style">
         <item name="android:textSize">30sp</item>
         <item name="android:textColor">@color/black</item>
     </style>

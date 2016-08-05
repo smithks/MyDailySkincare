@@ -20,7 +20,9 @@
     <color name="deleteButton">#fe5d5d</color>
 
     <!-- General Use -->
+    <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="newText">#808080</color>
     <color name="textBoxBackground">#f2f2f2</color>
+    <color name="listViewBorder">#cccccc</color>
 </resources>

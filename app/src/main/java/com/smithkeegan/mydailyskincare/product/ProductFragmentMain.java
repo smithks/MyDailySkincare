@@ -20,6 +20,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 /**
+ * //TODO wrap all database access in try catch
  * @author Keegan Smith
  * @since 5/19/2016
  */

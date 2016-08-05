@@ -22,6 +22,8 @@
         android:id="@+id/product_fragment_detail_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/product_button_layout"
+        android:layout_marginBottom="20dp"
         >
 
         <android.support.design.widget.TextInputLayout
@@ -34,7 +36,7 @@
                 android:id="@+id/product_name_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/edit_text_format"
+                style="@style/header_name_text_style"
                 android:background="@color/textBoxBackground"
                 android:hint="@string/product_name_string"
                 android:layout_centerHorizontal="true"
@@ -54,17 +56,19 @@
                 android:id="@+id/product_brand_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/default_edit_text_style"
                 android:hint="@string/brand_string"
                 />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
-            android:id="@+id/layout_type_layout"
+            android:id="@+id/product_type_layout"
             android:layout_below="@id/layout_brand_text_input"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginBottom="20dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp">
 
@@ -86,9 +90,56 @@
 
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/product_ingredient_list_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/product_type_layout">
+
+            <LinearLayout
+                android:id="@+id/product_ingredient_title_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/product_ingredient_list_title_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/product_ingredients"
+                    style="@style/default_field_label_format"
+                    />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/product_edit_ingredients"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/product_edit"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:textColor="@color/white"/>
+
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/product_ingredient_list"
+                android:layout_below="@id/product_ingredient_title_layout"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:background="@drawable/rectangle_border">
+            </ListView>
+
+        </RelativeLayout>
+
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@id/product_button_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -101,7 +152,7 @@
             android:layout_height="wrap_content"
             android:text="@string/delete_button_string"
             android:backgroundTint="@color/deleteButton"
-            android:textColor="#ffffff"
+            android:textColor="@color/white"
             />
 
         <Button
@@ -110,6 +161,6 @@
             android:layout_height="wrap_content"
             android:text="@string/save_button_string"
             android:backgroundTint="@color/colorPrimary"
-            android:textColor="#ffffff"/>
+            android:textColor="@color/white"/>
     </LinearLayout>
 </RelativeLayout>

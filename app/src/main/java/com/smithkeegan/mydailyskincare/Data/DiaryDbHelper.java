@@ -118,8 +118,8 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.ConditionModifier.COLUMN_DATE + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.ConditionModifier.COLUMN_MODIFIER_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.ConditionModifier.COLUMN_LOCATION + TEXT_TYPE + NOT_NULL + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.ConditionModifier.COLUMN_DATE + ") REFERENCES " + DiaryContract.DiaryEntry.TABLE_NAME + "(" + DiaryContract.DiaryEntry.COLUMN_DATE + ")" + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.ConditionModifier.COLUMN_MODIFIER_ID + ") REFERENCES " + DiaryContract.Modifier.TABLE_NAME + "("+ DiaryContract.Modifier._ID + ")" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.ConditionModifier.CONSTRAINT_FK_DATE + " FOREIGN KEY (" + DiaryContract.ConditionModifier.COLUMN_DATE + ") REFERENCES " + DiaryContract.DiaryEntry.TABLE_NAME + "(" + DiaryContract.DiaryEntry.COLUMN_DATE + ") ON DELETE CASCADE" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.ConditionModifier.CONSTRAINT_FK_MODIFIER_ID +" FOREIGN KEY (" + DiaryContract.ConditionModifier.COLUMN_MODIFIER_ID + ") REFERENCES " + DiaryContract.Modifier.TABLE_NAME + "("+ DiaryContract.Modifier._ID + ") ON DELETE CASCADE" + COMMA_SEP +
                     "PRIMARY KEY (" + DiaryContract.ConditionModifier.COLUMN_DATE + COMMA_SEP + DiaryContract.ConditionModifier.COLUMN_MODIFIER_ID + COMMA_SEP + DiaryContract.ConditionModifier.COLUMN_LOCATION + ")" +
                     " );";
 
@@ -136,8 +136,8 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " (" +
                     DiaryContract.DiaryEntryRoutine.COLUMN_DATE + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + INTEGER_TYPE +NOT_NULL + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DATE + ") REFERENCES " + DiaryContract.DiaryEntry.TABLE_NAME + "(" + DiaryContract.DiaryEntry.COLUMN_DATE + ")" + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ") REFERENCES " + DiaryContract.Routine.TABLE_NAME + "(" + DiaryContract.Routine._ID + ")" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.DiaryEntryRoutine.CONSTRAINT_FK_DATE + " FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DATE + ") REFERENCES " + DiaryContract.DiaryEntry.TABLE_NAME + "(" + DiaryContract.DiaryEntry.COLUMN_DATE + ") ON DELETE CASCADE" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.DiaryEntryRoutine.CONSTRAINT_FK_ROUTINE_ID + " FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ") REFERENCES " + DiaryContract.Routine.TABLE_NAME + "(" + DiaryContract.Routine._ID + ") ON DELETE CASCADE" + COMMA_SEP +
                     "PRIMARY KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DATE + COMMA_SEP + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ")" +
                     " );";
 
@@ -147,7 +147,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.Product._ID + INTEGER_TYPE + " PRIMARY KEY" + AUTOINCREMENT + NOT_NULL + COMMA_SEP +
                     DiaryContract.Product.COLUMN_BRAND + TEXT_TYPE + COMMA_SEP +
                     DiaryContract.Product.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
-                    DiaryContract.Product.COLUMN_TYPE + TEXT_TYPE + NOT_NULL +
+                    DiaryContract.Product.COLUMN_TYPE + TEXT_TYPE +
                     " );";
 
     private static final String SQL_ROUTINE_PRODUCT_TABLE =
@@ -155,8 +155,8 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " (" +
                     DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID + ") REFERENCES " + DiaryContract.Routine.TABLE_NAME + "(" + DiaryContract.Routine._ID + ")" + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + ") REFERENCES " + DiaryContract.Product.TABLE_NAME + "(" + DiaryContract.Product._ID + ")" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.RoutineProduct.CONSTRAINT_FK_ROUTINE_ID + " FOREIGN KEY (" + DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID + ") REFERENCES " + DiaryContract.Routine.TABLE_NAME + "(" + DiaryContract.Routine._ID + ") ON DELETE CASCADE" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.RoutineProduct.CONSTRAINT_FK_PRODUCT_ID + " FOREIGN KEY (" + DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + ") REFERENCES " + DiaryContract.Product.TABLE_NAME + "(" + DiaryContract.Product._ID + ") ON DELETE CASCADE" + COMMA_SEP +
                     "PRIMARY KEY (" + DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID + COMMA_SEP + DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + ")" +
                     " );";
 
@@ -174,14 +174,21 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " (" +
                     DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + ") REFERENCES " + DiaryContract.Product.TABLE_NAME + "(" + DiaryContract.Product._ID + ")" + COMMA_SEP +
-                    "FOREIGN KEY (" + DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + ") REFERENCES " + DiaryContract.Ingredient.TABLE_NAME + "(" + DiaryContract.Ingredient._ID + ")" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.ProductIngredient.CONSTRAINT_FK_PRODUCT_ID + " FOREIGN KEY (" + DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + ") REFERENCES " + DiaryContract.Product.TABLE_NAME + "(" + DiaryContract.Product._ID + ") ON DELETE CASCADE" + COMMA_SEP +
+                    "CONSTRAINT " + DiaryContract.ProductIngredient.CONSTRAINT_FK_INGREDIENT_ID + " FOREIGN KEY (" + DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + ") REFERENCES " + DiaryContract.Ingredient.TABLE_NAME + "(" + DiaryContract.Ingredient._ID + ") ON DELETE CASCADE" + COMMA_SEP +
                     "PRIMARY KEY (" + DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + COMMA_SEP + DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + ")" +
                     " );";
 
 
     public DiaryDbHelper(Context context){
         super(context,DATABASE_NAME,null,DATABASE_VERSION );
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db){
+        super.onOpen(db);
+        if(!db.isReadOnly())
+            db.execSQL("PRAGMA foreign_keys=ON;"); //enable foreign keys
     }
 
     @Override
@@ -200,15 +207,21 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        dropTables(db);
+        onCreate(db);
+
+    }
+
+    public void dropTables(SQLiteDatabase db){
+        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.RoutineProduct.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.ProductIngredient.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.ConditionModifier.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.DiaryEntryRoutine.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.DiaryEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Modifier.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.ConditionModifier.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Routine.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.DiaryEntryRoutine.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Product.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.RoutineProduct.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Ingredient.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.ProductIngredient.TABLE_NAME);
         onCreate(db);
 
     }

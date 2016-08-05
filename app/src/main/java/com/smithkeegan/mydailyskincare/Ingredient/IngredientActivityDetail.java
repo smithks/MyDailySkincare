@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.smithkeegan.mydailyskincare.R;
 
@@ -13,8 +14,8 @@ import com.smithkeegan.mydailyskincare.R;
  */
 public class IngredientActivityDetail extends AppCompatActivity {
 
-    public final static String NEW_INGREDIENT = "NEW_INGREDIENT";
-    public final static String ENTRY_ID = "ID";
+    public final static String NEW_INGREDIENT = "NEW_INGREDIENT"; //Key to new ingredient indicator value
+    public final static String ENTRY_ID = "ID";  //Key to ingredient id value passed to ingredient detail fragment.
 
     @Override
     public void onCreate(Bundle savedInstance){
@@ -42,5 +43,21 @@ public class IngredientActivityDetail extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.ingredient_activity_detail,fragmentDetail);
         transaction.commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case android.R.id.home:
+                ((IngredientFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.ingredient_activity_detail)).onBackButtonPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        ((IngredientFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.ingredient_activity_detail)).onBackButtonPressed();
     }
 }

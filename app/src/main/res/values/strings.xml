@@ -29,30 +29,36 @@
     <string name="save_button_string">Save</string>
     <string name="update_button_string">Update</string>
     <string name="cancel_string">Cancel</string>
-    <string name="no_changes_string">No changes to save!</string>
+    <string name="no_changes_string">No changes to save</string>
     <string name="toast_save_success">Save successful</string>
-    <string name="toast_update_success">Update successful</string>
     <string name="toast_save_failed">Error saving entry</string>
     <string name="toast_delete_successful">Entry deleted</string>
     <string name="toast_delete_failed">Error deleting entry</string>
+    <string name="toast_create_failed">Error creating entry</string>
+    <string name="alert_delete_confirm">delete</string>
+    <string name="done_string">done</string>
+    <string name="no_string">no</string>
 
 
     <!-- Ingredient Strings -->
     <string name="ingredient_name_string">Ingredient Name</string>
     <string name="ingredients">Ingredients</string>
     <string name="ingredient_irritant">Skin irritant</string>
-    <string name="ingredient_comment">comment</string>
+    <string name="ingredient_comment">Comment</string>
     <string name="new_ingredient">New ingredient</string>
-    <string name="alert_delete_confirm">delete</string>
-    <string name="alert_delete_message">Are you sure you want to delete this ingredient?</string>
-    <string name="alert_delete_title">Delete ingredient?</string>
+    <string name="alert_delete_ingredient_message">Are you sure you want to delete this ingredient?</string>
+    <string name="alert_delete_ingredient_title">Delete ingredient?</string>
 
     <!-- Product Strings -->
     <string name="product_name_string">Product Name</string>
     <string name="brand_string">Brand</string>
     <string name="products">Products</string>
     <string name="new_product">New product</string>
+    <string name="product_ingredients">Ingredients</string>
+    <string name="product_edit">edit</string>
     <string name="product_type">Type</string>
+    <string name="alert_delete_product_message">Are you sure you want to delete this product?</string>
+    <string name="alert_delete_product_title">Delete product?</string>
     <string-array name="product_types_array">
         <item>Cleanser</item>
         <item>Toner</item>

@@ -2,16 +2,19 @@ package com.smithkeegan.mydailyskincare.product;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
+import com.smithkeegan.mydailyskincare.DialogClosedListener;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
  * @author Keegan Smith
  * @since 5/19/2016
  */
-public class ProductActivityDetail extends AppCompatActivity{
+public class ProductActivityDetail extends AppCompatActivity implements DialogClosedListener{
 
     public final static String NEW_PRODUCT = "NEW_PRODUCT";
     public final static String ENTRY_ID = "ID";
@@ -41,5 +44,28 @@ public class ProductActivityDetail extends AppCompatActivity{
         transaction.add(R.id.product_activity_detail,fragmentDetail);
         transaction.commit();
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case android.R.id.home:
+                ((ProductFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.product_activity_detail)).onBackButtonPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        ((ProductFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.product_activity_detail)).onBackButtonPressed();
+    }
+
+    @Override
+    public void onEditListDialogClosed() {
+        FragmentManager manager = getSupportFragmentManager();
+        ProductFragmentDetail fragment = (ProductFragmentDetail) manager.findFragmentById(R.id.product_activity_detail);
+        fragment.refreshIngredients();
     }
 }

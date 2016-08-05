@@ -16,7 +16,7 @@
             android:id="@+id/ingredient_name_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/edit_text_format"
+            style="@style/header_name_text_style"
             android:background="@color/textBoxBackground"
             android:hint="@string/ingredient_name_string"
             android:layout_centerHorizontal="true"
@@ -29,8 +29,8 @@
         android:id="@+id/ingredient_irritant_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/default_name_text_format"
         android:textSize="20sp"
+        android:textColor="@color/black"
         android:text="@string/ingredient_irritant"
         android:layout_below="@+id/layout_name_text_input"
         android:layout_centerHorizontal="true"
@@ -47,9 +47,8 @@
             android:id="@+id/ingredient_comment_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/edit_text_format"
+            style="@style/default_edit_text_style"
             android:hint="@string/ingredient_comment"
-            android:textSize="20sp"
             />
 
     </android.support.design.widget.TextInputLayout>
@@ -67,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="@string/delete_button_string"
             android:backgroundTint="@color/deleteButton"
-            android:textColor="#ffffff"
+            android:textColor="@color/white"
             />
 
         <Button
@@ -76,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="@string/save_button_string"
             android:backgroundTint="@color/colorPrimary"
-            android:textColor="#ffffff"/>
+            android:textColor="@color/white"/>
     </LinearLayout>
 
 </RelativeLayout>
