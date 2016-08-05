@@ -30,7 +30,7 @@ public class ProductActivityDetail extends AppCompatActivity implements DialogCl
         Bundle bundle = new Bundle();
         Intent thisIntent = getIntent();
         if (thisIntent.hasExtra(NEW_PRODUCT)){
-            //Check new ingredient flag and entry id flag. Error occurred if new_ingredient is false and entry_id is -1. Open new ingredient.
+            //Check new product flag and entry id flag. Error occurred if new_product is false and entry_id is -1. Open new product.
             if (thisIntent.getBooleanExtra(NEW_PRODUCT,true) || thisIntent.getLongExtra(ENTRY_ID,-1) < 0){
                 bundle.putBoolean(NEW_PRODUCT,true);
             }else{

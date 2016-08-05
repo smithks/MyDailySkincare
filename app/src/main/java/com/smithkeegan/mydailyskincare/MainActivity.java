@@ -23,6 +23,7 @@ import com.roomorama.caldroid.CaldroidListener;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityMain;
 import com.smithkeegan.mydailyskincare.product.ProductActivityMain;
+import com.smithkeegan.mydailyskincare.routine.RoutineActivityMain;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -130,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
             case 0: //Todays diary entry
                 break;
             case 1: //Routines
+                Intent routineIntent = new Intent(this, RoutineActivityMain.class);
+                startActivity(routineIntent);
                 break;
             case 2: //Products
                 Intent productIntent = new Intent(this, ProductActivityMain.class);
@@ -142,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
             case 4: //Analytics
                 break;
             case 5: //Settings
+                break;
+            case 6: //TODO REMOVE TESTING BLOCK
                 DiaryDbHelper helper = DiaryDbHelper.getInstance(this);
                 helper.dropTables(helper.getWritableDatabase());
                 break;

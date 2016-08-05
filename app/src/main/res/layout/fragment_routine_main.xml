@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/routine_main_list_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/routine_main_new_button"
+        android:background="@drawable/rectangle_border"
+        android:layout_alignParentTop="true"
+        >
+
+    </ListView>
+
+    <Button
+        android:id="@+id/routine_main_new_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/routine_new_routine"
+        android:background="@color/colorPrimary"
+        android:textColor="#ffffff"
+        android:padding="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"/>
+
+</RelativeLayout>

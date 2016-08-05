@@ -28,7 +28,18 @@
                   android:parentActivityName=".MainActivity">
 
         </activity>
+        <activity android:name=".routine.RoutineActivityMain"
+                  android:label="Routines"
+                    android:parentActivityName=".MainActivity">
+
+        </activity>
+        <activity android:name=".routine.RoutineActivityDetail"
+                  android:windowSoftInputMode="adjustPan"
+                  android:parentActivityName=".routine.RoutineActivityMain">
+
+        </activity>
         <activity android:name=".product.ProductActivityDetail"
+                  android:windowSoftInputMode="adjustPan"
                   android:parentActivityName=".product.ProductActivityMain">
 
         </activity>
@@ -38,6 +49,7 @@
 
         </activity>
         <activity android:name=".ingredient.IngredientActivityDetail"
+                  android:windowSoftInputMode="adjustPan"
                   android:parentActivityName=".ingredient.IngredientActivityMain">
 
         </activity>

@@ -11,6 +11,7 @@ import com.smithkeegan.mydailyskincare.R;
 /**
  * @author Keegan Smith
  * @since 5/16/2016
+ * //TODO set activity title
  */
 public class IngredientActivityDetail extends AppCompatActivity {
 
