@@ -128,7 +128,8 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " (" +
                     DiaryContract.Routine._ID + INTEGER_TYPE + " PRIMARY KEY" + AUTOINCREMENT + NOT_NULL + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
-                    DiaryContract.Routine.COLUMN_TIME + INTEGER_TYPE +
+                    DiaryContract.Routine.COLUMN_TIME + INTEGER_TYPE + COMMA_SEP +
+                    DiaryContract.Routine.COLUMN_COMMENT + TEXT_TYPE +
                     " );";
 
     private static final String SQL_DIARY_ENTRY_ROUTINE_TABLE =

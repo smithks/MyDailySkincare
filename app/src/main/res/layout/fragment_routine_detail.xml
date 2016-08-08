@@ -68,12 +68,14 @@
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/routine_radio_AM"/>
+                    android:text="@string/routine_radio_AM"
+                    style="@style/default_field_label_format"/>
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/routine_radio_PM"/>
+                    android:text="@string/routine_radio_PM"
+                    style="@style/default_field_label_format"/>
 
             </RadioGroup>
 
@@ -116,7 +118,7 @@
             </LinearLayout>
 
             <ListView
-                android:id="@+id/routine_product_list"
+                android:id="@+id/routine_product_list_view"
                 android:layout_below="@id/routine_product_title_layout"
                 android:layout_height="100dp"
                 android:layout_width="match_parent"

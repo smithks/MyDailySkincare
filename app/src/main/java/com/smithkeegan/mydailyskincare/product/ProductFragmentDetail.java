@@ -26,8 +26,6 @@ import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
-import java.util.ArrayList;
-
 /**
  * @author Keegan Smith
  * @since 5/19/2016
@@ -59,6 +57,8 @@ public class ProductFragmentDetail extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
         View rootView = inflater.inflate(R.layout.fragment_product_detail, container, false);
+
+        mDbHelper = DiaryDbHelper.getInstance(getContext());
 
         fetchViews(rootView);
 
@@ -149,7 +149,6 @@ public class ProductFragmentDetail extends Fragment {
     }
 
     private void fetchViews(View rootView){
-        mDbHelper = DiaryDbHelper.getInstance(getContext());
         mNameEditText = (EditText) rootView.findViewById(R.id.product_name_edit);
         mBrandEditText = (EditText) rootView.findViewById(R.id.product_brand_edit);
         mSaveButton = (Button) rootView.findViewById(R.id.product_save_button);
@@ -258,7 +257,6 @@ public class ProductFragmentDetail extends Fragment {
             String[] productIngredientColumns = {DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID};
             String productIngredientWhere = DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + " = "+params[0];
             Cursor productIngredients = db.query(DiaryContract.ProductIngredient.TABLE_NAME,productIngredientColumns,productIngredientWhere,null,null,null,null);
-            ArrayList<String> ingredients = new ArrayList<>();
 
             String[] ingredientColumns = {DiaryContract.Ingredient._ID,DiaryContract.Ingredient.COLUMN_NAME};
             String ingredientWhere = "";
@@ -271,6 +269,7 @@ public class ProductFragmentDetail extends Fragment {
                         ingredientWhere += " OR " + DiaryContract.Ingredient._ID + " = " + Integer.toString(ingredientID);
                     }
                 }
+                productIngredients.close();
             }
 
             //Fetch Names of Ingredients in product from Ingredients table using IDs
@@ -338,6 +337,7 @@ public class ProductFragmentDetail extends Fragment {
                         ingredientWhere += " OR " + DiaryContract.Ingredient._ID + " = " + Integer.toString(ingredientID);
                     }
                 }
+                productIngredients.close();
             }
 
             //Fetch Names of Ingredients in product from Ingredients table
@@ -436,7 +436,7 @@ public class ProductFragmentDetail extends Fragment {
         protected Integer doInBackground(Boolean... params) {
             showToast = params[0];
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
-            String where = DiaryContract.Ingredient._ID + " = ?";
+            String where = DiaryContract.Product._ID + " = ?";
             String[] whereArgs = {mProductId.toString()};
             return db.delete(DiaryContract.Product.TABLE_NAME, where, whereArgs);
         }

@@ -55,6 +55,7 @@ public final class DiaryContract {
         public static final String TABLE_NAME = "Routine";
         public static final String COLUMN_NAME = "Name";
         public static final String COLUMN_TIME = "Time";
+        public static final String COLUMN_COMMENT = "Comment";
     }
 
     public static abstract class RoutineProduct implements BaseColumns{
