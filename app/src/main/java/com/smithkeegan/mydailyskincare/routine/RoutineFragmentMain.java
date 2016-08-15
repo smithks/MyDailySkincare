@@ -7,11 +7,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
@@ -72,6 +74,29 @@ public class RoutineFragmentMain extends Fragment {
             String[] columns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
             String sortOrder = DiaryContract.Routine.COLUMN_TIME + "DESC";
             return db.query(DiaryContract.Routine.TABLE_NAME,columns,null,null,null,null,sortOrder);
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            String[] fromColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
+            int[] toViews = {R.id.routine_listview_name, R.id.routine_listView_time};
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.routine_listview_item,cursor,fromColumns,toViews,0);
+            adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                @Override
+                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    if(columnIndex == cursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)){
+                        TextView nameView = (TextView) view;
+                        nameView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
+                        return true;
+                    }
+                    else if(columnIndex == cursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)){
+                        TextView timeView = (TextView) view;
+                        timeView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
+                        return true;
+                    }
+                    return false;
+                }
+            });
         }
     }
 }

@@ -54,6 +54,8 @@ public class RoutineFragmentDetail extends Fragment {
 
         fetchViews(rootView);
 
+        setListeners();
+
         return rootView;
     }
 
@@ -88,6 +90,10 @@ public class RoutineFragmentDetail extends Fragment {
         mInitialName = mNameEditText.getText().toString().trim();
         //TODO get time
         mInitialComment = mCommentEditText.getText().toString().trim();
+    }
+
+    public void setListeners(){
+
     }
 
 
@@ -127,7 +133,7 @@ public class RoutineFragmentDetail extends Fragment {
             }
 
 
-            //Fetch Names of Ingredients in product from Ingredients table using IDs
+            //Fetch Names of products in this routine table using IDs
             if (productWhere.length() > 0) {
                 cursors[1] = db.query(DiaryContract.Product.TABLE_NAME,productColumns,productWhere,null,null,null,null);
             }
@@ -237,7 +243,7 @@ public class RoutineFragmentDetail extends Fragment {
         }
 
         /*
-        Sets the adapter for the ingredients list if this product has ingredients
+        Sets the adapter for the products list if this routine has products
          */
         @Override
         protected void onPostExecute(Cursor result){
@@ -327,7 +333,7 @@ public class RoutineFragmentDetail extends Fragment {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(DiaryContract.Routine.COLUMN_NAME,"PlaceholderRoutine");
-            return db.insert(DiaryContract.Product.TABLE_NAME,null,values);
+            return db.insert(DiaryContract.Routine.TABLE_NAME,null,values);
         }
 
         @Override
