@@ -27,7 +27,6 @@ public class IngredientActivityDetail extends AppCompatActivity {
 
         IngredientFragmentDetail fragmentDetail = new IngredientFragmentDetail();
         //Set flags to send up to fragment. Existing ingredient id and new ingredient status.
-        //TODO: check for and send existing ingredient to/from intent/bundle
         Bundle bundle = new Bundle();
         Intent thisIntent = getIntent();
         if (thisIntent.hasExtra(NEW_INGREDIENT)){

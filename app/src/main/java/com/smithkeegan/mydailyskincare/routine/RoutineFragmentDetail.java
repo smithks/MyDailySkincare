@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +53,17 @@ public class RoutineFragmentDetail extends Fragment {
 
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
+        Bundle args = getArguments();
+        Boolean newEntry = args.getBoolean(RoutineActivityDetail.NEW_ROUTINE,true);
+        mRoutineID = args.getLong(RoutineActivityDetail.ENTRY_ID,-1);
+
         fetchViews(rootView);
+
+        if (newEntry || mRoutineID < 0){ //New entry or error loading
+            new SaveRoutinePlaceholderTask().execute();
+        }else{ //Existing entry
+            new LoadRoutineProductsTask().execute(mRoutineID);
+        }
 
         setListeners();
 
@@ -69,8 +80,8 @@ public class RoutineFragmentDetail extends Fragment {
         mDeleteButton = (Button) rootView.findViewById(R.id.routine_delete_button);
         mSaveButton = (Button) rootView.findViewById(R.id.routine_save_button);
 
-        mProgressLayout = (View) rootView.findViewById(R.id.routine_loading_layout);
-        mDetailLayout = (View) rootView.findViewById(R.id.routine_fragment_detail_layout);
+        mProgressLayout = rootView.findViewById(R.id.routine_loading_layout);
+        mDetailLayout = rootView.findViewById(R.id.routine_fragment_detail_layout);
     }
 
     //Hides the layout of this fragment and displays the loading icon
@@ -89,11 +100,40 @@ public class RoutineFragmentDetail extends Fragment {
     public void setInitialValues(){
         mInitialName = mNameEditText.getText().toString().trim();
         //TODO get time
+        mTimeRadioGroup.check(R.id.routine_radio_button_am);
+        mInitialTime = ((RadioButton)mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
         mInitialComment = mCommentEditText.getText().toString().trim();
     }
 
-    public void setListeners(){
+    //Returns true if the fields in this fragment have changed since creation
+    public boolean entryHasChanged(){
+        String currName = mNameEditText.getText().toString().trim();
+        int id = mTimeRadioGroup.getCheckedRadioButtonId();
+        RadioButton selectedButton = (RadioButton) mTimeRadioGroup.findViewById(id);
+        String currTime = selectedButton.getText().toString();
+        String currComment = mCommentEditText.getText().toString().trim();
+        Boolean changed = false;
+        if (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment)){
+            changed = true;
+        }
+        return changed;
+    }
 
+    public void setListeners(){
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!entryHasChanged()) {
+                    Toast.makeText(getContext(), R.string.no_changes_string, Toast.LENGTH_SHORT).show();
+                } else {
+                    String name = mNameEditText.getText().toString().trim();
+                    String time = ((RadioButton)mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
+                    String comment = mCommentEditText.getText().toString().trim();
+                    String[] params = {name, time, comment};
+                    new SaveRoutineTask().execute(params);
+                }
+            }
+        });
     }
 
 
@@ -343,9 +383,9 @@ public class RoutineFragmentDetail extends Fragment {
             }else {
                 mRoutineID = result;
             }
+            mIsNewRoutine = true;
             hideLoadingLayout();
             setInitialValues();
-            mIsNewRoutine = true;
             mDeleteButton.setVisibility(View.GONE);
             mInitialLoadComplete = true;
         }

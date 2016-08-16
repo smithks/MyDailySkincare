@@ -66,12 +66,14 @@
                 android:gravity="center_horizontal">
 
                 <RadioButton
+                    android:id="@+id/routine_radio_button_am"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/routine_radio_AM"
                     style="@style/default_field_label_format"/>
 
                 <RadioButton
+                    android:id="@+id/routine_radio_button_pm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/routine_radio_PM"

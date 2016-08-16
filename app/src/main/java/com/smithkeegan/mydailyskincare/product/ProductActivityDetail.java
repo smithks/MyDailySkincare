@@ -26,7 +26,6 @@ public class ProductActivityDetail extends AppCompatActivity implements DialogCl
 
         ProductFragmentDetail fragmentDetail = new ProductFragmentDetail();
         //Set flags to send up to fragment. Existing product id or new status.
-        //TODO: check for and send existing product to/from intent/bundle
         Bundle bundle = new Bundle();
         Intent thisIntent = getIntent();
         if (thisIntent.hasExtra(NEW_PRODUCT)){

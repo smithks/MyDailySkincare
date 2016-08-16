@@ -11,6 +11,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -63,7 +64,7 @@ public class RoutineFragmentMain extends Fragment {
     }
 
     private void refreshRoutineList(){
-
+        new FetchRoutinesTask().execute();
     }
 
     private class FetchRoutinesTask extends AsyncTask<Void,Void,Cursor>{
@@ -72,7 +73,7 @@ public class RoutineFragmentMain extends Fragment {
         protected Cursor doInBackground(Void... params) {
             SQLiteDatabase db = mDbHelper.getReadableDatabase();
             String[] columns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
-            String sortOrder = DiaryContract.Routine.COLUMN_TIME + "DESC";
+            String sortOrder = DiaryContract.Routine.COLUMN_NAME + " DESC";
             return db.query(DiaryContract.Routine.TABLE_NAME,columns,null,null,null,null,sortOrder);
         }
 
@@ -95,6 +96,16 @@ public class RoutineFragmentMain extends Fragment {
                         return true;
                     }
                     return false;
+                }
+            });
+            mRoutinesList.setAdapter(adapter);
+            mRoutinesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getContext(),RoutineActivityDetail.class);
+                    intent.putExtra(RoutineActivityDetail.NEW_ROUTINE,false);
+                    intent.putExtra(RoutineActivityDetail.ENTRY_ID,id);
+                    startActivity(intent);
                 }
             });
         }
