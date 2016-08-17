@@ -33,6 +33,7 @@ import java.util.Date;
  * @author Keegan Smith
  * @since 5/3/2016
  */
+//TODO move save and delete buttons in detail fragments to toolbar
 public class MainActivity extends AppCompatActivity {
 
     private CaldroidFragment mCaldroidFragment;

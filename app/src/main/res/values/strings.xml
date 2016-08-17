@@ -84,6 +84,8 @@
     <string name="routine_comment">comment</string>
     <string name="routine_radio_AM">AM</string>
     <string name="routine_radio_PM">PM</string>
+    <string name="routine_alert_dialog_title">Delete Routine?</string>
+    <string name="routine_alert_dialog_message">Are you sure you want to delete this routine?</string>
 
 
 </resources>

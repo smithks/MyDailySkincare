@@ -1,12 +1,14 @@
 package com.smithkeegan.mydailyskincare.routine;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
  * @author Keegan Smith
  * @since 8/5/2016
  */
+//TODO back button handling, delete unchanged new entry
 public class RoutineFragmentDetail extends Fragment {
 
     private EditText mNameEditText;
@@ -62,7 +65,7 @@ public class RoutineFragmentDetail extends Fragment {
         if (newEntry || mRoutineID < 0){ //New entry or error loading
             new SaveRoutinePlaceholderTask().execute();
         }else{ //Existing entry
-            new LoadRoutineProductsTask().execute(mRoutineID);
+            new InitialLoadRoutineTask().execute(mRoutineID);
         }
 
         setListeners();
@@ -97,10 +100,8 @@ public class RoutineFragmentDetail extends Fragment {
     }
 
     //Sets initial values for checking changes when exiting.
-    public void setInitialValues(){
+    public void setInitialMemberValues(){
         mInitialName = mNameEditText.getText().toString().trim();
-        //TODO get time
-        mTimeRadioGroup.check(R.id.routine_radio_button_am);
         mInitialTime = ((RadioButton)mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
         mInitialComment = mCommentEditText.getText().toString().trim();
     }
@@ -134,6 +135,37 @@ public class RoutineFragmentDetail extends Fragment {
                 }
             }
         });
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(R.string.routine_alert_dialog_title)
+                        .setMessage(R.string.routine_alert_dialog_message)
+                        .setIcon(R.drawable.ic_warning_black_24dp)
+                        .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new DeleteRoutineTask().execute(true);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+            }
+        });
+    }
+
+    private void setSelectedRadioButton(String selectionText){
+        for (int i = 0; i < mTimeRadioGroup.getChildCount(); i++){
+            RadioButton button = (RadioButton) mTimeRadioGroup.getChildAt(i);
+            if (selectionText.equals(button.getText().toString())){
+                button.setChecked(true);
+            }
+        }
     }
 
 
@@ -148,8 +180,8 @@ public class RoutineFragmentDetail extends Fragment {
             Cursor[] cursors = new Cursor[2]; //2 cursors, first from Routine, second from RoutineProduct
             SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-            //Fetch routine information from product table
-            String[] routineColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
+            //Fetch routine information from routine table
+            String[] routineColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME, DiaryContract.Routine.COLUMN_COMMENT};
             String routineWhere = DiaryContract.Routine._ID + " = "+params[0];
             cursors[0] = db.query(DiaryContract.Routine.TABLE_NAME,routineColumns,routineWhere,null,null,null,null);
 
@@ -172,7 +204,6 @@ public class RoutineFragmentDetail extends Fragment {
                 routineProducts.close();
             }
 
-
             //Fetch Names of products in this routine table using IDs
             if (productWhere.length() > 0) {
                 cursors[1] = db.query(DiaryContract.Product.TABLE_NAME,productColumns,productWhere,null,null,null,null);
@@ -194,7 +225,7 @@ public class RoutineFragmentDetail extends Fragment {
                     String comment = routineCursor.getString(routineCursor.getColumnIndex(DiaryContract.Routine.COLUMN_COMMENT));
 
                     mNameEditText.setText(name);
-                    //TODO set time checked
+                    setSelectedRadioButton(time);
                     mCommentEditText.setText(comment);
                 }
             }
@@ -237,7 +268,7 @@ public class RoutineFragmentDetail extends Fragment {
                 }
             }
             hideLoadingLayout();
-            setInitialValues();
+            setInitialMemberValues();
             mInitialLoadComplete = true;
         }
     }
@@ -385,7 +416,8 @@ public class RoutineFragmentDetail extends Fragment {
             }
             mIsNewRoutine = true;
             hideLoadingLayout();
-            setInitialValues();
+            mTimeRadioGroup.check(R.id.routine_radio_button_am);  //Set default time to AM
+            setInitialMemberValues();
             mDeleteButton.setVisibility(View.GONE);
             mInitialLoadComplete = true;
         }
