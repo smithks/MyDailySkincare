@@ -147,7 +147,8 @@ public class IngredientFragmentDetail extends Fragment {
                 String[] params = {name, irritant, comment};
                 new SaveIngredientTask().execute(params);
             }else{
-                Toast.makeText(getContext(),R.string.no_changes_string, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),R.string.toast_save_success, Toast.LENGTH_SHORT).show();
+                getActivity().finish();
             }
         }
     }

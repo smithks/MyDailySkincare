@@ -36,6 +36,7 @@ import java.util.List;
  * @since 7/12/2016
  */
 //TODO would be nice to have ripple effect in listview
+    //TODO save currently selected items before calling on resume
 public class ItemListDialogFragment extends DialogFragment {
 
     //String constants to denote the data displayed in this fragment

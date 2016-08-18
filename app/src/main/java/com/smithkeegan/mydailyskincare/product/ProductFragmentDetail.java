@@ -158,7 +158,8 @@ public class ProductFragmentDetail extends Fragment {
                 String[] params = {productName, productBrand, productType};
                 new SaveProductTask().execute(params);
             }else{
-                Toast.makeText(getContext(), R.string.no_changes_string, Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+                Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -3,36 +3,39 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/item_dialog_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:text="Select ingredients"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"/>
 
+    <LinearLayout
+        android:id="@+id/item_dialog_title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/item_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:text="@string/item_list_select_ingredients"
+            android:layout_margin="20dp"/>
+
+        <Button
+            android:id="@+id/item_dialog_button_new_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/item_list_new_string"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            />
+    </LinearLayout>
     <ListView
         android:id="@+id/item_dialog_list_view"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:layout_below="@id/item_dialog_title"
+        android:layout_below="@id/item_dialog_title_layout"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/rectangle_border"
-        />
-
-    <Button
-        android:id="@+id/item_dialog_button_new_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/new_ingredient"
-        android:layout_below="@id/item_dialog_list_view"
-        android:layout_centerHorizontal="true"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@color/white"
-        android:layout_marginBottom="10dp"
         />
 
     <Button
@@ -40,11 +43,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/done_string"
-        android:layout_below="@id/item_dialog_button_new_item"
-        android:layout_centerHorizontal="true"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@color/white"
+        android:layout_below="@id/item_dialog_list_view"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="10dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:textColor="@color/colorPrimaryDark"
         />
 
 

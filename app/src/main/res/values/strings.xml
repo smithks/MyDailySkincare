@@ -95,5 +95,11 @@
     <string name="routine_back_alert_dialog_title">Save Changes?</string>
     <string name="routine_back_alert_dialog_message">Save changes made to this routine?</string>
 
+    <!-- Item List Dialog Strings -->
+    <string name="item_list_select_ingredients">Select Ingredients</string>
+    <string name="item_list_select_products">Select Products</string>
+    <string name="item_list_new_string">New</string>
+
+
 
 </resources>
