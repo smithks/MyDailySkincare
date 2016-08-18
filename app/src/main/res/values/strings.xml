@@ -40,6 +40,7 @@
     <string name="done_string">done</string>
     <string name="no_string">no</string>
     <string name="edit_string">edit</string>
+    <string name="toast_enter_valid_name">Please enter a name</string>
 
 
 
@@ -49,8 +50,10 @@
     <string name="ingredient_irritant">Skin irritant</string>
     <string name="ingredient_comment">Comment</string>
     <string name="new_ingredient">New ingredient</string>
-    <string name="alert_delete_ingredient_message">Are you sure you want to delete this ingredient?</string>
-    <string name="alert_delete_ingredient_title">Delete ingredient?</string>
+    <string name="ingredient_delete_alert_dialog_message">Are you sure you want to delete this ingredient?</string>
+    <string name="ingredient_delete_alert_dialog_title">Delete ingredient?</string>
+    <string name="ingredient_back_alert_dialog_title">Save changes?</string>
+    <string name="ingredient_back_alert_dialog_message">Save changes made to this ingredient?</string>
 
     <!-- Product Strings -->
     <string name="product_name_string">product Name</string>
@@ -59,9 +62,12 @@
     <string name="new_product">New product</string>
     <string name="product_ingredients">Ingredients</string>
     <string name="product_type">Type</string>
-    <string name="alert_delete_product_message">Are you sure you want to delete this product?</string>
-    <string name="alert_delete_product_title">Delete product?</string>
+    <string name="product_delete_alert_dialog_message">Are you sure you want to delete this product?</string>
+    <string name="product_delete_alert_dialog__title">Delete product?</string>
+    <string name="product_back_alert_dialog_title">Save changes?</string>
+    <string name="product_back_alert_dialog_message">Save changes made to this product?</string>
     <string-array name="product_types_array">
+        <item>--</item>
         <item>Cleanser</item>
         <item>Toner</item>
         <item>Serum</item>
@@ -84,8 +90,10 @@
     <string name="routine_comment">comment</string>
     <string name="routine_radio_AM">AM</string>
     <string name="routine_radio_PM">PM</string>
-    <string name="routine_alert_dialog_title">Delete Routine?</string>
-    <string name="routine_alert_dialog_message">Are you sure you want to delete this routine?</string>
+    <string name="routine_delete_alert_dialog_title">Delete Routine?</string>
+    <string name="routine_delete_alert_dialog_message">Are you sure you want to delete this routine?</string>
+    <string name="routine_back_alert_dialog_title">Save Changes?</string>
+    <string name="routine_back_alert_dialog_message">Save changes made to this routine?</string>
 
 
 </resources>

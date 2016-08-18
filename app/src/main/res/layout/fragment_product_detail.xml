@@ -137,30 +137,4 @@
         </RelativeLayout>
 
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@id/product_button_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
-
-        <!-- TODO better button coloring -->
-        <Button
-            android:id="@+id/product_delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/delete_button_string"
-            android:backgroundTint="@color/deleteButton"
-            android:textColor="@color/white"
-            />
-
-        <Button
-            android:id="@+id/product_save_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save_button_string"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@color/white"/>
-    </LinearLayout>
 </RelativeLayout>

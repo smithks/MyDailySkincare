@@ -6,11 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -30,8 +34,8 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
  * @author Keegan Smith
  * @since 5/19/2016
  *
- * //TODO: on clicking ingredients in this fragment, open the ingredient detail activity
  * //TODO need default type
+ * //TODO prompts for which field is required when attempting to save
  */
 public class ProductFragmentDetail extends Fragment {
 
@@ -42,8 +46,7 @@ public class ProductFragmentDetail extends Fragment {
     private EditText mNameEditText;
     private EditText mBrandEditText;
     private Spinner mTypeSpinner;
-    private Button mSaveButton;
-    private Button mDeleteButton;
+    private ArrayAdapter<CharSequence> mSpinnerAdapter;
     private Button mEditIngredientsButton;
     private ListView mIngredientsList;
 
@@ -53,6 +56,13 @@ public class ProductFragmentDetail extends Fragment {
     private String mInitialType;
     private boolean mInitialLoadComplete;
     private boolean mIsNewProduct;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        getActivity().setTitle("");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
@@ -77,6 +87,25 @@ public class ProductFragmentDetail extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_item_detail,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_action_save:
+                saveCurrentProduct();
+                return true;
+            case R.id.menu_action_delete:
+                deleteCurrentProduct();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     /**
      * Refreshes data in the ingredients list if this is not the initial
      * load of the fragment.
@@ -97,6 +126,15 @@ public class ProductFragmentDetail extends Fragment {
         return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)));
     }
 
+    //Checks if the required name field is a valid value.
+    public boolean checkNameField(){
+        boolean valid = true;
+        String currentName = mNameEditText.getText().toString().trim();
+        if (currentName.length() == 0)
+            valid = false;
+        return valid;
+    }
+
     //Sets the intial member values of this form for comparison when exiting.
     public void setInitialValues(){
         mInitialName = mNameEditText.getText().toString().trim();
@@ -110,11 +148,38 @@ public class ProductFragmentDetail extends Fragment {
     }
 
     public void saveCurrentProduct(){
-        String productName = mNameEditText.getText().toString().trim();
-        String productBrand = mBrandEditText.getText().toString().trim();
-        String productType = mTypeSpinner.getSelectedItem().toString();
-        String[] params = {productName, productBrand, productType};
-        new SaveProductTask().execute(params);
+        if(!checkNameField()) {
+            Toast.makeText(getContext(), R.string.toast_enter_valid_name, Toast.LENGTH_SHORT).show();
+        }else {
+            if(entryHasChanged()) {
+                String productName = mNameEditText.getText().toString().trim();
+                String productBrand = mBrandEditText.getText().toString().trim();
+                String productType = mTypeSpinner.getSelectedItem().toString();
+                String[] params = {productName, productBrand, productType};
+                new SaveProductTask().execute(params);
+            }else{
+                Toast.makeText(getContext(), R.string.no_changes_string, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void deleteCurrentProduct(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.product_delete_alert_dialog_message)
+                .setTitle(R.string.product_delete_alert_dialog__title)
+                .setIcon(R.drawable.ic_warning_black_24dp)
+                .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new DeleteProductTask().execute(true);
+                    }
+                })
+                .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 
     /*
@@ -124,9 +189,8 @@ public class ProductFragmentDetail extends Fragment {
     public void onBackButtonPressed(){
         if (entryHasChanged() || (mIsNewProduct && entryHasChanged())) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Save changes made to this product?")
-                    .setTitle("Save changes?")
-                    .setIcon(R.drawable.ic_warning_black_24dp)
+            builder.setMessage(R.string.product_back_alert_dialog_message)
+                    .setTitle(R.string.product_back_alert_dialog_title)
                     .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -140,6 +204,11 @@ public class ProductFragmentDetail extends Fragment {
                             dialog.dismiss();
                             getActivity().finish();
                         }
+                    }).setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
                     }).show();
         } else if (mIsNewProduct) {
             new DeleteProductTask().execute(false);
@@ -151,15 +220,13 @@ public class ProductFragmentDetail extends Fragment {
     private void fetchViews(View rootView){
         mNameEditText = (EditText) rootView.findViewById(R.id.product_name_edit);
         mBrandEditText = (EditText) rootView.findViewById(R.id.product_brand_edit);
-        mSaveButton = (Button) rootView.findViewById(R.id.product_save_button);
-        mDeleteButton = (Button) rootView.findViewById(R.id.product_delete_button);
         mEditIngredientsButton = (Button) rootView.findViewById(R.id.product_edit_ingredients);
         mIngredientsList = (ListView) rootView.findViewById(R.id.product_ingredient_list);
 
         mTypeSpinner = (Spinner) rootView.findViewById(R.id.product_type_spinner);
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(),R.array.product_types_array,R.layout.spinner_layout);
-        spinnerAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mTypeSpinner.setAdapter(spinnerAdapter);
+        mSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),R.array.product_types_array,R.layout.spinner_layout);
+        mSpinnerAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        mTypeSpinner.setAdapter(mSpinnerAdapter);
 
         mProgressLayout = rootView.findViewById(R.id.product_loading_layout);
         mDetailLayout = rootView.findViewById(R.id.product_fragment_detail_layout);
@@ -180,38 +247,6 @@ public class ProductFragmentDetail extends Fragment {
 
     //Sets listeners for the buttons
     private void setListeners(){
-        mDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(R.string.alert_delete_product_message)
-                        .setTitle(R.string.alert_delete_product_title)
-                        .setIcon(R.drawable.ic_warning_black_24dp)
-                        .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new DeleteProductTask().execute(true);
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
-            }
-        });
-
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(entryHasChanged())
-                    saveCurrentProduct();
-                else
-                    Toast.makeText(getContext(),R.string.no_changes_string, Toast.LENGTH_SHORT).show();
-            }
-        });
-
         mEditIngredientsButton.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -290,9 +325,12 @@ public class ProductFragmentDetail extends Fragment {
                 if (productCursor.moveToFirst()) { //Populate data from product
                     String name = productCursor.getString(productCursor.getColumnIndex(DiaryContract.Product.COLUMN_NAME));
                     String brand = productCursor.getString(productCursor.getColumnIndex(DiaryContract.Product.COLUMN_BRAND));
+                    String type = productCursor.getString(productCursor.getColumnIndex(DiaryContract.Product.COLUMN_TYPE));
 
                     mNameEditText.setText(name);
                     mBrandEditText.setText(brand);
+                    int pos = mSpinnerAdapter.getPosition(type);
+                    mTypeSpinner.setSelection(pos);
                 }
             }
             if (result[1] != null) {
@@ -418,7 +456,6 @@ public class ProductFragmentDetail extends Fragment {
             hideLoadingLayout();
             setInitialValues();
             mIsNewProduct = true;
-            mDeleteButton.setVisibility(View.GONE);
             mInitialLoadComplete = true;
         }
     }

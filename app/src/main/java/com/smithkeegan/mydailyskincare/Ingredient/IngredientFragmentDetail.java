@@ -6,12 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -24,23 +27,26 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
  * @author Keegan Smith
  * @since 5/10/2016
  * TODO return to calling location, either add ingredients to product or ingredients listpage
- * TODO disable button if no changes have taken place, listeners for each field, change "update" text to "save"
  */
 public class IngredientFragmentDetail extends Fragment {
 
     private DiaryDbHelper mDbHelper;
     private Boolean mNewEntry;
-    private Boolean mEntryChanged;
     private EditText mNameEditText;
     private EditText mCommentEditText;
     private CheckBox mIrritantCheckbox;
-    private Button mButtonDelete;
-    private Button mButtonSave;
 
     private String mInitialName;
     private boolean mInitialCheck;
     private String mInitialComment;
     private Long mExistingId;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        getActivity().setTitle("");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
@@ -50,9 +56,6 @@ public class IngredientFragmentDetail extends Fragment {
         mNameEditText = (EditText) rootView.findViewById(R.id.ingredient_name_edit);
         mCommentEditText = (EditText) rootView.findViewById(R.id.ingredient_comment_edit);
         mIrritantCheckbox = (CheckBox) rootView.findViewById(R.id.ingredient_irritant_checkbox);
-        mButtonDelete = (Button) rootView.findViewById(R.id.ingredient_delete_button);
-        mButtonSave = (Button) rootView.findViewById(R.id.ingredient_save_button);
-
 
         Bundle args = getArguments();
         mNewEntry = args.getBoolean(IngredientActivityDetail.NEW_INGREDIENT,true);
@@ -62,13 +65,10 @@ public class IngredientFragmentDetail extends Fragment {
             mInitialName = mNameEditText.getText().toString().trim();
             mInitialCheck = mIrritantCheckbox.isChecked();
             mInitialComment = mCommentEditText.getText().toString().trim();
-            mButtonDelete.setVisibility(View.GONE);
         } else{ //Load data from existing entry
             new LoadIngredientTask().execute(mExistingId);
         }
 
-        mEntryChanged = false;
-        setListeners();
         return rootView;
     }
 
@@ -80,9 +80,8 @@ public class IngredientFragmentDetail extends Fragment {
     public void onBackButtonPressed(){
         if(entryHasChanged()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Save changes made to this ingredient?")
-                    .setTitle("Save changes?")
-                    .setIcon(R.drawable.ic_warning_black_24dp)
+            builder.setMessage(R.string.ingredient_back_alert_dialog_message)
+                    .setTitle(R.string.ingredient_back_alert_dialog_title)
                     .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -95,11 +94,36 @@ public class IngredientFragmentDetail extends Fragment {
                             dialog.dismiss();
                             getActivity().finish();
                         }
+                    }).setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
                     }).show();
         }
         else{
             getActivity().finish();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_item_detail,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_action_save:
+                saveCurrentIngredient();
+                return true;
+            case R.id.menu_action_delete:
+                deleteCurrentIngredient();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     //Returns whether this entry has changed values.
@@ -112,49 +136,39 @@ public class IngredientFragmentDetail extends Fragment {
     }
 
     public void saveCurrentIngredient(){
-        String name = mNameEditText.getText().toString().trim();
-        boolean isIrritant = mIrritantCheckbox.isChecked();
-        String irritant = isIrritant ? "1" : "0";
-        String comment = mCommentEditText.getText().toString().trim();
-        String[] params = {name,irritant,comment};
-        new SaveIngredientTask().execute(params);
+        if(mNameEditText.getText().toString().trim().length() == 0)
+            Toast.makeText(getContext(),R.string.toast_enter_valid_name,Toast.LENGTH_SHORT).show();
+        else {
+            if(entryHasChanged()) {
+                String name = mNameEditText.getText().toString().trim();
+                boolean isIrritant = mIrritantCheckbox.isChecked();
+                String irritant = isIrritant ? "1" : "0";
+                String comment = mCommentEditText.getText().toString().trim();
+                String[] params = {name, irritant, comment};
+                new SaveIngredientTask().execute(params);
+            }else{
+                Toast.makeText(getContext(),R.string.no_changes_string, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
-    /**
-     *Sets listeners for delete and save buttons.
-     */
-    private void setListeners(){
-        mButtonDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(R.string.alert_delete_ingredient_message)
-                        .setTitle(R.string.alert_delete_ingredient_title)
-                        .setIcon(R.drawable.ic_warning_black_24dp)
-                        .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new DeleteIngredientTask().execute();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
-            }
-        });
-
-        mButtonSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(entryHasChanged())
-                    saveCurrentIngredient();
-                else
-                    Toast.makeText(getContext(),R.string.no_changes_string, Toast.LENGTH_SHORT).show();
-            }
-        });
+    public void deleteCurrentIngredient(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.ingredient_delete_alert_dialog_message)
+                .setTitle(R.string.ingredient_delete_alert_dialog_title)
+                .setIcon(R.drawable.ic_warning_black_24dp)
+                .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new DeleteIngredientTask().execute();
+                    }
+                })
+                .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 
     /**

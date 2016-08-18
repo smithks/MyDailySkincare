@@ -53,29 +53,4 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
-
-        <!-- TODO better button coloring -->
-        <Button
-            android:id="@+id/ingredient_delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/delete_button_string"
-            android:backgroundTint="@color/deleteButton"
-            android:textColor="@color/white"
-            />
-
-        <Button
-            android:id="@+id/ingredient_save_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save_button_string"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@color/white"/>
-    </LinearLayout>
-
 </RelativeLayout>

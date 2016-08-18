@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.smithkeegan.mydailyskincare.R;
 
@@ -40,5 +41,21 @@ public class RoutineActivityDetail extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.routine_activity_detail,fragmentDetail);
         transaction.commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case android.R.id.home:
+                ((RoutineFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.routine_activity_detail)).onBackButtonPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        ((RoutineFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.routine_activity_detail)).onBackButtonPressed();
     }
 }

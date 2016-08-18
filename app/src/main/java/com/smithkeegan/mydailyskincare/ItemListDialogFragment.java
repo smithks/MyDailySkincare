@@ -94,6 +94,7 @@ public class ItemListDialogFragment extends DialogFragment {
         super.onResume();
 
         Object[] taskArguments = {mDisplayedData, mPrimaryItemID};
+        listView.setAdapter(null);
         new FetchDataTask().execute(taskArguments);
     }
 
@@ -314,8 +315,6 @@ public class ItemListDialogFragment extends DialogFragment {
         protected void onPostExecute(Long result){
             if (result == -1){
                 Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
-            } else if (result > -1){
-                Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
             }
             ((DialogClosedListener)getActivity()).onEditListDialogClosed();
             getDialog().dismiss();

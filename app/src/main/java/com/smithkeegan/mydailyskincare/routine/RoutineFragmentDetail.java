@@ -6,10 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -36,8 +40,6 @@ public class RoutineFragmentDetail extends Fragment {
     private ListView mProductsListView;
     private EditText mCommentEditText;
     private Button mEditProductsButton;
-    private Button mDeleteButton;
-    private Button mSaveButton;
 
     private View mProgressLayout;
     private View mDetailLayout;
@@ -51,6 +53,13 @@ public class RoutineFragmentDetail extends Fragment {
     private Long mRoutineID;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        getActivity().setTitle("");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_routine_detail,container,false);
 
@@ -61,6 +70,7 @@ public class RoutineFragmentDetail extends Fragment {
         mRoutineID = args.getLong(RoutineActivityDetail.ENTRY_ID,-1);
 
         fetchViews(rootView);
+        showLoadingLayout();
 
         if (newEntry || mRoutineID < 0){ //New entry or error loading
             new SaveRoutinePlaceholderTask().execute();
@@ -80,11 +90,28 @@ public class RoutineFragmentDetail extends Fragment {
         mCommentEditText = (EditText) rootView.findViewById(R.id.routine_comment_edit);
 
         mEditProductsButton = (Button) rootView.findViewById(R.id.routine_edit_products);
-        mDeleteButton = (Button) rootView.findViewById(R.id.routine_delete_button);
-        mSaveButton = (Button) rootView.findViewById(R.id.routine_save_button);
 
         mProgressLayout = rootView.findViewById(R.id.routine_loading_layout);
         mDetailLayout = rootView.findViewById(R.id.routine_fragment_detail_layout);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_item_detail,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_action_save:
+                saveCurrentRoutine();
+                return true;
+            case R.id.menu_action_delete:
+                deleteCurrentRoutine();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     //Hides the layout of this fragment and displays the loading icon
@@ -121,42 +148,7 @@ public class RoutineFragmentDetail extends Fragment {
     }
 
     public void setListeners(){
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!entryHasChanged()) {
-                    Toast.makeText(getContext(), R.string.no_changes_string, Toast.LENGTH_SHORT).show();
-                } else {
-                    String name = mNameEditText.getText().toString().trim();
-                    String time = ((RadioButton)mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
-                    String comment = mCommentEditText.getText().toString().trim();
-                    String[] params = {name, time, comment};
-                    new SaveRoutineTask().execute(params);
-                }
-            }
-        });
 
-        mDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle(R.string.routine_alert_dialog_title)
-                        .setMessage(R.string.routine_alert_dialog_message)
-                        .setIcon(R.drawable.ic_warning_black_24dp)
-                        .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new DeleteRoutineTask().execute(true);
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
-            }
-        });
     }
 
     private void setSelectedRadioButton(String selectionText){
@@ -165,6 +157,77 @@ public class RoutineFragmentDetail extends Fragment {
             if (selectionText.equals(button.getText().toString())){
                 button.setChecked(true);
             }
+        }
+    }
+
+    private void saveCurrentRoutine(){
+        if(mNameEditText.getText().toString().trim().length() == 0) {
+            Toast.makeText(getContext(), R.string.toast_enter_valid_name, Toast.LENGTH_SHORT).show();
+        }else {
+            if(entryHasChanged()) {
+                String name = mNameEditText.getText().toString().trim();
+                String time = ((RadioButton) mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
+                String comment = mCommentEditText.getText().toString().trim();
+                String[] params = {name, time, comment};
+                new SaveRoutineTask().execute(params);
+            }else{
+                Toast.makeText(getContext(), R.string.no_changes_string, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void deleteCurrentRoutine(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.routine_delete_alert_dialog_title)
+                .setMessage(R.string.routine_delete_alert_dialog_message)
+                .setIcon(R.drawable.ic_warning_black_24dp)
+                .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new DeleteRoutineTask().execute(true);
+                    }
+                })
+                .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+    }
+
+    /*
+      * Method called by parent activity when the user presses the home button or the physical back button.
+      * Asks the user if they want to save changes if there are changes to save.
+     */
+    public void onBackButtonPressed(){
+        if (entryHasChanged() || (mIsNewRoutine && entryHasChanged())) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.routine_back_alert_dialog_message)
+                    .setTitle(R.string.routine_back_alert_dialog_title)
+                    .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saveCurrentRoutine();
+                        }
+                    })
+                    .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if(mIsNewRoutine) new DeleteRoutineTask().execute(false);
+                            dialog.dismiss();
+                            getActivity().finish();
+                        }
+                    })
+                    .setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        } else if (mIsNewRoutine) {
+            new DeleteRoutineTask().execute(false);
+        } else {
+            getActivity().finish();
         }
     }
 
@@ -225,7 +288,10 @@ public class RoutineFragmentDetail extends Fragment {
                     String comment = routineCursor.getString(routineCursor.getColumnIndex(DiaryContract.Routine.COLUMN_COMMENT));
 
                     mNameEditText.setText(name);
-                    setSelectedRadioButton(time);
+                    if(time != null)
+                        setSelectedRadioButton(time);
+                    else  //Default saved time value if one was not saved.
+                        setSelectedRadioButton(getString(R.string.routine_radio_AM));
                     mCommentEditText.setText(comment);
                 }
             }
@@ -270,6 +336,7 @@ public class RoutineFragmentDetail extends Fragment {
             hideLoadingLayout();
             setInitialMemberValues();
             mInitialLoadComplete = true;
+            mIsNewRoutine = false;
         }
     }
 
@@ -418,7 +485,6 @@ public class RoutineFragmentDetail extends Fragment {
             hideLoadingLayout();
             mTimeRadioGroup.check(R.id.routine_radio_button_am);  //Set default time to AM
             setInitialMemberValues();
-            mDeleteButton.setVisibility(View.GONE);
             mInitialLoadComplete = true;
         }
     }
