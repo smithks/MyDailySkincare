@@ -304,6 +304,15 @@ public class ItemListDialogFragment extends DialogFragment {
                 holder.checkBox = (CheckBox) convertView.findViewById(R.id.item_list_dialog_check_box);
                 convertView.setTag(holder); //Set this holder as this views tag
 
+                holder.checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ItemListDialogItem dialogItem = (ItemListDialogItem) v.getTag();
+                        CheckBox checkBox = (CheckBox) v;
+                        dialogItem.setFinalSelected(checkBox.isChecked());
+                    }
+                });
+
                 //When the view is tapped, set the checkbox to checked and the selected field in the item.
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -401,7 +410,6 @@ public class ItemListDialogFragment extends DialogFragment {
             return result;
         }
 
-        //TODO support product-routine table
         private long deleteLinkedRow(SQLiteDatabase db, long primaryID){
             Long result = (long) -1;
             if(displayedData.equals(INGREDIENTS)){

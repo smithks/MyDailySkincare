@@ -41,12 +41,14 @@
     <string name="no_string">no</string>
     <string name="edit_string">edit</string>
     <string name="toast_enter_valid_name">Please enter a name</string>
+    <string name="field_name_string">name</string>
 
 
 
     <!-- Ingredient Strings -->
     <string name="ingredient_name_string">Ingredient Name</string>
     <string name="ingredients">Ingredients</string>
+    <string name="ingredient_activity_title">Ingredient</string>
     <string name="ingredient_irritant">Skin irritant</string>
     <string name="ingredient_comment">comments</string>
     <string name="new_ingredient">New ingredient</string>
@@ -58,6 +60,7 @@
     <!-- Product Strings -->
     <string name="product_name_string">product Name</string>
     <string name="brand_string">brand</string>
+    <string name="product_activity_title">Product</string>
     <string name="products">Products</string>
     <string name="new_product">New product</string>
     <string name="product_ingredients">Ingredients</string>
@@ -85,6 +88,7 @@
     <!-- Routine Strings -->
     <string name="routine_new_routine">New routine</string>
     <string name="routine_name_string">routine name</string>
+    <string name="routine_activity_title">Routine</string>
     <string name="routine_application_time">Time of application</string>
     <string name="routine_products">Products</string>
     <string name="routine_comment">comments</string>

@@ -61,7 +61,7 @@ public class ProductFragmentDetail extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        getActivity().setTitle("");
+        getActivity().setTitle(R.string.product_activity_title);
     }
 
     @Override

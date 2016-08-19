@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             style="@style/header_name_text_style"
             android:background="@color/textBoxBackground"
-            android:hint="@string/ingredient_name_string"
+            android:hint="@string/field_name_string"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
             />

@@ -58,7 +58,7 @@ public class RoutineFragmentDetail extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        getActivity().setTitle("");
+        getActivity().setTitle(R.string.routine_activity_title);
     }
 
     @Override
