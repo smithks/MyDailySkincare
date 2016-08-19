@@ -48,7 +48,7 @@
     <string name="ingredient_name_string">Ingredient Name</string>
     <string name="ingredients">Ingredients</string>
     <string name="ingredient_irritant">Skin irritant</string>
-    <string name="ingredient_comment">Comment</string>
+    <string name="ingredient_comment">comments</string>
     <string name="new_ingredient">New ingredient</string>
     <string name="ingredient_delete_alert_dialog_message">Are you sure you want to delete this ingredient?</string>
     <string name="ingredient_delete_alert_dialog_title">Delete ingredient?</string>
@@ -87,7 +87,7 @@
     <string name="routine_name_string">routine name</string>
     <string name="routine_application_time">Time of application</string>
     <string name="routine_products">Products</string>
-    <string name="routine_comment">comment</string>
+    <string name="routine_comment">comments</string>
     <string name="routine_radio_AM">AM</string>
     <string name="routine_radio_PM">PM</string>
     <string name="routine_delete_alert_dialog_title">Delete Routine?</string>
@@ -96,8 +96,8 @@
     <string name="routine_back_alert_dialog_message">Save changes made to this routine?</string>
 
     <!-- Item List Dialog Strings -->
-    <string name="item_list_select_ingredients">Select Ingredients</string>
-    <string name="item_list_select_products">Select Products</string>
+    <string name="item_list_select_ingredients">Select ingredients</string>
+    <string name="item_list_select_products">Select products</string>
     <string name="item_list_new_string">New</string>
 
 

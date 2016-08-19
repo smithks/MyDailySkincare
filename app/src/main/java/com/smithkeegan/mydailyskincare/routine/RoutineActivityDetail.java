@@ -6,13 +6,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.smithkeegan.mydailyskincare.DialogClosedListener;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
  * @author Keegan Smith
  * @since 8/5/2016
  */
-public class RoutineActivityDetail extends AppCompatActivity {
+public class RoutineActivityDetail extends AppCompatActivity implements DialogClosedListener{
 
     public final static String NEW_ROUTINE = "New Routine";
     public final static String ENTRY_ID = "ID";
@@ -57,5 +58,10 @@ public class RoutineActivityDetail extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         ((RoutineFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.routine_activity_detail)).onBackButtonPressed();
+    }
+
+    @Override
+    public void onEditListDialogClosed() {
+        ((RoutineFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.routine_activity_detail)).refreshProducts();
     }
 }

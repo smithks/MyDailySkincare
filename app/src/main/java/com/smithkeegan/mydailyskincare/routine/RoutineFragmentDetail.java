@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +25,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.smithkeegan.mydailyskincare.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
@@ -48,8 +50,8 @@ public class RoutineFragmentDetail extends Fragment {
     private String mInitialName;
     private String mInitialTime;
     private String mInitialComment;
-    private Boolean mInitialLoadComplete;
-    private Boolean mIsNewRoutine;
+    private boolean mInitialLoadComplete;
+    private boolean mIsNewRoutine;
     private Long mRoutineID;
 
     @Override
@@ -83,6 +85,12 @@ public class RoutineFragmentDetail extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mInitialLoadComplete) refreshProducts();
+    }
+
     public void fetchViews(View rootView){
         mNameEditText = (EditText) rootView.findViewById(R.id.routine_name_edit);
         mTimeRadioGroup = (RadioGroup) rootView.findViewById(R.id.routine_radio_group);
@@ -112,6 +120,11 @@ public class RoutineFragmentDetail extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void refreshProducts(){
+        mProductsListView.setAdapter(null);
+        new LoadRoutineProductsTask().execute(mRoutineID);
     }
 
     //Hides the layout of this fragment and displays the loading icon
@@ -148,7 +161,21 @@ public class RoutineFragmentDetail extends Fragment {
     }
 
     public void setListeners(){
+        mEditProductsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProductsEditDialog();
+            }
+        });
+    }
 
+    private void showProductsEditDialog(){
+        Bundle args = new Bundle();
+        args.putString(ItemListDialogFragment.DISPLAYED_DATA,ItemListDialogFragment.PRODUCTS);
+        args.putLong(ItemListDialogFragment.ITEM_ID,mRoutineID);
+        DialogFragment fragment = new ItemListDialogFragment();
+        fragment.setArguments(args);
+        fragment.show(getFragmentManager(),"dialog");
     }
 
     private void setSelectedRadioButton(String selectionText){
@@ -337,7 +364,6 @@ public class RoutineFragmentDetail extends Fragment {
             hideLoadingLayout();
             setInitialMemberValues();
             mInitialLoadComplete = true;
-            mIsNewRoutine = false;
         }
     }
 
