@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
         initializeDrawer();
         initializeCalendar();
 
-
-
     }
 
     @Override

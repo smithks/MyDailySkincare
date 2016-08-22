@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusableInTouchMode="true"
-            android:padding="20dp">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusableInTouchMode="true"
+                android:padding="20dp">
+
 
     <RelativeLayout
         android:id="@+id/routine_loading_layout"
@@ -19,131 +20,136 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/routine_fragment_detail_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="20dp">
+        android:layout_height="match_parent">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/layout_name_text_input"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/routine_name_edit"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/layout_name_text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/header_name_text_style"
-                android:background="@color/textBoxBackground"
-                android:hint="@string/field_name_string"
-                android:layout_centerHorizontal="true"
-                android:gravity="center_horizontal"/>
+                android:layout_marginBottom="20dp">
 
-        </android.support.design.widget.TextInputLayout>
-
-        <RelativeLayout
-            android:id="@+id/routine_layout_radio_buttons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/layout_name_text_input">
-
-            <TextView
-                android:id="@+id/routine_application_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/routine_application_time"
-                style="@style/default_field_label_format"
-                android:gravity="center_horizontal"/>
-
-            <RadioGroup
-                android:id="@+id/routine_radio_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_below="@id/routine_application_text"
-                android:gravity="center_horizontal">
-
-                <RadioButton
-                    android:id="@+id/routine_radio_button_am"
-                    android:layout_width="wrap_content"
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/routine_name_edit"
+                    style="@style/header_name_text_style"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/routine_radio_AM"
-                    style="@style/default_field_label_format"/>
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/textBoxBackground"
+                    android:gravity="center_horizontal"
+                    android:hint="@string/field_name_string"/>
 
-                <RadioButton
-                    android:id="@+id/routine_radio_button_pm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/routine_radio_PM"
-                    style="@style/default_field_label_format"/>
+            </android.support.design.widget.TextInputLayout>
 
-            </RadioGroup>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/routine_layout_product_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/routine_layout_radio_buttons">
-
-            <LinearLayout
-                android:id="@+id/routine_product_title_layout"
+            <RelativeLayout
+                android:id="@+id/routine_layout_radio_buttons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
+                android:layout_below="@id/layout_name_text_input">
 
                 <TextView
-                    android:id="@+id/routine_product_list_title_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/routine_products"
+                    android:id="@+id/routine_application_text"
                     style="@style/default_field_label_format"
-                    />
-
-                <Space
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:gravity="center_horizontal"
+                    android:text="@string/routine_application_time"/>
 
-                <Button
-                    android:id="@+id/routine_edit_products"
-                    android:layout_width="wrap_content"
+                <RadioGroup
+                    android:id="@+id/routine_radio_group"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/edit_string"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:textColor="@color/white"/>
+                    android:layout_below="@id/routine_application_text"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <RadioButton
+                        android:id="@+id/routine_radio_button_am"
+                        style="@style/default_field_label_format"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/routine_radio_AM"/>
 
-            <ListView
-                android:id="@+id/routine_product_list_view"
-                android:layout_below="@id/routine_product_title_layout"
-                android:layout_height="100dp"
-                android:layout_width="match_parent"
-                android:background="@drawable/rectangle_border">
-            </ListView>
+                    <RadioButton
+                        android:id="@+id/routine_radio_button_pm"
+                        style="@style/default_field_label_format"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/routine_radio_PM"/>
 
-        </RelativeLayout>
+                </RadioGroup>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/routine_layout_comment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/routine_layout_product_list">
+            </RelativeLayout>
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/routine_comment_edit"
+            <RelativeLayout
+                android:id="@+id/routine_layout_product_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/default_edit_text_style"
-                android:hint="@string/routine_comment"
-                />
+                android:layout_below="@id/routine_layout_radio_buttons">
 
-        </android.support.design.widget.TextInputLayout>
+                <LinearLayout
+                    android:id="@+id/routine_product_title_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/routine_product_list_title_text"
+                        style="@style/default_field_label_format"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/routine_products"
+                        />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                    <Button
+                        android:id="@+id/routine_edit_products"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:text="@string/edit_string"
+                        android:textColor="@color/white"/>
+
+                </LinearLayout>
+
+                <com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView
+                    android:id="@+id/routine_product_list_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_below="@id/routine_product_title_layout"
+                    android:background="@drawable/rectangle_border">
+                </com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView>
+
+            </RelativeLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/routine_layout_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/routine_layout_product_list">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/routine_comment_edit"
+                    style="@style/default_edit_text_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/routine_comment"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

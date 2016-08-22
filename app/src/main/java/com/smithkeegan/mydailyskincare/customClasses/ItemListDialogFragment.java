@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare;
+package com.smithkeegan.mydailyskincare.customClasses;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;

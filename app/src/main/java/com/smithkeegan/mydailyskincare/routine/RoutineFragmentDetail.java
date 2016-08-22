@@ -2,6 +2,7 @@ package com.smithkeegan.mydailyskincare.routine;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,10 +27,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.ItemListDialogFragment;
+import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
+import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
 
 /**
  * @author Keegan Smith
@@ -167,6 +170,16 @@ public class RoutineFragmentDetail extends Fragment {
                 showProductsEditDialog();
             }
         });
+
+        mProductsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getContext(), ProductActivityDetail.class);
+                intent.putExtra(ProductActivityDetail.NEW_PRODUCT,false);
+                intent.putExtra(ProductActivityDetail.ENTRY_ID,id);
+                startActivity(intent);
+            }
+        });
     }
 
     private void showProductsEditDialog(){
@@ -187,6 +200,10 @@ public class RoutineFragmentDetail extends Fragment {
         }
     }
 
+    /**
+     * Checks if fields are valid and if there have been any changes before saving
+     * the current entry.
+     */
     private void saveCurrentRoutine(){
         if(mNameEditText.getText().toString().trim().length() == 0) {
             Toast.makeText(getContext(), R.string.toast_enter_valid_name, Toast.LENGTH_SHORT).show();

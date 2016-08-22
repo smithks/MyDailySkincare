@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="20dp"
-                android:focusableInTouchMode="true">
+                android:focusableInTouchMode="true"
+                android:padding="20dp">
 
     <RelativeLayout
         android:id="@+id/product_loading_layout"
@@ -18,122 +18,129 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/product_fragment_detail_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="20dp"
-        >
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/layout_name_text_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/product_name_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/header_name_text_style"
-                android:background="@color/textBoxBackground"
-                android:hint="@string/field_name_string"
-                android:layout_centerHorizontal="true"
-                android:gravity="center_horizontal"
-                />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/layout_brand_text_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/layout_name_text_input"
-            android:layout_marginBottom="20dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/product_brand_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/default_edit_text_style"
-                android:hint="@string/brand_string"
-                />
-        </android.support.design.widget.TextInputLayout>
-
-        <LinearLayout
-            android:id="@+id/product_type_layout"
-            android:layout_below="@id/layout_brand_text_input"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/product_type"
-                style="@style/default_field_label_format"
-                android:layout_weight="1"/>
-
-            <Spinner
-                android:id="@+id/product_type_spinner"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                >
-
-            </Spinner>
-
-        </LinearLayout>
+        android:layout_height="match_parent">
 
         <RelativeLayout
-            android:id="@+id/product_ingredient_list_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/product_type_layout">
+            android:layout_marginBottom="20dp"
+            >
 
-            <LinearLayout
-                android:id="@+id/product_ingredient_title_layout"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/layout_name_text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginBottom="20dp">
 
-
-                <TextView
-                    android:id="@+id/product_ingredient_list_title_text"
-                    android:layout_width="wrap_content"
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/product_name_edit"
+                    style="@style/header_name_text_style"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/product_ingredients"
-                    style="@style/default_field_label_format"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/textBoxBackground"
+                    android:gravity="center_horizontal"
+                    android:hint="@string/field_name_string"
                     />
 
-                <Space
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/layout_brand_text_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_name_text_input"
+                android:layout_marginBottom="20dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/product_brand_edit"
+                    style="@style/default_edit_text_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/brand_string"
+                    />
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/product_type_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_brand_text_input"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/default_field_label_format"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:text="@string/product_type"/>
 
-                <Button
-                    android:id="@+id/product_edit_ingredients"
-                    android:layout_width="wrap_content"
+                <Spinner
+                    android:id="@+id/product_type_spinner"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/edit_string"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:textColor="@color/white"/>
+                    android:layout_weight="3"
+                    >
+
+                </Spinner>
 
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/product_ingredient_list"
-                android:layout_below="@id/product_ingredient_title_layout"
-                android:layout_height="match_parent"
+            <RelativeLayout
+                android:id="@+id/product_ingredient_list_layout"
                 android:layout_width="match_parent"
-                android:background="@drawable/rectangle_border">
-            </ListView>
+                android:layout_height="wrap_content"
+                android:layout_below="@id/product_type_layout">
+
+                <LinearLayout
+                    android:id="@+id/product_ingredient_title_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/product_ingredient_list_title_text"
+                        style="@style/default_field_label_format"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/product_ingredients"
+                        />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                    <Button
+                        android:id="@+id/product_edit_ingredients"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:text="@string/edit_string"
+                        android:textColor="@color/white"/>
+
+                </LinearLayout>
+
+                <com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView
+                    android:id="@+id/product_ingredient_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_below="@id/product_ingredient_title_layout"
+                    android:background="@drawable/rectangle_border"
+                    >
+                </com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView>
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
-    </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

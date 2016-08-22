@@ -20,8 +20,10 @@ public class ProductActivityMain extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_product_main);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.product_activity_main, new ProductFragmentMain());
-        transaction.commit();
+        if(savedInstance== null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.product_activity_main, new ProductFragmentMain());
+            transaction.commit();
+        }
     }
 }

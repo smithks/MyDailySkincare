@@ -20,8 +20,10 @@ public class IngredientActivityMain extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_ingredient_main);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.ingredient_activity_main,new IngredientFragmentMain());
-        transaction.commit();
+        if(savedInstance == null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.ingredient_activity_main, new IngredientFragmentMain());
+            transaction.commit();
+        }
     }
 }

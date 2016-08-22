@@ -40,9 +40,11 @@ public class IngredientActivityDetail extends AppCompatActivity {
             fragmentDetail.setArguments(bundle);
         }
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.ingredient_activity_detail,fragmentDetail);
-        transaction.commit();
+        if(savedInstance == null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.ingredient_activity_detail, fragmentDetail);
+            transaction.commit();
+        }
     }
 
     @Override

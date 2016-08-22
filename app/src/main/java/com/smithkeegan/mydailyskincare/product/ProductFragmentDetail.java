@@ -2,6 +2,7 @@ package com.smithkeegan.mydailyskincare.product;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -25,10 +26,11 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.ItemListDialogFragment;
+import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
+import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
 
 /**
  * @author Keegan Smith
@@ -259,7 +261,10 @@ public class ProductFragmentDetail extends Fragment {
         mIngredientsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showEditDialog();
+                Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
+                intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false);
+                intent.putExtra(IngredientActivityDetail.ENTRY_ID,id);
+                startActivity(intent);
             }
         });
     }

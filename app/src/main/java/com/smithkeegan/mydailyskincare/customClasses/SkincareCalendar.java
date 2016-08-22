@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare;
+package com.smithkeegan.mydailyskincare.customClasses;
 
 import android.content.Context;
 import android.widget.CalendarView;

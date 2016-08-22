@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.smithkeegan.mydailyskincare.DialogClosedListener;
+import com.smithkeegan.mydailyskincare.customClasses.DialogClosedListener;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
@@ -39,9 +39,11 @@ public class RoutineActivityDetail extends AppCompatActivity implements DialogCl
             fragmentDetail.setArguments(bundle);
         }
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.routine_activity_detail,fragmentDetail);
-        transaction.commit();
+        if(savedInstanceState == null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.routine_activity_detail, fragmentDetail);
+            transaction.commit();
+        }
     }
 
     @Override

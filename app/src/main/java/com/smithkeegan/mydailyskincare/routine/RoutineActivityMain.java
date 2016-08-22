@@ -18,8 +18,10 @@ public class RoutineActivityMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routine_main);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.routine_activity_main, new RoutineFragmentMain());
-        transaction.commit();
+        if(savedInstanceState == null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.routine_activity_main, new RoutineFragmentMain());
+            transaction.commit();
+        }
     }
 }
