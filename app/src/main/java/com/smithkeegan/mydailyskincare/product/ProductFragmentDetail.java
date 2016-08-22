@@ -342,8 +342,8 @@ public class ProductFragmentDetail extends Fragment {
             if (result[1] != null) {
                 if (ingredientCursor.moveToFirst()) { //Populate data from ingredients
                     String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
-                    int[] toViews = {R.id.detail_listview_item};
-                    SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.detail_listview_item, ingredientCursor, fromColumns, toViews, 0);
+                    int[] toViews = {R.id.product_detail_ingredient_listview_item};
+                    SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, ingredientCursor, fromColumns, toViews, 0);
                     mIngredientsList.setAdapter(ingredientAdapter);
                 }
             }
@@ -399,8 +399,8 @@ public class ProductFragmentDetail extends Fragment {
         protected void onPostExecute(Cursor result){
             if (result != null) {
                 String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
-                int[] toViews = {R.id.detail_listview_item};
-                SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.detail_listview_item, result, fromColumns, toViews, 0);
+                int[] toViews = {R.id.product_detail_ingredient_listview_item};
+                SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, result, fromColumns, toViews, 0);
                 mIngredientsList.setAdapter(ingredientAdapter);
             }
         }

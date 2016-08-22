@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".CalendarActivityMain"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -18,19 +18,19 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".DiaryEntryActivity"
+        <activity android:name=".DiaryEntryActivityMain"
                   android:label="Entry"
-                  android:parentActivityName=".MainActivity"
+                  android:parentActivityName=".CalendarActivityMain"
                   >
         </activity>
         <activity android:name=".product.ProductActivityMain"
                   android:label="@string/products"
-                  android:parentActivityName=".MainActivity">
+                  android:parentActivityName=".CalendarActivityMain">
 
         </activity>
         <activity android:name=".routine.RoutineActivityMain"
                   android:label="Routines"
-                    android:parentActivityName=".MainActivity">
+                    android:parentActivityName=".CalendarActivityMain">
 
         </activity>
         <activity android:name=".routine.RoutineActivityDetail"
@@ -45,7 +45,7 @@
         </activity>
         <activity android:name=".ingredient.IngredientActivityMain"
                   android:label="Ingredients"
-                  android:parentActivityName=".MainActivity">
+                  android:parentActivityName=".CalendarActivityMain">
 
         </activity>
         <activity android:name=".ingredient.IngredientActivityDetail"

@@ -34,7 +34,7 @@ import java.util.Date;
  * @since 5/3/2016
  */
 //TODO move save and delete buttons in detail fragments to toolbar
-public class MainActivity extends AppCompatActivity {
+public class CalendarActivityMain extends AppCompatActivity {
 
     private CaldroidFragment mCaldroidFragment;
     public final static String INTENT_DATE = "Date"; //Key for intent value
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_calendar_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ListView drawerList = (ListView)findViewById(R.id.drawer);
 
-        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_listview_item, mDrawerStrings));
+        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.listview_item_calendar_drawer, mDrawerStrings));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close);
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     final CaldroidListener listener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
-            Intent intent = new Intent(getApplicationContext(),DiaryEntryActivity.class);
+            Intent intent = new Intent(getApplicationContext(),DiaryEntryActivityMain.class);
             intent.putExtra(INTENT_DATE,date.getTime());
             startActivity(intent);
         }

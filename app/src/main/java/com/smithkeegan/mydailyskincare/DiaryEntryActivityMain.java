@@ -15,15 +15,15 @@ import java.util.Date;
  * TODO: load data from database based on date
  * TODO: don't show year in title if current year
  */
-public class DiaryEntryActivity extends AppCompatActivity {
+public class DiaryEntryActivityMain extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-        setContentView(R.layout.activity_diary_entry);
+        setContentView(R.layout.activity_diary_entry_main);
 
         Intent intent = getIntent();
-        Date date = new Date(intent.getLongExtra(MainActivity.INTENT_DATE,0));
+        Date date = new Date(intent.getLongExtra(CalendarActivityMain.INTENT_DATE,0));
         DateFormat df = DateFormat.getDateInstance();
         setTitle(df.format(date)+" Entry");
 

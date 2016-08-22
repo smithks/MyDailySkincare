@@ -81,7 +81,7 @@ public class RoutineFragmentMain extends Fragment {
         protected void onPostExecute(Cursor cursor) {
             String[] fromColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
             int[] toViews = {R.id.routine_listview_name, R.id.routine_listView_time};
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.routine_listview_item,cursor,fromColumns,toViews,0);
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.listview_item_routine_main,cursor,fromColumns,toViews,0);
             adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
                 @Override
                 public boolean setViewValue(View view, Cursor cursor, int columnIndex) {

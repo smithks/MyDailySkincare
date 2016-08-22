@@ -91,7 +91,7 @@ public class ProductFragmentMain extends Fragment{
         protected void onPostExecute(final Cursor result){
             String[] fromColumns = {DiaryContract.Product.COLUMN_NAME, DiaryContract.Product.COLUMN_BRAND, DiaryContract.Product.COLUMN_TYPE};
             int[] toViews = {R.id.product_listview_name,R.id.product_listview_brand,R.id.product_listview_type};
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.product_listview_item,result,fromColumns,toViews,0);
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.listview_item_product_main,result,fromColumns,toViews,0);
             adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
 
                 /**

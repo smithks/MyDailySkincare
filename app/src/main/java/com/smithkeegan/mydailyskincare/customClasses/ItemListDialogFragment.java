@@ -206,7 +206,7 @@ public class ItemListDialogFragment extends DialogFragment {
                     }
                 }
 
-                ItemListDialogArrayAdapter arrayAdapter = new ItemListDialogArrayAdapter(getContext(),R.layout.item_list_dialog_item,itemList);
+                ItemListDialogArrayAdapter arrayAdapter = new ItemListDialogArrayAdapter(getContext(),R.layout.listview_item_item_list_dialog,itemList);
                 listView.setAdapter(arrayAdapter);
             }
         }
@@ -298,7 +298,7 @@ public class ItemListDialogFragment extends DialogFragment {
 
             if(convertView == null){
                 LayoutInflater inflater = getActivity().getLayoutInflater();
-                convertView = inflater.inflate(R.layout.item_list_dialog_item,null);
+                convertView = inflater.inflate(R.layout.listview_item_item_list_dialog,null);
 
                 holder = new IngredientViewHolder();
                 holder.name = (TextView) convertView.findViewById(R.id.item_list_dialog_item_text);
