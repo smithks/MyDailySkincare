@@ -31,7 +31,7 @@
     <ListView
         android:id="@+id/item_dialog_list_view"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/item_dialog_title_layout"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"

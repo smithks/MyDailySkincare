@@ -1,5 +1,6 @@
 package com.smithkeegan.mydailyskincare.customClasses;
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -7,10 +8,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +56,23 @@ public class ItemListDialogFragment extends DialogFragment {
     private long mPrimaryItemID;
     private String mDisplayedData;
     private ArrayList<ItemListDialogItem> mItemsList;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            Point size = new Point();
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            display.getSize(size);
+            if(size.x > size.y){ //Phone is in landscape orientation
+                dialog.getWindow().setLayout(size.x, (int)(size.y*.95));
+            }else{ //Phone is in portrait orientation
+                dialog.getWindow().setLayout(size.x, (int)(size.y*.6));
+            }
+
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){

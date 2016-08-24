@@ -114,7 +114,7 @@ public class IngredientFragmentMain extends Fragment {
         protected void onPostExecute(final Cursor result){
             String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
             int[] toViews = {R.id.ingredient_list_view_item};
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.ingredient_listview_item,result,fromColumns,toViews,0);
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.listview_item_ingredient_main,result,fromColumns,toViews,0);
             mIngredientsList.setAdapter(adapter);
             mIngredientsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
