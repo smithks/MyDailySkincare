@@ -1,5 +1,6 @@
 package com.smithkeegan.mydailyskincare.product;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -58,6 +59,9 @@ public class ProductFragmentDetail extends Fragment {
     private String mInitialType;
     private boolean mInitialLoadComplete;
     private boolean mIsNewProduct;
+
+    private int mNumIngredients;
+    private boolean mIngredientsChanged;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,12 +124,20 @@ public class ProductFragmentDetail extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     //Returns whether this enties values have changed since the form has been opened.
     public boolean entryHasChanged(){
         String currentName = mNameEditText.getText().toString().trim();
         String currentBrand = mBrandEditText.getText().toString().trim();
-        String currentType = mTypeSpinner.getSelectedItem().toString();
-        return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)));
+        String currentType = "";
+        if(mTypeSpinner.getSelectedItem() != null) {
+            currentType = mTypeSpinner.getSelectedItem().toString();
+        }
+        return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)) || (mNumIngredients > 0 && mIngredientsChanged));
     }
 
     //Checks if the required name field is a valid value.
@@ -141,7 +153,11 @@ public class ProductFragmentDetail extends Fragment {
     public void setInitialValues(){
         mInitialName = mNameEditText.getText().toString().trim();
         mInitialBrand = mBrandEditText.getText().toString().trim();
-        mInitialType = mTypeSpinner.getSelectedItem().toString();
+        if(mTypeSpinner.getSelectedItem() != null){
+            mInitialType = mTypeSpinner.getSelectedItem().toString();
+        }else {
+            mInitialType = "--";
+        }
     }
 
     public void refreshIngredients(){
@@ -344,6 +360,7 @@ public class ProductFragmentDetail extends Fragment {
                     String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
                     int[] toViews = {R.id.product_detail_ingredient_listview_item};
                     SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, ingredientCursor, fromColumns, toViews, 0);
+                    mNumIngredients = ingredientAdapter.getCount();
                     mIngredientsList.setAdapter(ingredientAdapter);
                 }
             }
@@ -401,8 +418,12 @@ public class ProductFragmentDetail extends Fragment {
                 String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
                 int[] toViews = {R.id.product_detail_ingredient_listview_item};
                 SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, result, fromColumns, toViews, 0);
+                mNumIngredients = ingredientAdapter.getCount();
                 mIngredientsList.setAdapter(ingredientAdapter);
+            }else{
+                mNumIngredients = 0;
             }
+            mIngredientsChanged = true;
         }
     }
 
@@ -433,6 +454,9 @@ public class ProductFragmentDetail extends Fragment {
             if (result == -1){
                 Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
             }else {
+                Intent intent = new Intent();
+                intent.putExtra(ProductActivityMain.PRODUCT_FINISHED_ID,mProductId);
+                getActivity().setResult(Activity.RESULT_OK,intent);
                 Toast.makeText(getContext(), R.string.toast_save_success, Toast.LENGTH_SHORT).show();
             }
             getActivity().finish();
@@ -449,6 +473,7 @@ public class ProductFragmentDetail extends Fragment {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(DiaryContract.Product.COLUMN_NAME,"PlaceholderProduct");
+            values.put(DiaryContract.Product.COLUMN_TYPE,"--");
             return db.insert(DiaryContract.Product.TABLE_NAME,null,values);
         }
 

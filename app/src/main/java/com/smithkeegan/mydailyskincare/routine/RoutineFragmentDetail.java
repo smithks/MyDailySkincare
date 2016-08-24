@@ -57,6 +57,9 @@ public class RoutineFragmentDetail extends Fragment {
     private boolean mIsNewRoutine;
     private Long mRoutineID;
 
+    private boolean mProductsChanged;
+    private int mNumProducts;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,11 +159,7 @@ public class RoutineFragmentDetail extends Fragment {
         RadioButton selectedButton = (RadioButton) mTimeRadioGroup.findViewById(id);
         String currTime = selectedButton.getText().toString();
         String currComment = mCommentEditText.getText().toString().trim();
-        Boolean changed = false;
-        if (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment)){
-            changed = true;
-        }
-        return changed;
+        return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment) || (mNumProducts > 0 && mProductsChanged));
     }
 
     public void setListeners(){
@@ -375,6 +374,7 @@ public class RoutineFragmentDetail extends Fragment {
                             return false;
                         }
                     });
+                    mNumProducts = adapter.getCount();
                     mProductsListView.setAdapter(adapter);
                 }
             }
@@ -464,8 +464,12 @@ public class RoutineFragmentDetail extends Fragment {
                             return false;
                         }
                     });
+                    mNumProducts = adapter.getCount();
+                    mProductsChanged = true;
                     mProductsListView.setAdapter(adapter);
                 }
+            }else{
+                mNumProducts = 0; //No products loaded
             }
         }
     }

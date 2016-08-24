@@ -2,6 +2,7 @@ package com.smithkeegan.mydailyskincare.ingredient;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -78,6 +80,7 @@ public class IngredientFragmentDetail extends Fragment {
       * Asks the user if they want to save changes if there are changes to save.
      */
     public void onBackButtonPressed(){
+        final Intent resultIntent = new Intent();
         if(entryHasChanged()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.ingredient_back_alert_dialog_message)
@@ -192,7 +195,7 @@ public class IngredientFragmentDetail extends Fragment {
                 String where = DiaryContract.Ingredient._ID + " = ?";
                 String[] whereArg = {mExistingId.toString()};
                 int rows =  db.update(DiaryContract.Ingredient.TABLE_NAME,values,where,whereArg);
-                return Long.valueOf(rows == 0? -1 : 1); //return -1 if no rows affected, error storing
+                return Long.valueOf(rows == 0? -1 : 0); //return -1 if no rows affected, error storing
             }
 
         }
@@ -202,12 +205,11 @@ public class IngredientFragmentDetail extends Fragment {
             if (param == -1){
                 Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
             }else {
+                Intent intent = new Intent();
+                intent.putExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID,param);
+                getActivity().setResult(AppCompatActivity.RESULT_OK,intent);
                 Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
             }
-            //TODO uncomment if using highlight
-            //Intent intent = new Intent();
-            //intent.putExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID,param);
-            //getActivity().setResult(AppCompatActivity.RESULT_OK,intent);
             getActivity().finish();
         }
     }
