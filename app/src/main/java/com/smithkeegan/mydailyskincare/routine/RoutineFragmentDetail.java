@@ -314,7 +314,7 @@ public class RoutineFragmentDetail extends Fragment {
 
             //Fetch Names of products in this routine table using IDs
             if (productWhere.length() > 0) {
-                cursors[1] = db.query(DiaryContract.Product.TABLE_NAME,productColumns,productWhere,null,null,null,null);
+                cursors[1] = db.query(DiaryContract.Product.TABLE_NAME,productColumns,productWhere,null,null,null, DiaryContract.Product.COLUMN_NAME + " ASC");
             }
             return cursors;
         }
@@ -419,7 +419,7 @@ public class RoutineFragmentDetail extends Fragment {
 
             //Fetch product information for this routine from Products table using IDs
             if (productWhere.length() > 0) {
-                result = db.query(DiaryContract.Product.TABLE_NAME,productColumns,productWhere,null,null,null,null);
+                result = db.query(DiaryContract.Product.TABLE_NAME,productColumns,productWhere,null,null,null, DiaryContract.Product.COLUMN_NAME + " ASC");
             }
             return result;
         }

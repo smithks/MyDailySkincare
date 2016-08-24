@@ -315,7 +315,7 @@ public class ProductFragmentDetail extends Fragment {
 
             //Fetch Names of Ingredients in product from Ingredients table using IDs
             if (ingredientWhere.length() > 0) {
-                cursors[1] = db.query(DiaryContract.Ingredient.TABLE_NAME,ingredientColumns,ingredientWhere,null,null,null,null);
+                cursors[1] = db.query(DiaryContract.Ingredient.TABLE_NAME,ingredientColumns,ingredientWhere,null,null,null, DiaryContract.Ingredient.COLUMN_NAME + " ASC");
             }
             return cursors;
         }
@@ -386,7 +386,7 @@ public class ProductFragmentDetail extends Fragment {
 
             //Fetch Names of Ingredients in product from Ingredients table
             if (ingredientWhere.length() > 0) {
-                result = db.query(DiaryContract.Ingredient.TABLE_NAME,ingredientColumns,ingredientWhere,null,null,null,null);
+                result = db.query(DiaryContract.Ingredient.TABLE_NAME,ingredientColumns,ingredientWhere,null,null,null, DiaryContract.Ingredient.COLUMN_NAME + " ASC");
             }
 
             return result;

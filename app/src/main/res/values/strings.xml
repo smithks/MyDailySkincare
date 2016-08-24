@@ -100,8 +100,8 @@
     <string name="routine_back_alert_dialog_message">Save changes made to this routine?</string>
 
     <!-- Item List Dialog Strings -->
-    <string name="item_list_select_ingredients">Select ingredients</string>
-    <string name="item_list_select_products">Select products</string>
+    <string name="item_list_select_ingredients">Select ingredients to add</string>
+    <string name="item_list_select_products">Select products to add</string>
     <string name="item_list_new_string">New</string>
 
 

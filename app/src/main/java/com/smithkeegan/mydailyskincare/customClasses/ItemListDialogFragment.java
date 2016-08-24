@@ -17,6 +17,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -66,9 +67,9 @@ public class ItemListDialogFragment extends DialogFragment {
             Display display = getActivity().getWindowManager().getDefaultDisplay();
             display.getSize(size);
             if(size.x > size.y){ //Phone is in landscape orientation
-                dialog.getWindow().setLayout(size.x, (int)(size.y*.95));
+                dialog.getWindow().setLayout(size.x, WindowManager.LayoutParams.WRAP_CONTENT);
             }else{ //Phone is in portrait orientation
-                dialog.getWindow().setLayout(size.x, (int)(size.y*.6));
+                dialog.getWindow().setLayout(size.x, WindowManager.LayoutParams.WRAP_CONTENT);
             }
 
         }
@@ -155,6 +156,7 @@ public class ItemListDialogFragment extends DialogFragment {
 
             //Example of this query at http://sqlfiddle.com/#!7/b38f9/5
             String[] columns = null;
+            String sortOrder = null;
             SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
             //Construct database query to return all ingredients and any products they may be attached to.
             if (displayedData.equals(INGREDIENTS)){
@@ -162,16 +164,18 @@ public class ItemListDialogFragment extends DialogFragment {
                         DiaryContract.Ingredient.TABLE_NAME + "." + DiaryContract.Ingredient._ID + " = " +
                         DiaryContract.ProductIngredient.TABLE_NAME + "." + DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID);
                 columns = new String[] {DiaryContract.Ingredient._ID, DiaryContract.Ingredient.COLUMN_NAME,DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID};
+                sortOrder = DiaryContract.Ingredient.COLUMN_NAME + " ASC";
             }else if (displayedData.equals(PRODUCTS)){
                 //Set table and get columns for products and productsroutines table
                 queryBuilder.setTables(DiaryContract.Product.TABLE_NAME+ " LEFT JOIN "+ DiaryContract.RoutineProduct.TABLE_NAME + " ON "+
                         DiaryContract.Product.TABLE_NAME+"."+ DiaryContract.Product._ID+ " = "+
                         DiaryContract.RoutineProduct.TABLE_NAME+"."+ DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID);
                 columns = new String[] {DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME, DiaryContract.Product.COLUMN_BRAND, DiaryContract.Product.COLUMN_TYPE, DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID};
+                sortOrder = DiaryContract.Product.COLUMN_NAME + " ASC";
             }
 
             try {
-                result = queryBuilder.query(db,columns,null,null,null,null,null);
+                result = queryBuilder.query(db,columns,null,null,null,null,sortOrder);
             }catch (SQLiteException e){
                 Log.e("DATABASE ERROR", "Error processing database request. " + e);
             }
