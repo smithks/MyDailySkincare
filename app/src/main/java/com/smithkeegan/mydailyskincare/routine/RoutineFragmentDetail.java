@@ -37,7 +37,6 @@ import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
  * @author Keegan Smith
  * @since 8/5/2016
  */
-//TODO back button handling, delete unchanged new entry
 public class RoutineFragmentDetail extends Fragment {
 
     private EditText mNameEditText;

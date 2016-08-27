@@ -1,8 +1,12 @@
-package com.smithkeegan.mydailyskincare;
+package com.smithkeegan.mydailyskincare.diaryEntry;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+
+import com.smithkeegan.mydailyskincare.CalendarActivityMain;
+import com.smithkeegan.mydailyskincare.R;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -26,6 +30,12 @@ public class DiaryEntryActivityMain extends AppCompatActivity {
         Date date = new Date(intent.getLongExtra(CalendarActivityMain.INTENT_DATE,0));
         DateFormat df = DateFormat.getDateInstance();
         setTitle(df.format(date)+" Entry");
+
+        if(savedInstance == null){
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.diary_entry_layout, new DiaryEntryFragmentMain());
+            transaction.commit();
+        }
 
     }
 }

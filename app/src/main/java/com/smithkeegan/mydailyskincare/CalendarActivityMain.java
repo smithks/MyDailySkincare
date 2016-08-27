@@ -21,6 +21,7 @@ import android.widget.ListView;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
+import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityMain;
 import com.smithkeegan.mydailyskincare.product.ProductActivityMain;
 import com.smithkeegan.mydailyskincare.routine.RoutineActivityMain;
@@ -34,6 +35,7 @@ import java.util.Date;
  * @since 5/3/2016
  */
 //TODO move save and delete buttons in detail fragments to toolbar
+    //TODO handle orientation change in detail fragments through onSaveInstanceState and onRestoreInstanceState
 public class CalendarActivityMain extends AppCompatActivity {
 
     private CaldroidFragment mCaldroidFragment;
