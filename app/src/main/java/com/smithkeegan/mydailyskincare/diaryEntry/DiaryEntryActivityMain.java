@@ -29,7 +29,7 @@ public class DiaryEntryActivityMain extends AppCompatActivity {
         Intent intent = getIntent();
         Date date = new Date(intent.getLongExtra(CalendarActivityMain.INTENT_DATE,0));
         DateFormat df = DateFormat.getDateInstance();
-        setTitle(df.format(date)+" Entry");
+        setTitle(df.format(date));
 
         if(savedInstance == null){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
