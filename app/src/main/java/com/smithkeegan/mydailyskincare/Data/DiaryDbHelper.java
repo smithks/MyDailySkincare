@@ -90,7 +90,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DIARY_ENTRY_TABLE =
             "CREATE TABLE " + DiaryContract.DiaryEntry.TABLE_NAME +
                     " (" +
-                    DiaryContract.DiaryEntry._ID + INTEGER_TYPE + " PRIMARY_KEY" + COMMA_SEP +
+                    DiaryContract.DiaryEntry._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_DATE + INTEGER_TYPE + NOT_NULL + " UNIQUE" + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_PHOTO + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION + INTEGER_TYPE + COMMA_SEP +
@@ -109,7 +109,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_MODIFIER_TABLE =
             "CREATE TABLE " + DiaryContract.Modifier.TABLE_NAME +
                     "( " +
-                    DiaryContract.Modifier._ID + INTEGER_TYPE + " PRIMARY KEY" + NOT_NULL + COMMA_SEP +
+                    DiaryContract.Modifier._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.Modifier.COLUMN_NAME + TEXT_TYPE + NOT_NULL +
                     " );";
 
@@ -127,7 +127,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_ROUTINE_TABLE =
             "CREATE TABLE " + DiaryContract.Routine.TABLE_NAME +
                     " (" +
-                    DiaryContract.Routine._ID + INTEGER_TYPE + " PRIMARY KEY" + NOT_NULL + COMMA_SEP +
+                    DiaryContract.Routine._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_TIME + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_COMMENT + TEXT_TYPE +
@@ -146,7 +146,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_PRODUCT_TABLE =
             "CREATE TABLE " + DiaryContract.Product.TABLE_NAME +
                     " (" +
-                    DiaryContract.Product._ID + INTEGER_TYPE + " PRIMARY KEY" + NOT_NULL + COMMA_SEP +
+                    DiaryContract.Product._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.Product.COLUMN_BRAND + TEXT_TYPE + COMMA_SEP +
                     DiaryContract.Product.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Product.COLUMN_TYPE + TEXT_TYPE +
@@ -165,7 +165,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_INGREDIENT_TABLE =
             "CREATE TABLE " + DiaryContract.Ingredient.TABLE_NAME +
                     " (" +
-                    DiaryContract.Ingredient._ID + INTEGER_TYPE + " PRIMARY KEY " + NOT_NULL + COMMA_SEP +
+                    DiaryContract.Ingredient._ID + INTEGER_TYPE + " PRIMARY KEY " + COMMA_SEP +
                     DiaryContract.Ingredient.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Ingredient.COLUMN_IRRITANT + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Ingredient.COLUMN_COMMENT + TEXT_TYPE +
@@ -225,6 +225,5 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Product.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Ingredient.TABLE_NAME);
         onCreate(db);
-
     }
 }

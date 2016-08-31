@@ -21,6 +21,8 @@ import java.util.Date;
  */
 public class DiaryEntryActivityMain extends AppCompatActivity {
 
+    public static final String DATE_EXTRA = "DATE_EXTRA";
+
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
@@ -31,9 +33,15 @@ public class DiaryEntryActivityMain extends AppCompatActivity {
         DateFormat df = DateFormat.getDateInstance();
         setTitle(df.format(date));
 
+        //Place date in bundle and send to fragment
+        Bundle bundle = new Bundle();
+        bundle.putLong(DATE_EXTRA,date.getTime());
+        DiaryEntryFragmentMain fragment = new DiaryEntryFragmentMain();
+        fragment.setArguments(bundle);
+
         if(savedInstance == null){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.diary_entry_layout, new DiaryEntryFragmentMain());
+            transaction.add(R.id.diary_entry_layout, fragment);
             transaction.commit();
         }
 
