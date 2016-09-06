@@ -38,6 +38,8 @@ import java.util.Date;
     //TODO handle orientation change in detail fragments through onSaveInstanceState and onRestoreInstanceState
 public class CalendarActivityMain extends AppCompatActivity {
 
+    public static final String APPTAG = "MyDailySkincare";
+
     private CaldroidFragment mCaldroidFragment;
     public final static String INTENT_DATE = "Date"; //Key for intent value
 
