@@ -5,9 +5,6 @@
     <uses-feature android:name="android.hardware.camera"
                   android:required="false"/>
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-                     android:maxSdkVersion="18"/>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -62,15 +59,6 @@
         <activity android:name="com.smithkeegan.mydailyskincare.AndroidDatabaseManager"
                   android:theme="@style/Theme.AppCompat.Light"/>
 
-        <provider
-            android:authorities="com.smithkeegan.mydailyskincare.fileprovider"
-            android:name="android.support.v4.content.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
-        </provider>
     </application>
 
 

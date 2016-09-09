@@ -41,7 +41,7 @@ public class DiaryEntryActivityMain extends AppCompatActivity {
 
         if(savedInstance == null){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.diary_entry_layout, fragment);
+            transaction.add(R.id.diary_entry_main, fragment);
             transaction.commit();
         }
 

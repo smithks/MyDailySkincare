@@ -11,24 +11,24 @@
         android:layout_margin="20dp">
 
         <TextView
-            android:id="@+id/condition_general_title"
+            android:id="@+id/diary_entry_condition_general_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/general_condition"/>
 
         <TextView
-            android:id="@+id/condition_general_text"
+            android:id="@+id/diary_entry_condition_general_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/condition_general_title"
+            android:layout_below="@id/diary_entry_condition_general_title"
             android:layout_centerHorizontal="true"
             android:text="@string/excellent"/>
 
         <SeekBar
-            android:id="@+id/condition_general_slider"
+            android:id="@+id/diary_entry_seek_bar_general_condition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/condition_general_text"
+            android:layout_below="@id/diary_entry_condition_general_text"
             />
 
     </RelativeLayout>

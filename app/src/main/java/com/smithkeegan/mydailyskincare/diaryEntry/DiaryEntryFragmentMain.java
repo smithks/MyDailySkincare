@@ -1,32 +1,23 @@
 package com.smithkeegan.mydailyskincare.diaryEntry;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -35,18 +26,23 @@ import java.util.Date;
  */
 public class DiaryEntryFragmentMain extends Fragment {
 
-    private static final int CODE_PHOTO_REQUEST = 1;
+    public static final int CODE_PHOTO_REQUEST = 1;
+    public static final int CODE_PHOTO_PERMISSION_REQUEST = 1;
 
     private DiaryDbHelper mDbHelper;
+
+    private SeekBar mSeekBarGeneralCondition;
+
     private Date mDate;
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
-    private String mPhotoPath;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
+
+        setMemberViews(rootView);
 
         Bundle bundle = getArguments();
 
@@ -64,37 +60,19 @@ public class DiaryEntryFragmentMain extends Fragment {
             }
         });
 
+        setListeners();
+
         new LoadDiaryEntryTask().execute(mEpochTime);
 
         return rootView;
     }
 
-    private void takePhoto(){
-        Intent systemPhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(systemPhotoIntent.resolveActivity(getActivity().getPackageManager()) != null){ //If there is a valid camera app
-            File photofile = null;
-            try {
-                photofile = createImageFile();
-            } catch (IOException e){
-                Log.e(CalendarActivityMain.APPTAG,"Error creating imagefile. " + e.getMessage());
-            }
-            if(photofile != null){
-                Uri photoURI = FileProvider.getUriForFile(getContext(),"com.smithkeegan.mydailyskincare.fileprovider",photofile);
 
-                systemPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoURI);
-                startActivityForResult(systemPhotoIntent,CODE_PHOTO_REQUEST);
-            }
-        }
+    private void setMemberViews(View rootView){
+        mSeekBarGeneralCondition = (SeekBar) rootView.findViewById(R.id.diary_entry_seek_bar_general_condition);
     }
 
-    private File createImageFile() throws IOException{
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_"+timeStamp+"_";
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName,".jpg",storageDir);
-
-        mPhotoPath = "file:"+image.getAbsolutePath();
-        return image;
+    private void setListeners(){
     }
 
     /**
