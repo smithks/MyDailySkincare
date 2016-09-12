@@ -12,9 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
@@ -31,36 +33,36 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     private DiaryDbHelper mDbHelper;
 
-    private SeekBar mSeekBarGeneralCondition;
+    private DiaryEntrySeekBar mSeekBarGeneralCondition;
+    private TextView mTextViewGeneralCondition;
 
     private Date mDate;
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
+    private String[] mConditionStrings;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
-
-        setMemberViews(rootView);
-
-        Bundle bundle = getArguments();
-
-        mDate = new Date(bundle.getLong(DiaryEntryActivityMain.DATE_EXTRA));
-        mEpochTime = mDate.getTime(); //Set time long
-
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
+        Bundle bundle = getArguments();
+        mDate = new Date(bundle.getLong(DiaryEntryActivityMain.DATE_EXTRA));
+        mEpochTime = mDate.getTime(); //Set time long
+        setConditionStringArray();
+
+        View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
+        setMemberViews(rootView);
+        setListeners();
 
         Button testButton = (Button)rootView.findViewById(R.id.diary_entry_test_button);
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(),Long.toString(mDate.getTime()),Toast.LENGTH_SHORT).show();
+                double steps = 100 / 6.0;
+                Toast.makeText(getContext(),String.valueOf(steps),Toast.LENGTH_SHORT).show();
             }
         });
-
-        setListeners();
 
         new LoadDiaryEntryTask().execute(mEpochTime);
 
@@ -69,10 +71,42 @@ public class DiaryEntryFragmentMain extends Fragment {
 
 
     private void setMemberViews(View rootView){
-        mSeekBarGeneralCondition = (SeekBar) rootView.findViewById(R.id.diary_entry_seek_bar_general_condition);
+        mSeekBarGeneralCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_seek_bar_general_condition);
+        mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_condition_general_text);
+
+        mSeekBarGeneralCondition.setDefaultStep();
+        mTextViewGeneralCondition.setText(mConditionStrings[3]);
+    }
+
+    private void setConditionStringArray(){
+        mConditionStrings = new String[7];
+        mConditionStrings[0] = getResources().getString(R.string.terrible);
+        mConditionStrings[1] = getResources().getString(R.string.very_poor);
+        mConditionStrings[2] = getResources().getString(R.string.poor);
+        mConditionStrings[3] = getResources().getString(R.string.fair);
+        mConditionStrings[4] = getResources().getString(R.string.good);
+        mConditionStrings[5] = getResources().getString(R.string.very_good);
+        mConditionStrings[6] = getResources().getString(R.string.excellent);
     }
 
     private void setListeners(){
+        mSeekBarGeneralCondition.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) { //Do not recalculate if progress set programmatically
+                    int step = mSeekBarGeneralCondition.getNearestStep(progress);
+                    mSeekBarGeneralCondition.setProgressToStep(step);
+                    if (step < mConditionStrings.length)
+                        mTextViewGeneralCondition.setText(mConditionStrings[step]);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
     }
 
     /**

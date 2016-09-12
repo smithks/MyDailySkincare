@@ -24,7 +24,7 @@
             android:layout_centerHorizontal="true"
             android:text="@string/excellent"/>
 
-        <SeekBar
+        <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
             android:id="@+id/diary_entry_seek_bar_general_condition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
