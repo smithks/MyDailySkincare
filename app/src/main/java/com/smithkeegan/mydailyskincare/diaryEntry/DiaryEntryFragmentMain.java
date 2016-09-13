@@ -1,12 +1,14 @@
 package com.smithkeegan.mydailyskincare.diaryEntry;
 
 import android.content.ContentValues;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +40,9 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     private Date mDate;
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
+
     private String[] mConditionStrings;
+    private int[] mConditionColorIds;
 
 
     @Nullable
@@ -49,7 +53,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         Bundle bundle = getArguments();
         mDate = new Date(bundle.getLong(DiaryEntryActivityMain.DATE_EXTRA));
         mEpochTime = mDate.getTime(); //Set time long
-        setConditionStringArray();
+        setConditionArrays();
 
         View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
         setMemberViews(rootView);
@@ -75,18 +79,29 @@ public class DiaryEntryFragmentMain extends Fragment {
         mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_condition_general_text);
 
         mSeekBarGeneralCondition.setDefaultStep();
-        mTextViewGeneralCondition.setText(mConditionStrings[3]);
+        updateSliderLabel(mTextViewGeneralCondition, 3);
     }
 
-    private void setConditionStringArray(){
+    private void setConditionArrays(){
         mConditionStrings = new String[7];
-        mConditionStrings[0] = getResources().getString(R.string.terrible);
+        mConditionStrings[0] = getResources().getString(R.string.severe);
         mConditionStrings[1] = getResources().getString(R.string.very_poor);
         mConditionStrings[2] = getResources().getString(R.string.poor);
         mConditionStrings[3] = getResources().getString(R.string.fair);
         mConditionStrings[4] = getResources().getString(R.string.good);
         mConditionStrings[5] = getResources().getString(R.string.very_good);
         mConditionStrings[6] = getResources().getString(R.string.excellent);
+
+        mConditionColorIds = new int[7];
+
+        Resources resources = getResources();
+        mConditionColorIds[0] = ContextCompat.getColor(getContext(),R.color.severe);
+        mConditionColorIds[1] = ContextCompat.getColor(getContext(),R.color.veryPoor);
+        mConditionColorIds[2] = ContextCompat.getColor(getContext(),R.color.poor);
+        mConditionColorIds[3] = ContextCompat.getColor(getContext(),R.color.fair);
+        mConditionColorIds[4] = ContextCompat.getColor(getContext(),R.color.good);
+        mConditionColorIds[5] = ContextCompat.getColor(getContext(),R.color.veryGood);
+        mConditionColorIds[6] = ContextCompat.getColor(getContext(),R.color.excellent);
     }
 
     private void setListeners(){
@@ -96,8 +111,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 if(fromUser) { //Do not recalculate if progress set programmatically
                     int step = mSeekBarGeneralCondition.getNearestStep(progress);
                     mSeekBarGeneralCondition.setProgressToStep(step);
-                    if (step < mConditionStrings.length)
-                        mTextViewGeneralCondition.setText(mConditionStrings[step]);
+                    updateSliderLabel(mTextViewGeneralCondition, step);
                 }
             }
 
@@ -107,6 +121,13 @@ public class DiaryEntryFragmentMain extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+    }
+
+    public void updateSliderLabel(TextView view, int step){
+        if(step < mConditionStrings.length){
+            view.setText(mConditionStrings[step]);
+            view.setBackgroundColor(mConditionColorIds[step]);
+        }
     }
 
     /**

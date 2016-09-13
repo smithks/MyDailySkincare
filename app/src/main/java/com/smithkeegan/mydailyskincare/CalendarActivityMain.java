@@ -231,7 +231,7 @@ public class CalendarActivityMain extends AppCompatActivity {
         calendar.set(Calendar.DAY_OF_MONTH,7);
         mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.veryPoor)),calendar.getTime());
         calendar.set(Calendar.DAY_OF_MONTH,8);
-        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.terrible)),calendar.getTime());
+        mCaldroidFragment.setBackgroundDrawableForDate(new ColorDrawable(ContextCompat.getColor(this,R.color.severe)),calendar.getTime());
         mCaldroidFragment.refreshView();
     }
 }

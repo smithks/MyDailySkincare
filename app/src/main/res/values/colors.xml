@@ -5,13 +5,21 @@
     <color name="colorAccent">#FF4081</color>
 
     <!-- Skin condition slider colors -->
+    <color name="excellent">#68fd68</color>
+    <color name="veryGood">#8ffd76</color>
+    <color name="good">#b7fd84</color>
+    <color name="fair">#dffe93</color>
+    <color name="poor">#ffff99</color>
+    <color name="veryPoor">#fEA081</color>
+    <color name="severe">#FE8080</color>
+    <!--
     <color name="excellent">#a0ff70</color>
     <color name="veryGood">#bfff7d</color>
     <color name="good">#dfff8b</color>
     <color name="fair">#ffff99</color>
     <color name="poor">#fec985</color>
     <color name="veryPoor">#fe9371</color>
-    <color name="terrible">#fe5d5d</color>
+    <color name="severe">#fe5d5d</color> -->
 
     <!-- Text color highlighting today -->
     <color name="todayText">#ffff00</color>
