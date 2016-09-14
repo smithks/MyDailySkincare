@@ -20,6 +20,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 /**
+ * Fragment class for the product list screen.
  * //TODO wrap all database access in try catch
  * @author Keegan Smith
  * @since 5/19/2016
@@ -58,6 +59,9 @@ public class ProductFragmentMain extends Fragment{
         refreshProductList();
     }
 
+    /**
+     * Refreshes the list of products by calling the fetch product task.
+     */
     private void refreshProductList(){
         new FetchProductsTask().execute();
     }

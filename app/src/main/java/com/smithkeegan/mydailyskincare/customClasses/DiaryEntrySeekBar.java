@@ -46,17 +46,18 @@ public class DiaryEntrySeekBar extends SeekBar {
     }
 
 
-    /*
-    Sets this seekBar to the default step of centered.
+    /**
+     * Sets this seekBar to the default step of centered.
      */
     public void setDefaultStep(){
         int mid = mNumSteps / 2;
         setProgressToStep(mid);
     }
 
-    /*
-    Sets the number of steps for this seekbar and also sets the values of those steps in
-    the steps array.
+    /**
+     * Sets the number of steps for this seekbar and also sets the values of those steps in
+     * the steps array.
+     * @param steps the number of steps in this seekbar
      */
     public void setNumSteps(int steps){
         mNumSteps = steps;
@@ -69,8 +70,8 @@ public class DiaryEntrySeekBar extends SeekBar {
         mSteps[steps-1] = max;
     }
 
-    /*
-    Sets the progress of this seekbar to the specified step.
+    /**
+     * Sets the progress of this seekbar to the specified step.
      */
     public void setProgressToStep(int step){
         if(step < mSteps.length)
@@ -80,6 +81,7 @@ public class DiaryEntrySeekBar extends SeekBar {
     /**
      * Given a progress, this method returns the index of the nearest step in this
      * seekbar.
+     * @param progress the progress value of the updated seekbar
      */
     public int getNearestStep(int progress){
         int before = -1, after = -1, i = 0;

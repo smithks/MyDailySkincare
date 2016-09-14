@@ -11,6 +11,7 @@ import com.smithkeegan.mydailyskincare.customClasses.DialogClosedListener;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
+ * Activity class for the detail screen of a product. Makes calls to the corresponding fragment.
  * @author Keegan Smith
  * @since 5/19/2016
  */
@@ -22,6 +23,8 @@ public class ProductActivityDetail extends AppCompatActivity implements DialogCl
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
+        setTitle(R.string.product_activity_title);
+
         setContentView(R.layout.activity_product_detail);
 
         ProductFragmentDetail fragmentDetail = new ProductFragmentDetail();
@@ -51,7 +54,7 @@ public class ProductActivityDetail extends AppCompatActivity implements DialogCl
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()){
-            case android.R.id.home:
+            case android.R.id.home: //Handle the user pressing the navigate up button.
                 ((ProductFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.product_activity_detail)).onBackButtonPressed();
                 return true;
         }
@@ -60,11 +63,13 @@ public class ProductActivityDetail extends AppCompatActivity implements DialogCl
 
     @Override
     public void onBackPressed() {
+        //Handle when the user pressed the back button.
         ((ProductFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.product_activity_detail)).onBackButtonPressed();
     }
 
     @Override
     public void onEditListDialogClosed() {
+        //Refresh the ingredient when the edit dialog closes.
         FragmentManager manager = getSupportFragmentManager();
         ProductFragmentDetail fragment = (ProductFragmentDetail) manager.findFragmentById(R.id.product_activity_detail);
         fragment.refreshIngredients();

@@ -7,9 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
+ * Activity class for the product list screen.
  * @author Keegan Smith
  * @since 8/5/2016
- * //TODO reuse a layout for main select screen for products and routines
  */
 public class RoutineActivityMain extends AppCompatActivity {
 

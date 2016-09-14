@@ -34,6 +34,8 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
 
 /**
+ * Fragment class for the product detail screen. Handles actions to manipulate
+ * information about a proudct and making those updates to the database.
  * @author Keegan Smith
  * @since 8/5/2016
  */
@@ -63,7 +65,6 @@ public class RoutineFragmentDetail extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        getActivity().setTitle(R.string.routine_activity_title);
     }
 
     @Override
@@ -96,6 +97,10 @@ public class RoutineFragmentDetail extends Fragment {
         if(mInitialLoadComplete) refreshProducts();
     }
 
+    /**
+     * Fetches views belonging to this fragment.
+     * @param rootView the fragment's rootview
+     */
     public void fetchViews(View rootView){
         mNameEditText = (EditText) rootView.findViewById(R.id.routine_name_edit);
         mTimeRadioGroup = (RadioGroup) rootView.findViewById(R.id.routine_radio_group);
@@ -127,31 +132,43 @@ public class RoutineFragmentDetail extends Fragment {
         }
     }
 
+    /**
+     * Refreshes the list of products belonging to this routine.
+     */
     public void refreshProducts(){
         mProductsListView.setAdapter(null);
         new LoadRoutineProductsTask().execute(mRoutineID);
     }
 
-    //Hides the layout of this fragment and displays the loading icon
+    /**
+     * Hides the layout of this fragment and displays the loading icon
+     */
     private void showLoadingLayout(){
         mProgressLayout.setVisibility(View.VISIBLE);
         mDetailLayout.setVisibility(View.INVISIBLE);
     }
 
-    //Hides the loading icon and shows the fragments layout
+    /**
+     * Hides the loading icon and shows the fragments layout
+     */
     private void hideLoadingLayout(){
         mProgressLayout.setVisibility(View.INVISIBLE);
         mDetailLayout.setVisibility(View.VISIBLE);
     }
 
-    //Sets initial values for checking changes when exiting.
+    /**
+     * Sets initial values for checking changes when exiting.
+     */
     public void setInitialMemberValues(){
         mInitialName = mNameEditText.getText().toString().trim();
         mInitialTime = ((RadioButton)mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
         mInitialComment = mCommentEditText.getText().toString().trim();
     }
 
-    //Returns true if the fields in this fragment have changed since creation
+    /**
+     * Returns true if the fields in this fragment have changed since creation
+     * @return true if the fields of this fragment have been changed
+     */
     public boolean entryHasChanged(){
         String currName = mNameEditText.getText().toString().trim();
         int id = mTimeRadioGroup.getCheckedRadioButtonId();
@@ -161,6 +178,9 @@ public class RoutineFragmentDetail extends Fragment {
         return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment) || (mNumProducts > 0 && mProductsChanged));
     }
 
+    /**
+     * Sets listeners of appropriate views in this fragment.
+     */
     public void setListeners(){
         mEditProductsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,6 +200,10 @@ public class RoutineFragmentDetail extends Fragment {
         });
     }
 
+    /**
+     * Loads the product list detail dialog when the user presses the edit
+     * list button.
+     */
     private void showProductsEditDialog(){
         Bundle args = new Bundle();
         args.putString(ItemListDialogFragment.DISPLAYED_DATA,ItemListDialogFragment.PRODUCTS);
@@ -189,6 +213,10 @@ public class RoutineFragmentDetail extends Fragment {
         fragment.show(getFragmentManager(),"dialog");
     }
 
+    /**
+     * Sets the member radio button to the selection passed into the method.
+     * @param selectionText the text to match to a radio button option.
+     */
     private void setSelectedRadioButton(String selectionText){
         for (int i = 0; i < mTimeRadioGroup.getChildCount(); i++){
             RadioButton button = (RadioButton) mTimeRadioGroup.getChildAt(i);
@@ -219,6 +247,9 @@ public class RoutineFragmentDetail extends Fragment {
         }
     }
 
+    /**
+     * Deletes this routine entry. Called when the user presses the delete button.
+     */
     private void deleteCurrentRoutine(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(R.string.routine_delete_alert_dialog_title)
@@ -238,9 +269,9 @@ public class RoutineFragmentDetail extends Fragment {
                 }).show();
     }
 
-    /*
-      * Method called by parent activity when the user presses the home button or the physical back button.
-      * Asks the user if they want to save changes if there are changes to save.
+    /**
+     * Method called by parent activity when the user presses the home button or the physical back button.
+     * Asks the user if they want to save changes if there are changes to save.
      */
     public void onBackButtonPressed(){
         if (entryHasChanged() || (mIsNewRoutine && entryHasChanged())) {
@@ -317,8 +348,8 @@ public class RoutineFragmentDetail extends Fragment {
             return cursors;
         }
 
-        /*
-        Populates the fields of this fragment with data from both the Routine and Product table
+        /**
+         * Populates the fields of this fragment with data from both the Routine and Product table
          */
         @Override
         protected void onPostExecute(final Cursor[] result){

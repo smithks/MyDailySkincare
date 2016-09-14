@@ -70,7 +70,7 @@ public class ItemListDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         Dialog dialog = getDialog();
-        if (dialog != null) {
+        if (dialog != null) { //Set dimensions of this dialog.
             Point size = new Point();
             Display display = getActivity().getWindowManager().getDefaultDisplay();
             display.getSize(size);
@@ -87,6 +87,8 @@ public class ItemListDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.fragment_item_list_dialog,container,false);
         getDialog().setCanceledOnTouchOutside(false);
+
+        //Listen for back button touch
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
@@ -116,6 +118,8 @@ public class ItemListDialogFragment extends DialogFragment {
             }
         });
 
+
+        //Set the behavior of the new item button based on which fragment this dialog was called from
         if(mDisplayedData.equals(INGREDIENTS)){
             titleView.setText(R.string.item_list_select_ingredients);
             newItemButton.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +158,9 @@ public class ItemListDialogFragment extends DialogFragment {
         new SaveDataTask().execute(adapter.getItems(), mDisplayedData, mPrimaryItemID, closeOnFinish);
     }
 
+    /**
+     * Set the id of the new item when returning from new item creation.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ITEM_ID_REQUEST){
@@ -171,12 +178,15 @@ public class ItemListDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Refresh the list of items on resume.
+     */
     @Override
     public void onResume() {
         super.onResume();
 
         Object[] taskArguments = {mDisplayedData, mPrimaryItemID};
-        listView.setAdapter(null);
+        listView.setAdapter(null); //Clear listview adapter
         new FetchDataTask().execute(taskArguments);
     }
 
@@ -346,8 +356,8 @@ public class ItemListDialogFragment extends DialogFragment {
         }
     }
 
-    /*
-      * Custom array adapter class for interfacing with listview.
+    /**
+     * Custom array adapter class for interfacing with listview.
      */
     private class ItemListDialogArrayAdapter extends ArrayAdapter<ItemListDialogItem> {
 
@@ -364,8 +374,8 @@ public class ItemListDialogFragment extends DialogFragment {
         }
 
 
-        /*
-          * Called by listview to retrieve a view to place in the row for this item.
+        /**
+         * Called by listview to retrieve a view to place in the row for this item.
          */
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
@@ -390,7 +400,7 @@ public class ItemListDialogFragment extends DialogFragment {
                     }
                 });
 
-                //When the view is tapped, set the checkbox to checked and the selected field in the item.
+                //When the view is tapped, set the checkbox status and the selected field of the item based on selection.
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -405,28 +415,26 @@ public class ItemListDialogFragment extends DialogFragment {
                 holder = (IngredientViewHolder) convertView.getTag();
             }
 
-
             ItemListDialogItem item = itemList.get(position);
             holder.name.setText(item.getName());
             holder.checkBox.setChecked(item.getFinalSelected());
             holder.checkBox.setTag(item); //Assign this item to the checkbox so its isSelected field can be modified with the checkbox
 
-
-
             return convertView;
         }
 
 
-        //Helper class for setting tags to views for caching.
+        /**
+         * Helper class for setting tags to views for caching.
+         */
         private class IngredientViewHolder{
             TextView name;
             CheckBox checkBox;
         }
     }
 
-    /*
-      * AsyncTask for saving data when the user presses the done key or taps away
-      * from the screen.
+    /**
+     * AsyncTask for saving data when the user is finished with this dialog.
      */
     private class SaveDataTask extends AsyncTask<Object,Void,Long>{
 
@@ -444,6 +452,8 @@ public class ItemListDialogFragment extends DialogFragment {
             boolean modified = false;
             Long result = (long) 1;
 
+
+            //TODO build single query to send to db.
             for (ItemListDialogItem item: selected) {
                 long primaryID = item.getId();
                 long secondaryID = item.getLinkedId();
@@ -476,8 +486,12 @@ public class ItemListDialogFragment extends DialogFragment {
             }
         }
 
-
-        //TODO support product-routine table
+        /**
+         * Adds a new entry to the given database.
+         * @param db The database to insert into
+         * @param primaryID The id of the primary item to insert
+         * @return the id of the inserted record
+         */
         private long insertLinkedRow(SQLiteDatabase db, long primaryID){
             Long result = (long) -1;
             if(displayedData.equals(INGREDIENTS)){
@@ -494,6 +508,12 @@ public class ItemListDialogFragment extends DialogFragment {
             return result;
         }
 
+        /**
+         * Deletes the given record from the given databse.
+         * @param db The databse to remove the record from.
+         * @param primaryID The primary item id of the record to remove
+         * @return The number of rows affected by this deletion, will always be 1
+         */
         private long deleteLinkedRow(SQLiteDatabase db, long primaryID){
             Long result = (long) -1;
             if(displayedData.equals(INGREDIENTS)){

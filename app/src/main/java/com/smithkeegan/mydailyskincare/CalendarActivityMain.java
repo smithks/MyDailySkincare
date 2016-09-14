@@ -30,6 +30,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
+ * Main calendar activity. Displays a Caldroid calendar and handles actions
+ * taken on that calendar view.
  * TODO: toolbar buttons to scroll to a date
  * @author Keegan Smith
  * @since 5/3/2016
@@ -116,7 +118,9 @@ public class CalendarActivityMain extends AppCompatActivity {
 
     }
 
-    //Click listener for items in the drawer
+    /**
+     * Listener class for items in the drawer
+     */
     class DrawerItemClickListener implements ListView.OnItemClickListener{
 
         @Override
@@ -215,6 +219,7 @@ public class CalendarActivityMain extends AppCompatActivity {
         }
     };
 
+    //TODO: remove
     private void testColors(){
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();

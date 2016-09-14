@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
+ * Activity class for the product main screen. Contains a list of all products.
  * @author Keegan Smith
  * @since 5/19/2016
  */

@@ -21,6 +21,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 /**
+ * Fragment class for the routine list screen.
  * @author Keegan Smith
  * @since 8/5/2016
  */
@@ -45,6 +46,9 @@ public class RoutineFragmentMain extends Fragment {
         return rootView;
     }
 
+    /**
+     * Set listener for the new routine button.
+     */
     private void setButtonListener(){
         mNewRoutineButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +103,7 @@ public class RoutineFragmentMain extends Fragment {
                 }
             });
             mRoutinesList.setAdapter(adapter);
+            //Set listener for the list view cells. Open detail activity on press
             mRoutinesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

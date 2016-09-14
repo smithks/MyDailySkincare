@@ -1,15 +1,16 @@
 package com.smithkeegan.mydailyskincare.diaryEntry;
 
 import android.content.ContentValues;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,9 +46,14 @@ public class DiaryEntryFragmentMain extends Fragment {
     private int[] mConditionColorIds;
 
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
         Bundle bundle = getArguments();
@@ -73,7 +79,28 @@ public class DiaryEntryFragmentMain extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_item_detail,menu);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_action_save:
+                return true;
+            case R.id.menu_action_delete:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Retrieves the views for this fragment.
+     * @param rootView the rootview of this fragment
+     */
     private void setMemberViews(View rootView){
         mSeekBarGeneralCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_seek_bar_general_condition);
         mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_condition_general_text);
@@ -82,6 +109,9 @@ public class DiaryEntryFragmentMain extends Fragment {
         updateSliderLabel(mTextViewGeneralCondition, 3);
     }
 
+    /*
+    Fetches properties to be used with the condition label's from xml resources.
+     */
     private void setConditionArrays(){
         mConditionStrings = new String[7];
         mConditionStrings[0] = getResources().getString(R.string.severe);
@@ -93,8 +123,6 @@ public class DiaryEntryFragmentMain extends Fragment {
         mConditionStrings[6] = getResources().getString(R.string.excellent);
 
         mConditionColorIds = new int[7];
-
-        Resources resources = getResources();
         mConditionColorIds[0] = ContextCompat.getColor(getContext(),R.color.severe);
         mConditionColorIds[1] = ContextCompat.getColor(getContext(),R.color.veryPoor);
         mConditionColorIds[2] = ContextCompat.getColor(getContext(),R.color.poor);
@@ -104,6 +132,9 @@ public class DiaryEntryFragmentMain extends Fragment {
         mConditionColorIds[6] = ContextCompat.getColor(getContext(),R.color.excellent);
     }
 
+    /*
+    Sets the listeners of views in this fragment.
+     */
     private void setListeners(){
         mSeekBarGeneralCondition.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -123,6 +154,11 @@ public class DiaryEntryFragmentMain extends Fragment {
         });
     }
 
+    /**
+     *  Updates the passed in textView with the appropriate label and background color.
+     * @param view the view to update
+     * @param step the step of the slider to set the text and color too
+     */
     public void updateSliderLabel(TextView view, int step){
         if(step < mConditionStrings.length){
             view.setText(mConditionStrings[step]);

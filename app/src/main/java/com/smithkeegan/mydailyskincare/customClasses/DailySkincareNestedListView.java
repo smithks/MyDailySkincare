@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.widget.ListView;
 
 /**
+ * Subclass of ListView that implements the NestedScrollingChild interface. Allow scrolling within
+ * a listview.
  * @author Keegan Smith
  * @since 8/22/2016
  */

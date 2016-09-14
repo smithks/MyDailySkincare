@@ -34,10 +34,10 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
 
 /**
+ * Fragment class of the detail screen for a product. Performs actions to manipulate a product.
  * @author Keegan Smith
  * @since 5/19/2016
  *
- * //TODO need default type
  * //TODO prompts for which field is required when attempting to save
  */
 public class ProductFragmentDetail extends Fragment {
@@ -67,7 +67,6 @@ public class ProductFragmentDetail extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        getActivity().setTitle(R.string.product_activity_title);
     }
 
     @Override
@@ -129,7 +128,10 @@ public class ProductFragmentDetail extends Fragment {
         super.onDestroy();
     }
 
-    //Returns whether this enties values have changed since the form has been opened.
+    /**
+     * Returns whether this enties values have changed since the form has been opened.
+     * @return true if this entry has changed
+     */
     public boolean entryHasChanged(){
         String currentName = mNameEditText.getText().toString().trim();
         String currentBrand = mBrandEditText.getText().toString().trim();
@@ -140,7 +142,10 @@ public class ProductFragmentDetail extends Fragment {
         return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)) || (mNumIngredients > 0 && mIngredientsChanged));
     }
 
-    //Checks if the required name field is a valid value.
+    /**
+     * Checks if the required name field is a valid value.
+     * @return true if the name field is valid
+     */
     public boolean checkNameField(){
         boolean valid = true;
         String currentName = mNameEditText.getText().toString().trim();
@@ -149,7 +154,9 @@ public class ProductFragmentDetail extends Fragment {
         return valid;
     }
 
-    //Sets the intial member values of this form for comparison when exiting.
+    /**
+     * Sets the intial member values of this form for comparison when exiting.
+     */
     public void setInitialValues(){
         mInitialName = mNameEditText.getText().toString().trim();
         mInitialBrand = mBrandEditText.getText().toString().trim();
@@ -160,11 +167,17 @@ public class ProductFragmentDetail extends Fragment {
         }
     }
 
+    /**
+     * Refresh the ingredients list of this product
+     */
     public void refreshIngredients(){
         mIngredientsList.setAdapter(null);
         new LoadProductIngredientsTask().execute(mProductId);
     }
 
+    /**
+     * Save the current product based on its current status.
+     */
     public void saveCurrentProduct(){
         if(!checkNameField()) {
             Toast.makeText(getContext(), R.string.toast_enter_valid_name, Toast.LENGTH_SHORT).show();
@@ -182,6 +195,9 @@ public class ProductFragmentDetail extends Fragment {
         }
     }
 
+    /**
+     * Deletes this product. Called when the user preses the delete button.
+     */
     private void deleteCurrentProduct(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.product_delete_alert_dialog_message)
@@ -201,9 +217,9 @@ public class ProductFragmentDetail extends Fragment {
                 }).show();
     }
 
-    /*
-      * Method called by parent activity when the user presses the home button or the physical back button.
-      * Asks the user if they want to save changes if there are changes to save.
+    /**
+     * Method called by parent activity when the user presses the home button or the physical back button.
+     * Asks the user if they want to save changes if there are changes to save.
      */
     public void onBackButtonPressed(){
         if (entryHasChanged() || (mIsNewProduct && entryHasChanged())) {
@@ -236,6 +252,10 @@ public class ProductFragmentDetail extends Fragment {
         }
     }
 
+    /**
+     * Fetches the views belonging to this fragment.
+     * @param rootView the rootview of this fragment
+     */
     private void fetchViews(View rootView){
         mNameEditText = (EditText) rootView.findViewById(R.id.product_name_edit);
         mBrandEditText = (EditText) rootView.findViewById(R.id.product_brand_edit);
@@ -252,19 +272,25 @@ public class ProductFragmentDetail extends Fragment {
         showLoadingLayout();
     }
 
-    //Hides the layout of this fragment and displays the loading icon
+    /**
+     * Hides the layout of this fragment and displays the loading icon
+     */
     private void showLoadingLayout(){
         mProgressLayout.setVisibility(View.VISIBLE);
         mDetailLayout.setVisibility(View.INVISIBLE);
     }
 
-    //Hides the loading icon and shows the fragments layout
+    /**
+     * Hides the loading icon and shows the fragments layout
+     */
     private void hideLoadingLayout(){
         mProgressLayout.setVisibility(View.INVISIBLE);
         mDetailLayout.setVisibility(View.VISIBLE);
     }
 
-    //Sets listeners for the buttons
+    /**
+     * Sets listeners to appropriate views in this fragment.
+     */
     private void setListeners(){
         mEditIngredientsButton.setOnClickListener(new View.OnClickListener(){
 
@@ -285,6 +311,9 @@ public class ProductFragmentDetail extends Fragment {
         });
     }
 
+    /**
+     * Called when the edit ingredients button is pressed. Opens the item list dialog for this product.
+     */
     private void showEditDialog(){
         Bundle args = new Bundle();
         args.putString(ItemListDialogFragment.DISPLAYED_DATA,ItemListDialogFragment.INGREDIENTS);
