@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
+ * Activity class for the main screen of ingredients.
  * @author Keegan Smith
  * @since 5/6/2016
  */

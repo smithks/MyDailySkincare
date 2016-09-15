@@ -1,51 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/skin_condition_general"
+        android:id="@+id/diary_entry_loading_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp">
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-        <TextView
-            android:id="@+id/diary_entry_condition_general_title"
+        <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/general_condition"
-            android:layout_marginBottom="5dp"
-            style="@style/diary_entry_slider_label"/>
-
-        <TextView
-            android:id="@+id/diary_entry_condition_general_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/diary_entry_condition_general_title"
-            android:gravity="center"
-            android:background="@color/veryGood"
-            android:text="@string/excellent"
-            android:padding="7dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            style="@style/diary_entry_slider_label"/>
-
-        <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
-            android:id="@+id/diary_entry_seek_bar_general_condition"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/diary_entry_condition_general_text"
-            android:paddingTop="7dp"
-            android:paddingBottom="15dp"
-            />
+            android:indeterminate="true"/>
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/diary_entry_test_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test Button"/>
+    <LinearLayout
+        android:id="@+id/diary_entry_detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <RelativeLayout
+            android:id="@+id/skin_condition_general"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp">
+
+            <TextView
+                android:id="@+id/diary_entry_condition_general_title"
+                style="@style/diary_entry_slider_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/general_condition"/>
+
+            <TextView
+                android:id="@+id/diary_entry_condition_general_text"
+                style="@style/diary_entry_slider_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/diary_entry_condition_general_title"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@color/veryGood"
+                android:gravity="center"
+                android:padding="7dp"
+                android:text="@string/excellent"/>
+
+            <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
+                android:id="@+id/diary_entry_seek_bar_general_condition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/diary_entry_condition_general_text"
+                android:paddingBottom="15dp"
+                android:paddingTop="7dp"
+                />
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/diary_entry_test_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test Button"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
+ * Activity class for the detail screen of ingredients.
  * @author Keegan Smith
  * @since 5/16/2016
  * //TODO set activity title
@@ -21,9 +22,9 @@ public class IngredientActivityDetail extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
+        setTitle(R.string.ingredient_activity_title);
+
         setContentView(R.layout.activity_ingredient_detail);
-
-
 
         IngredientFragmentDetail fragmentDetail = new IngredientFragmentDetail();
         //Set flags to send up to fragment. Existing ingredient id and new ingredient status.
@@ -49,9 +50,8 @@ public class IngredientActivityDetail extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()){
-            case android.R.id.home:
+            case android.R.id.home: //Call to fragment when navigate up button is pressed.
                 ((IngredientFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.ingredient_activity_detail)).onBackButtonPressed();
                 return true;
         }
@@ -60,6 +60,7 @@ public class IngredientActivityDetail extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        //Call to fragment when back button is pressed.
         ((IngredientFragmentDetail)getSupportFragmentManager().findFragmentById(R.id.ingredient_activity_detail)).onBackButtonPressed();
     }
 }

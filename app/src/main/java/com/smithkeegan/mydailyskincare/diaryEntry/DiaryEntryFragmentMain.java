@@ -36,9 +36,12 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     private DiaryDbHelper mDbHelper;
 
+    private View mLoadingView;
+    private View mEntryDetailView;
     private DiaryEntrySeekBar mSeekBarGeneralCondition;
     private TextView mTextViewGeneralCondition;
 
+    private long mEntryID;
     private Date mDate;
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
 
@@ -74,6 +77,8 @@ public class DiaryEntryFragmentMain extends Fragment {
             }
         });
 
+        //showLoadingScreen();
+        hideLoadingScreen();
         new LoadDiaryEntryTask().execute(mEpochTime);
 
         return rootView;
@@ -89,6 +94,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_action_save:
+                saveCurrentDiaryEntry();
                 return true;
             case R.id.menu_action_delete:
                 return true;
@@ -102,6 +108,8 @@ public class DiaryEntryFragmentMain extends Fragment {
      * @param rootView the rootview of this fragment
      */
     private void setMemberViews(View rootView){
+        mLoadingView = rootView.findViewById(R.id.diary_entry_loading_layout);
+        mEntryDetailView = rootView.findViewById(R.id.diary_entry_detail_layout);
         mSeekBarGeneralCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_seek_bar_general_condition);
         mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_condition_general_text);
 
@@ -141,8 +149,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser) { //Do not recalculate if progress set programmatically
                     int step = mSeekBarGeneralCondition.getNearestStep(progress);
-                    mSeekBarGeneralCondition.setProgressToStep(step);
-                    updateSliderLabel(mTextViewGeneralCondition, step);
+                    updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,step);
                 }
             }
 
@@ -155,6 +162,22 @@ public class DiaryEntryFragmentMain extends Fragment {
     }
 
     /**
+     * Shows the loading screen while hiding the detail layout.
+     */
+    private void showLoadingScreen(){
+        mLoadingView.setVisibility(View.VISIBLE);
+        mEntryDetailView.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Hides the loading screen and shows the detail layout.
+     */
+    private void hideLoadingScreen(){
+        mLoadingView.setVisibility(View.INVISIBLE);
+        mEntryDetailView.setVisibility(View.VISIBLE);
+    }
+
+    /**
      *  Updates the passed in textView with the appropriate label and background color.
      * @param view the view to update
      * @param step the step of the slider to set the text and color too
@@ -164,6 +187,38 @@ public class DiaryEntryFragmentMain extends Fragment {
             view.setText(mConditionStrings[step]);
             view.setBackgroundColor(mConditionColorIds[step]);
         }
+    }
+
+    /**
+     * Sets a condition block to the provided step.
+     * @param view The textview to update
+     * @param seekbar The seekbar to update
+     * @param step The step to set to.
+     */
+    private void updateConditionBlock(TextView view, DiaryEntrySeekBar seekbar, long step){
+        updateSliderLabel(view,(int)step);
+        seekbar.setProgressToStep((int)step);
+    }
+
+    /**
+     * Called when the user presses the back button or the navigate up button.
+     * Called by parent activity.
+     */
+    //TODO: check for changes and ask user if they want to proceed
+    public void backButtonPressed(){
+        saveCurrentDiaryEntry();
+
+    }
+
+
+    /**
+     * Calls to the saveDiaryEntry async task to save this diary entry.
+     */
+    private void saveCurrentDiaryEntry(){
+        long generalStep = mSeekBarGeneralCondition.getCurrentStep();
+        Long[] args = {mEpochTime,
+                        generalStep};
+        new SaveDiaryEntryTask().execute(args);
     }
 
     /**
@@ -207,9 +262,44 @@ public class DiaryEntryFragmentMain extends Fragment {
         @Override
         protected void onPostExecute(Cursor result) {
             if(result != null && result.moveToFirst()){ //Row was returned from query, an entry for this date exists
-                long id = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry._ID));
+                mEntryID = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry._ID));
                 long date = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_DATE));
+                long generalStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION));
+                updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,generalStep);
+            }else{ //A new entry was created
+
             }
+            //hideLoadingScreen();
+        }
+    }
+
+
+    /**
+     * AsyncTask for saving this diary entry to the database. Called when the user explicitly presses the save button or when the
+     * user chooses to save changes when leaving the fragment.
+     */
+    private class SaveDiaryEntryTask extends AsyncTask<Long,Void,Long>{
+
+        @Override
+        protected Long doInBackground(Long... params) {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+
+            values.put(DiaryContract.DiaryEntry.COLUMN_DATE,params[0]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION,params[1]);
+
+            String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + mEpochTime;
+            return (long) db.update(DiaryContract.DiaryEntry.TABLE_NAME,values,selection,null);
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            if(result == -1){
+                Toast.makeText(getContext(),R.string.toast_save_failed, Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
+            }
+            getActivity().finish();
         }
     }
 }

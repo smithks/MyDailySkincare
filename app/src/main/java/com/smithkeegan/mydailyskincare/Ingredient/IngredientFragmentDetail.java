@@ -26,6 +26,8 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 /**
+ * Fragment class of the detail screen of ingredients. Handles the various actions taken
+ * to manipulate an ingredient's details.
  * @author Keegan Smith
  * @since 5/10/2016
  * TODO return to calling location, either add ingredients to product or ingredients listpage
@@ -47,7 +49,6 @@ public class IngredientFragmentDetail extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        getActivity().setTitle(R.string.ingredient_activity_title);
     }
 
     @Override
@@ -75,9 +76,9 @@ public class IngredientFragmentDetail extends Fragment {
     }
 
 
-    /*
-      * Method called by parent activity when the user presses the home button or the physical back button.
-      * Asks the user if they want to save changes if there are changes to save.
+    /**
+     * Method called by parent activity when the user presses the home button or the physical back button.
+     * Asks the user if they want to save changes if there are changes to save.
      */
     public void onBackButtonPressed(){
         final Intent resultIntent = new Intent();
@@ -129,7 +130,10 @@ public class IngredientFragmentDetail extends Fragment {
 
     }
 
-    //Returns whether this entry has changed values.
+    /**
+     * Returns whether this entry has changed values.
+     * @return true if this entry has changed
+     */
     private boolean entryHasChanged(){
         String name = mNameEditText.getText().toString().trim();
         boolean isIrritant = mIrritantCheckbox.isChecked();
@@ -138,6 +142,9 @@ public class IngredientFragmentDetail extends Fragment {
         return (!name.equals(mInitialName)) || (!isIrritant == mInitialCheck) || (!comment.equals(mInitialComment));
     }
 
+    /**
+     * Based on conditions of the fragment, will begin the save ingredient task.
+     */
     public void saveCurrentIngredient(){
         if(mNameEditText.getText().toString().trim().length() == 0)
             Toast.makeText(getContext(),R.string.toast_enter_valid_name,Toast.LENGTH_SHORT).show();
@@ -149,13 +156,16 @@ public class IngredientFragmentDetail extends Fragment {
                 String comment = mCommentEditText.getText().toString().trim();
                 String[] params = {name, irritant, comment};
                 new SaveIngredientTask().execute(params);
-            }else{
+            }else{ //Provide feedback if everything is ok
                 Toast.makeText(getContext(),R.string.toast_save_success, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
         }
     }
 
+    /**
+     * Deletes this ingredient from the ingredient database.
+     */
     public void deleteCurrentIngredient(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.ingredient_delete_alert_dialog_message)
@@ -215,7 +225,7 @@ public class IngredientFragmentDetail extends Fragment {
     }
 
     /**
-     * Task to delete the currently open ingredient.
+     * Task to delete the currently open ingredient. Performed in background.
      */
     private class DeleteIngredientTask extends AsyncTask<Void,Void,Integer>{
 

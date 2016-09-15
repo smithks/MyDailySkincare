@@ -79,6 +79,14 @@ public class DiaryEntrySeekBar extends SeekBar {
     }
 
     /**
+     * Returns the current step this seek bar is set to.
+     * @return this seekbars current step.
+     */
+    public int getCurrentStep(){
+        return getNearestStep(getProgress());
+    }
+
+    /**
      * Given a progress, this method returns the index of the nearest step in this
      * seekbar.
      * @param progress the progress value of the updated seekbar

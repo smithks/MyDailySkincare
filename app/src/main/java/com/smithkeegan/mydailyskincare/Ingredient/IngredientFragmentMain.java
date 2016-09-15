@@ -19,7 +19,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 /**
- * Contains the users ingredients displayed in a list view.
+ * Fragment class of the ingredient main screen. Contains the users ingredients displayed in a list view.
  * @author Keegan Smith
  * @since 5/10/2016
  */
@@ -51,7 +51,7 @@ public class IngredientFragmentMain extends Fragment {
     /**
      * Called from the ingredient fragment detail when the user updates an existing entry or creates a new entry.
      * Scrolls the listview to the edited entry.
-     * TODO: uncomment if using
+     * TODO: uncomment if scrolling and highlighting new entries
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){

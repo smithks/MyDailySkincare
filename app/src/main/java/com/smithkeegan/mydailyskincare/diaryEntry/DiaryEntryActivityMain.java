@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
@@ -45,5 +46,22 @@ public class DiaryEntryActivityMain extends AppCompatActivity {
             transaction.commit();
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home: //Handle user pressing navigate up button.
+                ((DiaryEntryFragmentMain)getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).backButtonPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Handle user pressing back button
+        ((DiaryEntryFragmentMain)getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).backButtonPressed();
     }
 }
