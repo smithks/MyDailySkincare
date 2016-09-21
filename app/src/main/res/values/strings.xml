@@ -15,16 +15,6 @@
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
 
-    <!-- Condition slider strings -->
-    <string name="excellent">Excellent</string>
-    <string name="very_good">Very Good</string>
-    <string name="good">Good</string>
-    <string name="fair">Fair</string>
-    <string name="poor">Poor</string>
-    <string name="very_poor">Very Poor</string>
-    <string name="severe">Severe</string>
-    <string name="general_condition">General Condition</string>
-
     <!-- General Strings -->
     <string name="delete_button_string">Delete</string>
     <string name="save_button_string">Save</string>
@@ -43,7 +33,17 @@
     <string name="toast_enter_valid_name">Please enter a name</string>
     <string name="field_name_string">name</string>
 
-
+    <!-- Diary Entry Strings -->
+    <string name="excellent">Excellent</string>
+    <string name="very_good">Very Good</string>
+    <string name="good">Good</string>
+    <string name="fair">Fair</string>
+    <string name="poor">Poor</string>
+    <string name="very_poor">Very Poor</string>
+    <string name="severe">Severe</string>
+    <string name="general_condition">General Condition</string>
+    <string name="diary_entry_delete_alert_message">Are you sure you want to delete this entry?</string>
+    <string name="diary_entry_delete_alert_title">Delete diary entry?</string>
 
     <!-- Ingredient Strings -->
     <string name="ingredient_name_string">Ingredient Name</string>

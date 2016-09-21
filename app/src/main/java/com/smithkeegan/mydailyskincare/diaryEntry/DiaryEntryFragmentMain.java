@@ -1,23 +1,27 @@
 package com.smithkeegan.mydailyskincare.diaryEntry;
 
+import android.app.Activity;
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
@@ -68,15 +72,6 @@ public class DiaryEntryFragmentMain extends Fragment {
         setMemberViews(rootView);
         setListeners();
 
-        Button testButton = (Button)rootView.findViewById(R.id.diary_entry_test_button);
-        testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                double steps = 100 / 6.0;
-                Toast.makeText(getContext(),String.valueOf(steps),Toast.LENGTH_SHORT).show();
-            }
-        });
-
         //showLoadingScreen();
         hideLoadingScreen();
         new LoadDiaryEntryTask().execute(mEpochTime);
@@ -97,6 +92,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 saveCurrentDiaryEntry();
                 return true;
             case R.id.menu_action_delete:
+                deleteCurrentDiaryEntry();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -207,7 +203,6 @@ public class DiaryEntryFragmentMain extends Fragment {
     //TODO: check for changes and ask user if they want to proceed
     public void backButtonPressed(){
         saveCurrentDiaryEntry();
-
     }
 
 
@@ -219,6 +214,28 @@ public class DiaryEntryFragmentMain extends Fragment {
         Long[] args = {mEpochTime,
                         generalStep};
         new SaveDiaryEntryTask().execute(args);
+    }
+
+    /**
+     * Calls to deleteDiaryEntry task to delete this entry.
+     */
+    private void deleteCurrentDiaryEntry(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.diary_entry_delete_alert_message)
+                .setTitle(R.string.diary_entry_delete_alert_title)
+                .setIcon(R.drawable.ic_warning_black_24dp)
+                .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new DeleteDiaryEntryTask().execute();
+                    }
+                })
+                .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 
     /**
@@ -299,6 +316,38 @@ public class DiaryEntryFragmentMain extends Fragment {
             }else{
                 Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
             }
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra(CalendarActivityMain.INTENT_DATE,mEpochTime);
+            getActivity().setResult(Activity.RESULT_OK,returnIntent);
+            getActivity().finish();
+        }
+    }
+
+    /**
+     * AsyncTask for deleting a diary entry.
+     */
+    private class DeleteDiaryEntryTask extends AsyncTask<Void,Void,Integer>{
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+            String where = DiaryContract.DiaryEntry.COLUMN_DATE + " = ?";
+            String[] whereArgs = {Long.toString(mEpochTime)};
+            return db.delete(DiaryContract.DiaryEntry.TABLE_NAME,where,whereArgs);
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if(result == 0)
+                Toast.makeText(getContext(), R.string.toast_delete_failed, Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getContext(), R.string.toast_delete_successful,Toast.LENGTH_SHORT).show();
+
+            //Return to calendar activity with delete flag set
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra(CalendarActivityMain.INTENT_DATE_DELETED,mEpochTime);
+            getActivity().setResult(Activity.RESULT_OK,returnIntent);
             getActivity().finish();
         }
     }
