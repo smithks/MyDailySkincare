@@ -42,8 +42,12 @@
     <string name="very_poor">Very Poor</string>
     <string name="severe">Severe</string>
     <string name="general_condition">General Condition</string>
-    <string name="diary_entry_delete_alert_message">Are you sure you want to delete this entry?</string>
-    <string name="diary_entry_delete_alert_title">Delete diary entry?</string>
+    <string name="diary_entry_delete_alert_dialog_message">Are you sure you want to delete this entry?</string>
+    <string name="diary_entry_delete_alert_dialog_title">Delete diary entry?</string>
+    <string name="diary_entry_back_alert_dialog_title">Save changes?</string>
+    <string name="diary_entry_back_alert_dialog_message">Save changes made to this entry?</string>
+    <string name="diary_entry_back_alert_save_new_entry_title">Save entry?</string>
+    <string name="diary_entry_back_alert_save_new_entry_message">Do you want to save this new entry?</string>
 
     <!-- Ingredient Strings -->
     <string name="ingredient_name_string">Ingredient Name</string>

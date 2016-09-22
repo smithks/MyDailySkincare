@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -57,6 +58,7 @@ public class CalendarActivityMain extends AppCompatActivity {
     private CaldroidFragment mCaldroidFragment;
     private DiaryDbHelper mDbHelper;
 
+    private DrawerLayout mDrawerLayout;
     private String[] mDrawerStrings;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -112,9 +114,15 @@ public class CalendarActivityMain extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
-
-
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)){
+            mDrawerLayout.closeDrawer(GravityCompat.START,false);
+        }
     }
 
     /**
@@ -148,7 +156,7 @@ public class CalendarActivityMain extends AppCompatActivity {
      */
     private void initializeDrawer(){
         mDrawerStrings = getResources().getStringArray(R.array.drawer_strings);
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ListView drawerList = (ListView)findViewById(R.id.drawer);
 
         drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.listview_item_calendar_drawer, mDrawerStrings));
@@ -159,7 +167,7 @@ public class CalendarActivityMain extends AppCompatActivity {
             }
         });
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close);
 
     }
 
@@ -169,7 +177,16 @@ public class CalendarActivityMain extends AppCompatActivity {
      */
     private void selectItem(int position){
         switch(position){
-            case 0: //Todays diary entry
+            case 0: //Go to today's diary entry
+                Calendar calendar = Calendar.getInstance(); //Fetch todays entry by creating a date corresponding to today at time 00:00.000
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.SECOND,0);
+                calendar.set(Calendar.MILLISECOND,0);
+                Date todaysDate = calendar.getTime();
+                Intent intent = new Intent(this,DiaryEntryActivityMain.class);
+                intent.putExtra(INTENT_DATE,todaysDate.getTime());
+                startActivityForResult(intent,CODE_DATE_RETURN);
                 break;
             case 1: //Routines
                 Intent routineIntent = new Intent(this, RoutineActivityMain.class);

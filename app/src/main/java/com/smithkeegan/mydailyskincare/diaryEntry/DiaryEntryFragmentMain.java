@@ -35,9 +35,6 @@ import java.util.Date;
  */
 public class DiaryEntryFragmentMain extends Fragment {
 
-    public static final int CODE_PHOTO_REQUEST = 1;
-    public static final int CODE_PHOTO_PERMISSION_REQUEST = 1;
-
     private DiaryDbHelper mDbHelper;
 
     private View mLoadingView;
@@ -45,9 +42,11 @@ public class DiaryEntryFragmentMain extends Fragment {
     private DiaryEntrySeekBar mSeekBarGeneralCondition;
     private TextView mTextViewGeneralCondition;
 
-    private long mEntryID;
-    private Date mDate;
+    private EntryFieldCollection mInitialFieldValues;
+    private EntryFieldCollection mCurrentFieldValues;
+
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
+    private boolean mNewEntry;
 
     private String[] mConditionStrings;
     private int[] mConditionColorIds;
@@ -64,16 +63,19 @@ public class DiaryEntryFragmentMain extends Fragment {
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
         Bundle bundle = getArguments();
-        mDate = new Date(bundle.getLong(DiaryEntryActivityMain.DATE_EXTRA));
-        mEpochTime = mDate.getTime(); //Set time long
+        Date date = new Date(bundle.getLong(DiaryEntryActivityMain.DATE_EXTRA));
+        mEpochTime = date.getTime(); //Set time long
         setConditionArrays();
 
         View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
         setMemberViews(rootView);
         setListeners();
 
-        //showLoadingScreen();
-        hideLoadingScreen();
+        mInitialFieldValues = new EntryFieldCollection();
+        mCurrentFieldValues = new EntryFieldCollection();
+        mNewEntry = false;
+
+        showLoadingScreen();
         new LoadDiaryEntryTask().execute(mEpochTime);
 
         return rootView;
@@ -92,7 +94,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 saveCurrentDiaryEntry();
                 return true;
             case R.id.menu_action_delete:
-                deleteCurrentDiaryEntry();
+                deleteCurrentDiaryEntry(true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -146,6 +148,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 if(fromUser) { //Do not recalculate if progress set programmatically
                     int step = mSeekBarGeneralCondition.getNearestStep(progress);
                     updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,step);
+                    mCurrentFieldValues.generalCondition = step;
                 }
             }
 
@@ -196,13 +199,48 @@ public class DiaryEntryFragmentMain extends Fragment {
         seekbar.setProgressToStep((int)step);
     }
 
+    private boolean entryHasChanged(){
+        if(mInitialFieldValues.generalCondition != mCurrentFieldValues.generalCondition){
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Called when the user presses the back button or the navigate up button.
      * Called by parent activity.
      */
-    //TODO: check for changes and ask user if they want to proceed
     public void backButtonPressed(){
-        saveCurrentDiaryEntry();
+        if(entryHasChanged() || mNewEntry) {
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+            if(mNewEntry){
+                dialog.setTitle(R.string.diary_entry_back_alert_save_new_entry_title);
+                dialog.setMessage(R.string.diary_entry_back_alert_save_new_entry_message);
+            }else{
+                dialog.setTitle(R.string.diary_entry_back_alert_dialog_title);
+                dialog.setMessage(R.string.diary_entry_back_alert_dialog_message);
+            }
+            dialog.setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saveCurrentDiaryEntry();
+                        }
+                    }).setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if(mNewEntry) deleteCurrentDiaryEntry(false); //If this is a new entry, delete it
+                            dialog.dismiss();
+                            getActivity().finish();
+                        }
+                    }).setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }else{
+            getActivity().finish();
+        }
     }
 
 
@@ -210,7 +248,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Calls to the saveDiaryEntry async task to save this diary entry.
      */
     private void saveCurrentDiaryEntry(){
-        long generalStep = mSeekBarGeneralCondition.getCurrentStep();
+        long generalStep = mCurrentFieldValues.generalCondition;
         Long[] args = {mEpochTime,
                         generalStep};
         new SaveDiaryEntryTask().execute(args);
@@ -219,23 +257,29 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Calls to deleteDiaryEntry task to delete this entry.
      */
-    private void deleteCurrentDiaryEntry(){
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.diary_entry_delete_alert_message)
-                .setTitle(R.string.diary_entry_delete_alert_title)
-                .setIcon(R.drawable.ic_warning_black_24dp)
-                .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        new DeleteDiaryEntryTask().execute();
-                    }
-                })
-                .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+    private void deleteCurrentDiaryEntry(boolean askUser){
+        if(askUser) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.diary_entry_delete_alert_dialog_message)
+                    .setTitle(R.string.diary_entry_delete_alert_dialog_title)
+                    .setIcon(R.drawable.ic_warning_black_24dp)
+                    .setPositiveButton(R.string.alert_delete_confirm, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Boolean[] args = {true};
+                            new DeleteDiaryEntryTask().execute(args);
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }else{
+            Boolean[] args = {false};
+            new DeleteDiaryEntryTask().execute(args);
+        }
     }
 
     /**
@@ -244,6 +288,10 @@ public class DiaryEntryFragmentMain extends Fragment {
      */
     private class LoadDiaryEntryTask extends AsyncTask<Long,Void,Cursor>{
 
+        /**
+         * @param params params[0] contains the date to fetch from database
+         * @return cursor holding database query results
+         */
         @Override
         protected Cursor doInBackground(Long... params) {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -279,14 +327,14 @@ public class DiaryEntryFragmentMain extends Fragment {
         @Override
         protected void onPostExecute(Cursor result) {
             if(result != null && result.moveToFirst()){ //Row was returned from query, an entry for this date exists
-                mEntryID = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry._ID));
-                long date = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_DATE));
                 long generalStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION));
                 updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,generalStep);
+                mInitialFieldValues.generalCondition = generalStep;
+                mCurrentFieldValues.generalCondition = generalStep;
             }else{ //A new entry was created
-
+                mNewEntry = true;
             }
-            //hideLoadingScreen();
+            hideLoadingScreen();
         }
     }
 
@@ -297,6 +345,9 @@ public class DiaryEntryFragmentMain extends Fragment {
      */
     private class SaveDiaryEntryTask extends AsyncTask<Long,Void,Long>{
 
+        /**
+         * @param params the values of fields to save
+         */
         @Override
         protected Long doInBackground(Long... params) {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -326,11 +377,18 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * AsyncTask for deleting a diary entry.
      */
-    private class DeleteDiaryEntryTask extends AsyncTask<Void,Void,Integer>{
+    private class DeleteDiaryEntryTask extends AsyncTask<Boolean,Void,Integer>{
 
+        private boolean showToast;
+
+        /**
+         * @param params params[0] contains a boolean value denoting whether a toast should be displayed alerting the user this entry
+         * was deleted (no toast is shown when automatically deleting a new entry on back press).
+         */
         @Override
-        protected Integer doInBackground(Void... params) {
+        protected Integer doInBackground(Boolean... params) {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            showToast = params[0];
 
             String where = DiaryContract.DiaryEntry.COLUMN_DATE + " = ?";
             String[] whereArgs = {Long.toString(mEpochTime)};
@@ -339,16 +397,30 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         @Override
         protected void onPostExecute(Integer result) {
-            if(result == 0)
-                Toast.makeText(getContext(), R.string.toast_delete_failed, Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getContext(), R.string.toast_delete_successful,Toast.LENGTH_SHORT).show();
+            if(result == 0) {
+                if (showToast)
+                    Toast.makeText(getContext(), R.string.toast_delete_failed, Toast.LENGTH_SHORT).show();
+            } else {
+                if (showToast)
+                    Toast.makeText(getContext(), R.string.toast_delete_successful, Toast.LENGTH_SHORT).show();
+            }
 
             //Return to calendar activity with delete flag set
             Intent returnIntent = new Intent();
             returnIntent.putExtra(CalendarActivityMain.INTENT_DATE_DELETED,mEpochTime);
             getActivity().setResult(Activity.RESULT_OK,returnIntent);
             getActivity().finish();
+        }
+    }
+
+    /**
+     * Helper class used to hold values of fields in this fragment for comparison.
+     */
+    private class EntryFieldCollection{
+        long generalCondition;
+
+        EntryFieldCollection(){
+            generalCondition = 3;
         }
     }
 }
