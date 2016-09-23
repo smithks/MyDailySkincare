@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">My Daily Skincare</string>
+
+    <!-- Calendar Activity Strings -->
     <string name="action_view_db">View Database</string>
+    <string name="action_go_to_date">Go to…</string>
 
     <!-- Navigation Drawer Options -->
     <string-array name="drawer_strings">

@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -25,6 +26,7 @@ import android.widget.ListView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
+import com.smithkeegan.mydailyskincare.customClasses.DatePickerDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
@@ -108,11 +110,15 @@ public class CalendarActivityMain extends AppCompatActivity {
         if(mDrawerToggle.onOptionsItemSelected(item))
             return true;
 
-        //TODO Remove this database menu action
-        if (id == R.id.action_view_db) {
-            Intent intent = new Intent(this,AndroidDatabaseManager.class);
-            startActivity(intent);
-            return true;
+        switch (id){
+            case R.id.action_go_to_date:
+                DialogFragment datePicker = new DatePickerDialogFragment();
+                datePicker.show(getSupportFragmentManager(), "date picker");
+                return true;
+            case R.id.action_view_db:
+                Intent intent = new Intent(this,AndroidDatabaseManager.class);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

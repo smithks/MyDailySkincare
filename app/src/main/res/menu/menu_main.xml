@@ -8,4 +8,10 @@
         android:orderInCategory="100"
         android:title="@string/action_view_db"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_go_to_date"
+        android:orderInCategory="50"
+        android:title="@string/action_go_to_date"
+        />
 </menu>
