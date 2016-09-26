@@ -39,8 +39,20 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     private View mLoadingView;
     private View mEntryDetailView;
-    private DiaryEntrySeekBar mSeekBarGeneralCondition;
+
     private TextView mTextViewGeneralCondition;
+    private TextView mTextViewForeheadCondition;
+    private TextView mTextViewNoseCondition;
+    private TextView mTextViewCheeksCondition;
+    private TextView mTextViewLipsCondition;
+    private TextView mTextViewChinCondition;
+
+    private DiaryEntrySeekBar mSeekBarGeneralCondition;
+    private DiaryEntrySeekBar mSeekBarForeheadCondition;
+    private DiaryEntrySeekBar mSeekBarNoseCondition;
+    private DiaryEntrySeekBar mSeekBarCheeksCondition;
+    private DiaryEntrySeekBar mSeekBarLipsCondition;
+    private DiaryEntrySeekBar mSeekBarChinCondition;
 
     private EntryFieldCollection mInitialFieldValues;
     private EntryFieldCollection mCurrentFieldValues;
@@ -108,11 +120,35 @@ public class DiaryEntryFragmentMain extends Fragment {
     private void setMemberViews(View rootView){
         mLoadingView = rootView.findViewById(R.id.diary_entry_loading_layout);
         mEntryDetailView = rootView.findViewById(R.id.diary_entry_detail_layout);
-        mSeekBarGeneralCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_seek_bar_general_condition);
-        mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_condition_general_text);
+
+        mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_general_condition_text);
+        mTextViewForeheadCondition = (TextView) rootView.findViewById(R.id.diary_entry_forehead_condition_text);
+        mTextViewNoseCondition = (TextView) rootView.findViewById(R.id.diary_entry_nose_condition_text);
+        mTextViewCheeksCondition = (TextView) rootView.findViewById(R.id.diary_entry_cheeks_condition_text);
+        mTextViewLipsCondition = (TextView) rootView.findViewById(R.id.diary_entry_lips_condition_text);
+        mTextViewChinCondition = (TextView) rootView.findViewById(R.id.diary_entry_chin_condition_text);
+
+        mSeekBarGeneralCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_general_condition_seek_bar);
+        mSeekBarForeheadCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_forehead_condition_seek_bar);
+        mSeekBarNoseCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_nose_condition_seek_bar);
+        mSeekBarCheeksCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_cheeks_condition_seek_bar);
+        mSeekBarLipsCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lips_condition_seek_bar);
+        mSeekBarChinCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_chin_condition_seek_bar);
+
+        //Set the default value of sliders, will be changed on load from database.
+        updateSliderLabel(mTextViewGeneralCondition, 3);
+        updateSliderLabel(mTextViewForeheadCondition, 3);
+        updateSliderLabel(mTextViewNoseCondition, 3);
+        updateSliderLabel(mTextViewCheeksCondition, 3);
+        updateSliderLabel(mTextViewLipsCondition, 3);
+        updateSliderLabel(mTextViewChinCondition, 3);
 
         mSeekBarGeneralCondition.setDefaultStep();
-        updateSliderLabel(mTextViewGeneralCondition, 3);
+        mSeekBarForeheadCondition.setDefaultStep();
+        mSeekBarNoseCondition.setDefaultStep();
+        mSeekBarCheeksCondition.setDefaultStep();
+        mSeekBarLipsCondition.setDefaultStep();
+        mSeekBarChinCondition.setDefaultStep();
     }
 
     /*
@@ -142,22 +178,64 @@ public class DiaryEntryFragmentMain extends Fragment {
     Sets the listeners of views in this fragment.
      */
     private void setListeners(){
-        mSeekBarGeneralCondition.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser) { //Do not recalculate if progress set programmatically
-                    int step = mSeekBarGeneralCondition.getNearestStep(progress);
-                    updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,step);
-                    mCurrentFieldValues.generalCondition = step;
+        mSeekBarGeneralCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarForeheadCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarNoseCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarCheeksCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarLipsCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarChinCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+    }
+
+
+    /**
+     * Listener for this diary entries seek bars. Updates the corresponding textView and value for this
+     * seekbar.
+     */
+    private class DiaryEntrySeekBarChangeListener implements SeekBar.OnSeekBarChangeListener{
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if(fromUser) { //Only change if the user changed the progress
+                DiaryEntrySeekBar diaryEntrySeekBar = ((DiaryEntrySeekBar) seekBar);
+                int step = diaryEntrySeekBar.getNearestStep(progress);
+                switch (diaryEntrySeekBar.getId()){ //Set the text, color and current value for this seek bar's corresponding views
+                    case R.id.diary_entry_general_condition_seek_bar:
+                        updateConditionBlock(mTextViewGeneralCondition, mSeekBarGeneralCondition, step);
+                        mCurrentFieldValues.generalCondition = step;
+                        break;
+                    case R.id.diary_entry_forehead_condition_seek_bar:
+                        updateConditionBlock(mTextViewForeheadCondition, mSeekBarForeheadCondition, step);
+                        mCurrentFieldValues.foreheadCondition = step;
+                        break;
+                    case R.id.diary_entry_nose_condition_seek_bar:
+                        updateConditionBlock(mTextViewNoseCondition, mSeekBarNoseCondition, step);
+                        mCurrentFieldValues.noseCondition = step;
+                        break;
+                    case R.id.diary_entry_cheeks_condition_seek_bar:
+                        updateConditionBlock(mTextViewCheeksCondition, mSeekBarCheeksCondition, step);
+                        mCurrentFieldValues.cheeksCondition = step;
+                        break;
+                    case R.id.diary_entry_lips_condition_seek_bar:
+                        updateConditionBlock(mTextViewLipsCondition, mSeekBarLipsCondition, step);
+                        mCurrentFieldValues.lipsCondition = step;
+                        break;
+                    case R.id.diary_entry_chin_condition_seek_bar:
+                        updateConditionBlock(mTextViewChinCondition, mSeekBarChinCondition, step);
+                        mCurrentFieldValues.chinCondition = step;
+                        break;
                 }
             }
+        }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
     }
 
     /**
@@ -199,8 +277,16 @@ public class DiaryEntryFragmentMain extends Fragment {
         seekbar.setProgressToStep((int)step);
     }
 
+    /**
+     * Checks if the current values of any field is different from its value at creation.
+     * @return true if this entry has changed
+     */
     private boolean entryHasChanged(){
-        if(mInitialFieldValues.generalCondition != mCurrentFieldValues.generalCondition){
+        if(mInitialFieldValues.generalCondition != mCurrentFieldValues.generalCondition
+                || mInitialFieldValues.foreheadCondition != mCurrentFieldValues.foreheadCondition
+                || mInitialFieldValues.noseCondition != mCurrentFieldValues.noseCondition
+                || mInitialFieldValues.cheeksCondition != mCurrentFieldValues.cheeksCondition
+                || mInitialFieldValues.chinCondition != mCurrentFieldValues.chinCondition){
             return true;
         }
         return false;
@@ -248,9 +334,13 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Calls to the saveDiaryEntry async task to save this diary entry.
      */
     private void saveCurrentDiaryEntry(){
-        long generalStep = mCurrentFieldValues.generalCondition;
         Long[] args = {mEpochTime,
-                        generalStep};
+                mCurrentFieldValues.generalCondition,
+                mCurrentFieldValues.foreheadCondition,
+                mCurrentFieldValues.noseCondition,
+                mCurrentFieldValues.cheeksCondition,
+                mCurrentFieldValues.lipsCondition,
+                mCurrentFieldValues.chinCondition};
         new SaveDiaryEntryTask().execute(args);
     }
 
@@ -324,6 +414,10 @@ public class DiaryEntryFragmentMain extends Fragment {
             return rows;
         }
 
+        /**
+         * Set values of views and fields based on result returned form query.
+         * @param result cursor that contains this entry from the Diary Entry table
+         */
         @Override
         protected void onPostExecute(Cursor result) {
             if(result != null && result.moveToFirst()){ //Row was returned from query, an entry for this date exists
@@ -331,7 +425,32 @@ public class DiaryEntryFragmentMain extends Fragment {
                 updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,generalStep);
                 mInitialFieldValues.generalCondition = generalStep;
                 mCurrentFieldValues.generalCondition = generalStep;
-            }else{ //A new entry was created
+
+                long foreheadStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION));
+                updateConditionBlock(mTextViewForeheadCondition, mSeekBarForeheadCondition, foreheadStep);
+                mInitialFieldValues.foreheadCondition = foreheadStep;
+                mCurrentFieldValues.foreheadCondition = foreheadStep;
+
+                long noseStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION));
+                updateConditionBlock(mTextViewNoseCondition, mSeekBarNoseCondition, noseStep);
+                mInitialFieldValues.noseCondition = noseStep;
+                mCurrentFieldValues.noseCondition = noseStep;
+
+                long cheeksStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION));
+                updateConditionBlock(mTextViewCheeksCondition, mSeekBarCheeksCondition, cheeksStep);
+                mInitialFieldValues.cheeksCondition = cheeksStep;
+                mCurrentFieldValues.cheeksCondition = cheeksStep;
+
+                long lipsStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION));
+                updateConditionBlock(mTextViewLipsCondition, mSeekBarLipsCondition, lipsStep);
+                mInitialFieldValues.lipsCondition = lipsStep;
+                mCurrentFieldValues.lipsCondition = lipsStep;
+
+                long chinStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION));
+                updateConditionBlock(mTextViewChinCondition, mSeekBarChinCondition, chinStep);
+                mInitialFieldValues.chinCondition = chinStep;
+                mCurrentFieldValues.chinCondition = chinStep;
+            }else{ //A new entry was created, default values have already been set
                 mNewEntry = true;
             }
             hideLoadingScreen();
@@ -346,7 +465,13 @@ public class DiaryEntryFragmentMain extends Fragment {
     private class SaveDiaryEntryTask extends AsyncTask<Long,Void,Long>{
 
         /**
-         * @param params the values of fields to save
+         * @param params params[0] - date as milliseconds from epoch
+         *               params[1] - general condition
+         *               params[2] - forehead condition
+         *               params[3] - nose condition
+         *               params[4] - cheeks condition
+         *               params[5] - lips condition
+         *               params[6] - chin condition
          */
         @Override
         protected Long doInBackground(Long... params) {
@@ -355,6 +480,11 @@ public class DiaryEntryFragmentMain extends Fragment {
 
             values.put(DiaryContract.DiaryEntry.COLUMN_DATE,params[0]);
             values.put(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION,params[1]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION, params[2]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION, params[3]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, params[4]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION, params[5]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION, params[6]);
 
             String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + mEpochTime;
             return (long) db.update(DiaryContract.DiaryEntry.TABLE_NAME,values,selection,null);
@@ -382,8 +512,8 @@ public class DiaryEntryFragmentMain extends Fragment {
         private boolean showToast;
 
         /**
-         * @param params params[0] contains a boolean value denoting whether a toast should be displayed alerting the user this entry
-         * was deleted (no toast is shown when automatically deleting a new entry on back press).
+         * @param params params[0] contains a boolean value denoting whether a toast should be displayed on delete.
+         *               (no toast is shown when automatically deleting a new entry on back press).
          */
         @Override
         protected Integer doInBackground(Boolean... params) {
@@ -418,9 +548,19 @@ public class DiaryEntryFragmentMain extends Fragment {
      */
     private class EntryFieldCollection{
         long generalCondition;
+        long foreheadCondition;
+        long noseCondition;
+        long cheeksCondition;
+        long lipsCondition;
+        long chinCondition;
 
         EntryFieldCollection(){
             generalCondition = 3;
+            foreheadCondition = 3;
+            noseCondition = 3;
+            cheeksCondition = 3;
+            lipsCondition = 3;
+            chinCondition = 3;
         }
     }
 }

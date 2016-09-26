@@ -124,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/colorPrimary"
-                        android:text="@string/edit_string"
+                        android:text="@string/add_remove_string"
                         android:textColor="@color/white"/>
 
                 </LinearLayout>
