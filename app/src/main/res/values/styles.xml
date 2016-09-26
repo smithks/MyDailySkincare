@@ -38,5 +38,10 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
+    <style name="diary_entry_section_label">
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
     
 </resources>

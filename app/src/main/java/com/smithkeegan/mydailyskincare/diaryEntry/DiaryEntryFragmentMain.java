@@ -17,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +42,9 @@ public class DiaryEntryFragmentMain extends Fragment {
     private View mLoadingView;
     private View mEntryDetailView;
 
+    private RelativeLayout mShowMoreLayout;
+    private RelativeLayout mAdditionalConditionsLayout;
+
     private TextView mTextViewGeneralCondition;
     private TextView mTextViewForeheadCondition;
     private TextView mTextViewNoseCondition;
@@ -59,6 +64,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
     private boolean mNewEntry;
+    private boolean mAdditionalConditionsShown;
 
     private String[] mConditionStrings;
     private int[] mConditionColorIds;
@@ -82,6 +88,8 @@ public class DiaryEntryFragmentMain extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
         setMemberViews(rootView);
         setListeners();
+
+        mAdditionalConditionsShown = false;
 
         mInitialFieldValues = new EntryFieldCollection();
         mCurrentFieldValues = new EntryFieldCollection();
@@ -120,6 +128,9 @@ public class DiaryEntryFragmentMain extends Fragment {
     private void setMemberViews(View rootView){
         mLoadingView = rootView.findViewById(R.id.diary_entry_loading_layout);
         mEntryDetailView = rootView.findViewById(R.id.diary_entry_detail_layout);
+
+        mShowMoreLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_show_more_layout);
+        mAdditionalConditionsLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_additional_conditions_layout);
 
         mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_general_condition_text);
         mTextViewForeheadCondition = (TextView) rootView.findViewById(R.id.diary_entry_forehead_condition_text);
@@ -184,6 +195,20 @@ public class DiaryEntryFragmentMain extends Fragment {
         mSeekBarCheeksCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarLipsCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarChinCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+
+        mShowMoreLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleAdditionalConditions();
+            }
+        });
+
+        ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleAdditionalConditions();
+            }
+        });
     }
 
 
@@ -252,6 +277,22 @@ public class DiaryEntryFragmentMain extends Fragment {
     private void hideLoadingScreen(){
         mLoadingView.setVisibility(View.INVISIBLE);
         mEntryDetailView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Called when the users toggles the show more conditions button. Displays
+     * additional conditions if they are hidden, hides them if they are shown.
+     */
+    private void toggleAdditionalConditions(){
+        if(mAdditionalConditionsShown){
+            mAdditionalConditionsLayout.setVisibility(View.INVISIBLE);
+            ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.ic_add_circle_black_24dp));
+            mAdditionalConditionsShown = false;
+        }else{
+            mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
+            ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.ic_remove_circle_black_24dp));
+            mAdditionalConditionsShown = true;
+        }
     }
 
     /**
@@ -465,7 +506,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     private class SaveDiaryEntryTask extends AsyncTask<Long,Void,Long>{
 
         /**
-         * @param params params[0] - date as milliseconds from epoch
+         * @param params params[0] - todays date as milliseconds from epoch
          *               params[1] - general condition
          *               params[2] - forehead condition
          *               params[3] - nose condition
