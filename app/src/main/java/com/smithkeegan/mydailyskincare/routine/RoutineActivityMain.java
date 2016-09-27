@@ -13,6 +13,8 @@ import com.smithkeegan.mydailyskincare.R;
  */
 public class RoutineActivityMain extends AppCompatActivity {
 
+    public static final String ROUTINE_FINISHED_ID = "ROUTINE_FINISHED_ID";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

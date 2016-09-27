@@ -35,6 +35,8 @@ import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityMain;
 import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
 import com.smithkeegan.mydailyskincare.product.ProductActivityMain;
+import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
+import com.smithkeegan.mydailyskincare.routine.RoutineActivityMain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +57,7 @@ public class ItemListDialogFragment extends DialogFragment {
     public static final String DISPLAYED_DATA = "Displayed_data";
     public static final String INGREDIENTS = "Ingredients";
     public static final String PRODUCTS = "Products";
+    public static final String ROUTINES = "Routines";
     public static final int NEW_ITEM_ID_REQUEST = 1;
 
     private ListView listView;
@@ -144,6 +147,18 @@ public class ItemListDialogFragment extends DialogFragment {
                     startActivityForResult(intent,NEW_ITEM_ID_REQUEST);
                 }
             });
+        }else if (mDisplayedData.equals(ROUTINES)){
+            titleView.setText(R.string.item_list_select_routines);
+            newItemButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    saveCurrentItems(false);
+                    mNewItemID = 0; //set new item id to default
+                    Intent intent = new Intent(getContext(), RoutineActivityDetail.class);
+                    intent.putExtra(RoutineActivityDetail.NEW_ROUTINE, true);
+                    startActivityForResult(intent,NEW_ITEM_ID_REQUEST);
+                }
+            });
         }
 
         return v;
@@ -172,6 +187,10 @@ public class ItemListDialogFragment extends DialogFragment {
                 }else if (mDisplayedData.equals(PRODUCTS)){
                     if(data.hasExtra(ProductActivityMain.PRODUCT_FINISHED_ID)){
                         mNewItemID = data.getExtras().getLong(ProductActivityMain.PRODUCT_FINISHED_ID);
+                    }
+                }else if(mDisplayedData.equals(ROUTINES)){
+                    if(data.hasExtra(RoutineActivityMain.ROUTINE_FINISHED_ID)){
+                        mNewItemID = data.getExtras().getLong(RoutineActivityMain.ROUTINE_FINISHED_ID);
                     }
                 }
             }
@@ -229,6 +248,8 @@ public class ItemListDialogFragment extends DialogFragment {
                         DiaryContract.RoutineProduct.TABLE_NAME+"."+ DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID);
                 columns = new String[] {DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME, DiaryContract.Product.COLUMN_BRAND, DiaryContract.Product.COLUMN_TYPE, DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID};
                 sortOrder = DiaryContract.Product.COLUMN_NAME + " ASC";
+            }else if (mDisplayedData.equals(ROUTINES)){
+
             }
 
             try {

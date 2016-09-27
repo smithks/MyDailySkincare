@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -17,7 +18,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar;
+import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
@@ -44,6 +48,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     private RelativeLayout mShowMoreLayout;
     private RelativeLayout mAdditionalConditionsLayout;
+    private RelativeLayout mRoutinesLayout;
 
     private TextView mTextViewGeneralCondition;
     private TextView mTextViewForeheadCondition;
@@ -59,9 +64,13 @@ public class DiaryEntryFragmentMain extends Fragment {
     private DiaryEntrySeekBar mSeekBarLipsCondition;
     private DiaryEntrySeekBar mSeekBarChinCondition;
 
+    private ListView mRoutinesListView;
+    private Button mAddRemoveRoutinesButton;
+
     private EntryFieldCollection mInitialFieldValues;
     private EntryFieldCollection mCurrentFieldValues;
 
+    private long mDiaryEntryID;
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
     private boolean mNewEntry;
     private boolean mAdditionalConditionsShown;
@@ -131,6 +140,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         mShowMoreLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_show_more_layout);
         mAdditionalConditionsLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_additional_conditions_layout);
+        mRoutinesLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_routines_layout);
 
         mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_general_condition_text);
         mTextViewForeheadCondition = (TextView) rootView.findViewById(R.id.diary_entry_forehead_condition_text);
@@ -145,6 +155,9 @@ public class DiaryEntryFragmentMain extends Fragment {
         mSeekBarCheeksCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_cheeks_condition_seek_bar);
         mSeekBarLipsCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lips_condition_seek_bar);
         mSeekBarChinCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_chin_condition_seek_bar);
+
+        mRoutinesListView = (ListView) rootView.findViewById(R.id.diary_entry_routines_listview);
+        mAddRemoveRoutinesButton = (Button) rootView.findViewById(R.id.diary_entry_add_remove_routine_button);
 
         //Set the default value of sliders, will be changed on load from database.
         updateSliderLabel(mTextViewGeneralCondition, 3);
@@ -207,6 +220,18 @@ public class DiaryEntryFragmentMain extends Fragment {
             @Override
             public void onClick(View v) {
                 toggleAdditionalConditions();
+            }
+        });
+
+        mAddRemoveRoutinesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString(ItemListDialogFragment.DISPLAYED_DATA,ItemListDialogFragment.ROUTINES);
+                args.putLong(ItemListDialogFragment.ITEM_ID,mDiaryEntryID);
+                DialogFragment fragment = new ItemListDialogFragment();
+                fragment.setArguments(args);
+                fragment.show(getFragmentManager(),"dialog");
             }
         });
     }
@@ -284,13 +309,22 @@ public class DiaryEntryFragmentMain extends Fragment {
      * additional conditions if they are hidden, hides them if they are shown.
      */
     private void toggleAdditionalConditions(){
+
         if(mAdditionalConditionsShown){
             mAdditionalConditionsLayout.setVisibility(View.INVISIBLE);
             ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.ic_add_circle_black_24dp));
+            //Move the layout below additional conditions up
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.BELOW, mShowMoreLayout.getId());
+            mRoutinesLayout.setLayoutParams(layoutParams);
             mAdditionalConditionsShown = false;
         }else{
             mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
             ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.ic_remove_circle_black_24dp));
+            //Move the layout below the additional conditions down
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.BELOW,mAdditionalConditionsLayout.getId());
+            mRoutinesLayout.setLayoutParams(layoutParams);
             mAdditionalConditionsShown = true;
         }
     }
@@ -462,6 +496,8 @@ public class DiaryEntryFragmentMain extends Fragment {
         @Override
         protected void onPostExecute(Cursor result) {
             if(result != null && result.moveToFirst()){ //Row was returned from query, an entry for this date exists
+                mDiaryEntryID = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry._ID));
+
                 long generalStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION));
                 updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,generalStep);
                 mInitialFieldValues.generalCondition = generalStep;

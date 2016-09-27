@@ -1,5 +1,6 @@
 package com.smithkeegan.mydailyskincare.routine;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -531,8 +532,13 @@ public class RoutineFragmentDetail extends Fragment {
             if (result == -1){
                 Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
             }else {
+                //Pass the id of the new routine down to calling activity
+                Intent intent = new Intent();
+                intent.putExtra(RoutineActivityMain.ROUTINE_FINISHED_ID,mRoutineID);
+                getActivity().setResult(Activity.RESULT_OK,intent);
                 Toast.makeText(getContext(), R.string.toast_save_success, Toast.LENGTH_SHORT).show();
             }
+
             getActivity().finish();
         }
     }

@@ -47,7 +47,7 @@ public final class DiaryContract {
         public static final String TABLE_NAME = "DiaryEntryRoutine";
         public static final String CONSTRAINT_FK_DATE = "fk_date";
         public static final String CONSTRAINT_FK_ROUTINE_ID = "fk_routine_id";
-        public static final String COLUMN_DATE = "Date";
+        public static final String COLUMN_DIARY_ENTRY_ID = "Date";
         public static final String COLUMN_ROUTINE_ID = "RoutineID";
     }
 
