@@ -129,7 +129,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " (" +
                     DiaryContract.Routine._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
-                    DiaryContract.Routine.COLUMN_TIME + INTEGER_TYPE + COMMA_SEP +
+                    DiaryContract.Routine.COLUMN_TIME + TEXT_TYPE + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_COMMENT + TEXT_TYPE +
                     " );";
 
@@ -138,7 +138,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     " (" +
                     DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + INTEGER_TYPE +NOT_NULL + COMMA_SEP +
-                    "CONSTRAINT "+ DiaryContract.DiaryEntryRoutine.CONSTRAINT_FK_DATE + " FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + ") REFERENCES " + DiaryContract.DiaryEntry.TABLE_NAME + "(" + DiaryContract.DiaryEntry._ID + ") ON DELETE CASCADE" + COMMA_SEP +
+                    "CONSTRAINT "+ DiaryContract.DiaryEntryRoutine.CONSTRAINT_FK_DIARY_ENTRY_ID + " FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + ") REFERENCES " + DiaryContract.DiaryEntry.TABLE_NAME + "(" + DiaryContract.DiaryEntry._ID + ") ON DELETE CASCADE" + COMMA_SEP +
                     "CONSTRAINT "+ DiaryContract.DiaryEntryRoutine.CONSTRAINT_FK_ROUTINE_ID + " FOREIGN KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ") REFERENCES " + DiaryContract.Routine.TABLE_NAME + "(" + DiaryContract.Routine._ID + ") ON DELETE CASCADE" + COMMA_SEP +
                     "PRIMARY KEY (" + DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + COMMA_SEP + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + ")" +
                     " );";

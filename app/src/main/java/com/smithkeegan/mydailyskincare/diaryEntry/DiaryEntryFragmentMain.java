@@ -404,6 +404,14 @@ public class DiaryEntryFragmentMain extends Fragment {
         }
     }
 
+    /**
+     * Refreshes the listview containing this diary entries routines.
+     */
+    public void refreshRoutinesList(){
+        Long[] args = {mDiaryEntryID};
+        new LoadDiaryEntryRoutinesTask().execute(args);
+    }
+
 
     /**
      * Calls to the saveDiaryEntry async task to save this diary entry.
@@ -530,7 +538,34 @@ public class DiaryEntryFragmentMain extends Fragment {
             }else{ //A new entry was created, default values have already been set
                 mNewEntry = true;
             }
+            refreshRoutinesList();
             hideLoadingScreen();
+        }
+    }
+
+    /**
+     * AsyncTask to populate the routines listview for this diary entry.
+     */
+    private class LoadDiaryEntryRoutinesTask extends AsyncTask<Long,Void,Cursor>{
+
+        /**
+         * Grabs this diary entry's routines from the DiaryEntryRoutines table and
+         * returns them via a cursor.
+         * @param params params[0] - this diary entry's _ID
+         * @return cursor object containing routines
+         */
+        @Override
+        protected Cursor doInBackground(Long... params) {
+            return null;
+        }
+
+        /**
+         * Populates the listview with the results from the table query
+         * @param cursor contains rows to insert into listview
+         */
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
         }
     }
 

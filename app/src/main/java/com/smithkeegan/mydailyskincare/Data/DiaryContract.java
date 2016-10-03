@@ -45,9 +45,9 @@ public final class DiaryContract {
 
     public static abstract class DiaryEntryRoutine implements BaseColumns{
         public static final String TABLE_NAME = "DiaryEntryRoutine";
-        public static final String CONSTRAINT_FK_DATE = "fk_date";
+        public static final String CONSTRAINT_FK_DIARY_ENTRY_ID = "fk_diary_entry_id";
         public static final String CONSTRAINT_FK_ROUTINE_ID = "fk_routine_id";
-        public static final String COLUMN_DIARY_ENTRY_ID = "Date";
+        public static final String COLUMN_DIARY_ENTRY_ID = "DiaryEntryID";
         public static final String COLUMN_ROUTINE_ID = "RoutineID";
     }
 
@@ -63,7 +63,7 @@ public final class DiaryContract {
         public static final String CONSTRAINT_FK_ROUTINE_ID = "fk_routine_id";
         public static final String CONSTRAINT_FK_PRODUCT_ID = "fk_product_id";
         public static final String COLUMN_ROUTINE_ID = "RoutineID";
-        public static final String COLUMN_PRODUCT_ID = "Product";
+        public static final String COLUMN_PRODUCT_ID = "ProductID";
     }
 
     public static abstract class Product implements BaseColumns{

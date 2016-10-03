@@ -67,7 +67,6 @@ public class ItemListDialogFragment extends DialogFragment {
     private String mDisplayedData;
     private ArrayList<ItemListDialogItem> mItemsList;
     private long mNewItemID;
-    private boolean itemsSaved;
 
     @Override
     public void onStart() {
@@ -249,7 +248,11 @@ public class ItemListDialogFragment extends DialogFragment {
                 columns = new String[] {DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME, DiaryContract.Product.COLUMN_BRAND, DiaryContract.Product.COLUMN_TYPE, DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID};
                 sortOrder = DiaryContract.Product.COLUMN_NAME + " ASC";
             }else if (mDisplayedData.equals(ROUTINES)){
-
+                queryBuilder.setTables(DiaryContract.Routine.TABLE_NAME + " LEFT JOIN "+ DiaryContract.DiaryEntryRoutine.TABLE_NAME + " ON "+
+                        DiaryContract.Routine.TABLE_NAME + "." + DiaryContract.Routine._ID+ " = "+
+                        DiaryContract.DiaryEntryRoutine.TABLE_NAME + "." + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID);
+                columns = new String[] {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME, DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID};
+                sortOrder = DiaryContract.Routine.COLUMN_NAME + " ASC";
             }
 
             try {
@@ -286,7 +289,7 @@ public class ItemListDialogFragment extends DialogFragment {
                             if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Set this item to automatically selected since it was just created
                             itemList.add(item);
                         }
-                    itemList = formatIngredientArray(itemList);
+                    itemList = formatItemArray(itemList);
                     }
                 } else if (displayedData.equals(PRODUCTS)) {
                     if(result.moveToFirst()){
@@ -308,7 +311,27 @@ public class ItemListDialogFragment extends DialogFragment {
                             if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Set this item to automatically selected since it was just created
                             itemList.add(item);
                         }
-                        itemList = formatProductArray(itemList);
+                        itemList = formatItemArray(itemList);
+                    }
+                }else if (displayedData.equals(ROUTINES)){
+                    if(result.moveToFirst()){
+                        ItemListDialogItem item = new ItemListDialogItem();
+                        item.setId(result.getLong(result.getColumnIndex(DiaryContract.Routine._ID)));
+                        item.setName(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
+                        item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
+                        item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID)));
+                        if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Item was just created, automatically select it
+                        itemList.add(item);
+                        while (result.moveToNext()){
+                            item = new ItemListDialogItem();
+                            item.setId(result.getLong(result.getColumnIndex(DiaryContract.Routine._ID)));
+                            item.setName(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
+                            item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
+                            item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID)));
+                            if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Item was just created, automatically select it
+                            itemList.add(item);
+                        }
+                        itemList = formatItemArray(itemList);
                     }
                 }
 
@@ -318,13 +341,15 @@ public class ItemListDialogFragment extends DialogFragment {
             }
         }
 
-        /*
+        /**
           * Method to format the raw returned data from the cursor into the correct order and format
-          * to display in the listview rows. Each ingredient will only appear in the list once, and
-          * the isSelected field of the checkbox will be true if the linkedProductID returned form the cursor
-          * matches the productID of the product this fragment was called from.
+          * to display in the listview rows. Each item will only appear in the list once, and
+          * the isSelected field of the checkbox will be true if the linkedID returned from the cursor
+          * matches the primaryItemID of the item this fragment was called from.
+          * @param list The raw data from cursor
+          * @return The formatted list of items.
          */
-        private ArrayList<ItemListDialogItem> formatIngredientArray(ArrayList<ItemListDialogItem> list){
+        private ArrayList<ItemListDialogItem> formatItemArray(ArrayList<ItemListDialogItem> list){
             ArrayList<ItemListDialogItem> newList = new ArrayList<>();
             HashMap<String,Integer> entries = new HashMap<>(); //Hashmap of entry name and location in new arraylist
             int newListIndex = 0;
@@ -339,35 +364,6 @@ public class ItemListDialogFragment extends DialogFragment {
                         newList.get(entries.get(name)).setInitialSelected(true);
                     }
                 }else{
-                    entries.put(name,newListIndex++);
-                    if(linkedID == primaryItemID) currItem.setInitialSelected(true);
-                    newList.add(currItem);
-                }
-            }
-
-            return newList;
-        }
-
-        /**
-         * Method to format the raw returned data from the cursor into the correct order and format
-         * to display in the listview rows. Each product will only appear in the list once, and
-         * the isSelected field of the checkbox will be true if the linkedRoutineID returned form the cursor
-         * matches the routineID of the routine this fragment was called from.
-         */
-        private ArrayList<ItemListDialogItem> formatProductArray(ArrayList<ItemListDialogItem> list){
-            ArrayList<ItemListDialogItem> newList = new ArrayList<>();
-            HashMap<String,Integer> entries = new HashMap<>();
-            int newListIndex = 0;
-            for(int i = 0; i < list.size(); i++){
-                ItemListDialogItem currItem = list.get(i);
-                String name = currItem.getName();
-                long linkedID = currItem.getLinkedId();
-
-                if(entries.containsKey(name)){
-                    if(linkedID == primaryItemID){
-                        newList.get(entries.get(name)).setInitialSelected(true);
-                    }
-                } else {
                     entries.put(name,newListIndex++);
                     if(linkedID == primaryItemID) currItem.setInitialSelected(true);
                     newList.add(currItem);
@@ -477,7 +473,6 @@ public class ItemListDialogFragment extends DialogFragment {
             //TODO build single query to send to db.
             for (ItemListDialogItem item: selected) {
                 long primaryID = item.getId();
-                long secondaryID = item.getLinkedId();
                 boolean initialSelected = item.getInitialSelected();
                 boolean finalSelected = item.getFinalSelected();
 
@@ -525,6 +520,11 @@ public class ItemListDialogFragment extends DialogFragment {
                 values.put(DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID,primaryID);
                 values.put(DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID,primaryLinkedID);
                 result = db.insert(DiaryContract.RoutineProduct.TABLE_NAME,null,values);
+            }else if(displayedData.equals(ROUTINES)){
+                ContentValues values = new ContentValues();
+                values.put(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID,primaryID);
+                values.put(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID,primaryLinkedID);
+                result = db.insert(DiaryContract.DiaryEntryRoutine.TABLE_NAME,null,values);
             }
             return result;
         }
@@ -545,6 +545,10 @@ public class ItemListDialogFragment extends DialogFragment {
                 String where = DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + " = ? AND " + DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID + " = ?";
                 String[] whereArgs = {Long.toString(primaryID),Long.toString(primaryLinkedID)};
                 result = (long) db.delete(DiaryContract.RoutineProduct.TABLE_NAME,where,whereArgs);
+            }else if (displayedData.equals(ROUTINES)){
+                String where = DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + " = ? AND "+ DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + " = ?";
+                String[] whereArgs = {Long.toString(primaryID), Long.toString(primaryLinkedID)};
+                result = (long) db.delete(DiaryContract.DiaryEntryRoutine.TABLE_NAME,where,whereArgs);
             }
             return result;
         }
@@ -561,8 +565,8 @@ public class ItemListDialogFragment extends DialogFragment {
         private String mName;
         private Long mId;
         private Long mLinkedId;
-        private String mExtraField1; //Ingredient: N/A. Product: Brand.
-        private String mExtraField2; //Ingredient: N/A. Product: Type.
+        private String mExtraField1; //Ingredient: N/A. Product: Brand. Routine: Time.
+        private String mExtraField2; //Ingredient: N/A. Product: Type. Routine: N/A.
         private boolean mInitialSelected;
         private boolean mFinalSelected;
 

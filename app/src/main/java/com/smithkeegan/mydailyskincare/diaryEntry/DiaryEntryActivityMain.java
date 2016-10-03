@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.customClasses.DialogClosedListener;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -20,7 +21,7 @@ import java.util.Date;
  * TODO: load data from database based on date
  * TODO: don't show year in title if current year
  */
-public class DiaryEntryActivityMain extends AppCompatActivity {
+public class DiaryEntryActivityMain extends AppCompatActivity implements DialogClosedListener{
 
     public static final String DATE_EXTRA = "DATE_EXTRA";
 
@@ -63,5 +64,11 @@ public class DiaryEntryActivityMain extends AppCompatActivity {
     public void onBackPressed() {
         //Handle user pressing back button
         ((DiaryEntryFragmentMain)getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).backButtonPressed();
+    }
+
+    @Override
+    public void onEditListDialogClosed() {
+        //On return from item list dialog
+        ((DiaryEntryFragmentMain)getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).refreshRoutinesList();
     }
 }
