@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -491,7 +492,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             if(rows != null && rows.getCount() == 0){ //No entry found for this date, create a new one.
                 ContentValues values = new ContentValues();
                 values.put(DiaryContract.DiaryEntry.COLUMN_DATE,epochTime);
-                db.insert(DiaryContract.DiaryEntry.TABLE_NAME,null,values);
+                mDiaryEntryID = db.insert(DiaryContract.DiaryEntry.TABLE_NAME,null,values); //Set returned row ID to this diary entry's ID
             }
 
             return rows;
@@ -556,7 +557,31 @@ public class DiaryEntryFragmentMain extends Fragment {
          */
         @Override
         protected Cursor doInBackground(Long... params) {
-            return null;
+            SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+            long diaryEntryID = params[0];
+            Cursor routineCursor = null;
+
+            String[] columns = {DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID};
+            String where = DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + " = " + Long.toString(diaryEntryID);
+            Cursor routineIDsCursor = db.query(DiaryContract.DiaryEntryRoutine.TABLE_NAME,columns,where,null,null,null,null);
+
+            String[] routineColumns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
+            String routineWhere = "";
+            if(routineIDsCursor.moveToFirst()){
+                do {
+                    long routineID = routineIDsCursor.getLong(routineIDsCursor.getColumnIndex(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID));
+                    if (routineWhere.length() > 0) { //Append OR to every ID past the first.
+                        routineWhere = routineWhere + " OR ";
+                    }
+                    routineWhere = routineWhere +DiaryContract.Routine._ID + " = " + routineID;
+                }while(routineIDsCursor.moveToNext());
+
+                String routineOrderBy = DiaryContract.Routine.COLUMN_NAME + " ASC";
+                routineCursor = db.query(DiaryContract.Routine.TABLE_NAME,routineColumns,routineWhere,null,null,null,routineOrderBy);
+            }
+
+            return routineCursor;
         }
 
         /**
@@ -565,7 +590,28 @@ public class DiaryEntryFragmentMain extends Fragment {
          */
         @Override
         protected void onPostExecute(Cursor cursor) {
-            super.onPostExecute(cursor);
+            mRoutinesListView.setAdapter(null);//Clear current adapter
+            if(cursor != null){
+                String [] fromColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
+                int[] toViews = {R.id.routine_listview_name,R.id.routine_listView_time};
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.listview_item_routine_main,cursor,fromColumns,toViews,0);
+                adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                    @Override
+                    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                        if (columnIndex == cursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)) {
+                            TextView nameView = (TextView) view;
+                            nameView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
+                            return true;
+                        }else if (columnIndex == cursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)){
+                            TextView timeView = (TextView) view;
+                            timeView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                mRoutinesListView.setAdapter(adapter);
+            }
         }
     }
 
