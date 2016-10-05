@@ -44,7 +44,7 @@
     <string name="poor">Poor</string>
     <string name="very_poor">Very Poor</string>
     <string name="severe">Severe</string>
-    <string name="diary_entry_skin_condition_string">Skin</string>
+    <string name="diary_entry_skin_condition_string">My Skin Today</string>
     <string name="diary_entry_general_condition">General Condition</string>
     <string name="diary_entry_forehead_condition">Forehead</string>
     <string name="diary_entry_nose_condition">Nose</string>

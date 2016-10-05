@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -33,6 +34,7 @@ import com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar;
 import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
+import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
 
 import java.util.Date;
 
@@ -75,6 +77,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
     private boolean mNewEntry;
     private boolean mAdditionalConditionsShown;
+    private boolean mInitalLoadFinished;
 
     private String[] mConditionStrings;
     private int[] mConditionColorIds;
@@ -100,6 +103,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         setListeners();
 
         mAdditionalConditionsShown = false;
+        mInitalLoadFinished = false;
 
         mInitialFieldValues = new EntryFieldCollection();
         mCurrentFieldValues = new EntryFieldCollection();
@@ -129,6 +133,18 @@ public class DiaryEntryFragmentMain extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Refresh routines list on activity resume.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mInitalLoadFinished){
+            refreshRoutinesList();
+        }
+
     }
 
     /**
@@ -233,6 +249,16 @@ public class DiaryEntryFragmentMain extends Fragment {
                 DialogFragment fragment = new ItemListDialogFragment();
                 fragment.setArguments(args);
                 fragment.show(getFragmentManager(),"dialog");
+            }
+        });
+
+        mRoutinesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getContext(), RoutineActivityDetail.class);
+                intent.putExtra(RoutineActivityDetail.NEW_ROUTINE,false);
+                intent.putExtra(RoutineActivityDetail.ENTRY_ID,id);
+                startActivity(intent);
             }
         });
     }
@@ -541,6 +567,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             }
             refreshRoutinesList();
             hideLoadingScreen();
+            mInitalLoadFinished = true;
         }
     }
 
