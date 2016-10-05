@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -52,6 +53,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     private RelativeLayout mShowMoreLayout;
     private RelativeLayout mAdditionalConditionsLayout;
     private RelativeLayout mRoutinesLayout;
+    private RelativeLayout mOnPeriodLayout;
 
     private TextView mTextViewGeneralCondition;
     private TextView mTextViewForeheadCondition;
@@ -59,6 +61,10 @@ public class DiaryEntryFragmentMain extends Fragment {
     private TextView mTextViewCheeksCondition;
     private TextView mTextViewLipsCondition;
     private TextView mTextViewChinCondition;
+    private TextView mTextViewExercise;
+    private TextView mTextViewDiet;
+    private TextView mTextViewHygiene;
+    private TextView mTextViewWaterIntake;
 
     private DiaryEntrySeekBar mSeekBarGeneralCondition;
     private DiaryEntrySeekBar mSeekBarForeheadCondition;
@@ -66,9 +72,14 @@ public class DiaryEntryFragmentMain extends Fragment {
     private DiaryEntrySeekBar mSeekBarCheeksCondition;
     private DiaryEntrySeekBar mSeekBarLipsCondition;
     private DiaryEntrySeekBar mSeekBarChinCondition;
+    private DiaryEntrySeekBar mSeekBarExercise;
+    private DiaryEntrySeekBar mSeekBarDiet;
+    private DiaryEntrySeekBar mSeekBarHygiene;
+    private DiaryEntrySeekBar mSeekBarWaterIntake;
 
     private ListView mRoutinesListView;
     private Button mAddRemoveRoutinesButton;
+    private CheckBox mOnPeriodCheckBox;
 
     private EntryFieldCollection mInitialFieldValues;
     private EntryFieldCollection mCurrentFieldValues;
@@ -77,11 +88,15 @@ public class DiaryEntryFragmentMain extends Fragment {
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
     private boolean mNewEntry;
     private boolean mAdditionalConditionsShown;
-    private boolean mInitalLoadFinished;
+    private boolean mInitialLoadFinished;
 
     private String[] mConditionStrings;
     private int[] mConditionColorIds;
 
+    private String[] mExerciseStrings;
+    private String[] mDietStrings;
+    private String[] mHygieneStrings;
+    private String[] mWaterIntakeStrings;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,18 +111,13 @@ public class DiaryEntryFragmentMain extends Fragment {
         Bundle bundle = getArguments();
         Date date = new Date(bundle.getLong(DiaryEntryActivityMain.DATE_EXTRA));
         mEpochTime = date.getTime(); //Set time long
-        setConditionArrays();
+        setSliderArrays();
 
         View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
+
         setMemberViews(rootView);
+        setDefaultMemberValues();
         setListeners();
-
-        mAdditionalConditionsShown = false;
-        mInitalLoadFinished = false;
-
-        mInitialFieldValues = new EntryFieldCollection();
-        mCurrentFieldValues = new EntryFieldCollection();
-        mNewEntry = false;
 
         showLoadingScreen();
         new LoadDiaryEntryTask().execute(mEpochTime);
@@ -141,10 +151,9 @@ public class DiaryEntryFragmentMain extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(mInitalLoadFinished){
+        if(mInitialLoadFinished){
             refreshRoutinesList();
         }
-
     }
 
     /**
@@ -158,6 +167,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         mShowMoreLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_show_more_layout);
         mAdditionalConditionsLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_additional_conditions_layout);
         mRoutinesLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_routines_layout);
+        mOnPeriodLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_lifestyle_period_layout);
 
         mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_general_condition_text);
         mTextViewForeheadCondition = (TextView) rootView.findViewById(R.id.diary_entry_forehead_condition_text);
@@ -165,6 +175,10 @@ public class DiaryEntryFragmentMain extends Fragment {
         mTextViewCheeksCondition = (TextView) rootView.findViewById(R.id.diary_entry_cheeks_condition_text);
         mTextViewLipsCondition = (TextView) rootView.findViewById(R.id.diary_entry_lips_condition_text);
         mTextViewChinCondition = (TextView) rootView.findViewById(R.id.diary_entry_chin_condition_text);
+        mTextViewExercise = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_exercise_text);
+        mTextViewDiet = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_diet_text);
+        mTextViewHygiene = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_hygiene_text);
+        mTextViewWaterIntake = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_water_text);
 
         mSeekBarGeneralCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_general_condition_seek_bar);
         mSeekBarForeheadCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_forehead_condition_seek_bar);
@@ -173,16 +187,32 @@ public class DiaryEntryFragmentMain extends Fragment {
         mSeekBarLipsCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lips_condition_seek_bar);
         mSeekBarChinCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_chin_condition_seek_bar);
 
+        mSeekBarExercise = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lifestyle_exercise_seek_bar);
+        mSeekBarDiet = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lifestyle_diet_seek_bar);
+        mSeekBarHygiene = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lifestyle_hygiene_seek_bar);
+        mSeekBarWaterIntake = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lifestyle_water_seek_bar);
+
         mRoutinesListView = (ListView) rootView.findViewById(R.id.diary_entry_routines_listview);
         mAddRemoveRoutinesButton = (Button) rootView.findViewById(R.id.diary_entry_add_remove_routine_button);
+        mOnPeriodCheckBox = (CheckBox) rootView.findViewById(R.id.diary_entry_lifestyle_period_check);
+    }
 
+    /**
+     * Set the default values of fields of this diary entry.
+     */
+    private void setDefaultMemberValues(){
         //Set the default value of sliders, will be changed on load from database.
-        updateSliderLabel(mTextViewGeneralCondition, 3);
-        updateSliderLabel(mTextViewForeheadCondition, 3);
-        updateSliderLabel(mTextViewNoseCondition, 3);
-        updateSliderLabel(mTextViewCheeksCondition, 3);
-        updateSliderLabel(mTextViewLipsCondition, 3);
-        updateSliderLabel(mTextViewChinCondition, 3);
+        updateSliderLabel(mTextViewGeneralCondition, 3, mConditionStrings);
+        updateSliderLabel(mTextViewForeheadCondition, 3, mConditionStrings);
+        updateSliderLabel(mTextViewNoseCondition, 3, mConditionStrings);
+        updateSliderLabel(mTextViewCheeksCondition, 3, mConditionStrings);
+        updateSliderLabel(mTextViewLipsCondition, 3, mConditionStrings);
+        updateSliderLabel(mTextViewChinCondition, 3, mConditionStrings);
+
+        updateSliderLabel(mTextViewExercise, 0, mExerciseStrings);
+        updateSliderLabel(mTextViewDiet, 0, mDietStrings);
+        updateSliderLabel(mTextViewHygiene, 0, mHygieneStrings);
+        updateSliderLabel(mTextViewWaterIntake, 0, mWaterIntakeStrings);
 
         mSeekBarGeneralCondition.setDefaultStep();
         mSeekBarForeheadCondition.setDefaultStep();
@@ -190,20 +220,39 @@ public class DiaryEntryFragmentMain extends Fragment {
         mSeekBarCheeksCondition.setDefaultStep();
         mSeekBarLipsCondition.setDefaultStep();
         mSeekBarChinCondition.setDefaultStep();
+
+        //Set the number of steps for lifestyle sliders
+        mSeekBarExercise.setNumSteps(mExerciseStrings.length);
+        mSeekBarDiet.setNumSteps(mDietStrings.length);
+        mSeekBarHygiene.setNumSteps(mHygieneStrings.length);
+        mSeekBarWaterIntake.setNumSteps(mWaterIntakeStrings.length);
+
+        //Set default value of lifestyle sliders
+        mSeekBarExercise.setProgressToStep(0);
+        mSeekBarDiet.setProgressToStep(0);
+        mSeekBarHygiene.setProgressToStep(0);
+        mSeekBarWaterIntake.setProgressToStep(0);
+
+        mAdditionalConditionsShown = false;
+        mInitialLoadFinished = false;
+
+        mInitialFieldValues = new EntryFieldCollection();
+        mCurrentFieldValues = new EntryFieldCollection();
+        mNewEntry = false;
     }
 
     /*
     Fetches properties to be used with the condition label's from xml resources.
      */
-    private void setConditionArrays(){
+    private void setSliderArrays(){
         mConditionStrings = new String[7];
-        mConditionStrings[0] = getResources().getString(R.string.severe);
-        mConditionStrings[1] = getResources().getString(R.string.very_poor);
-        mConditionStrings[2] = getResources().getString(R.string.poor);
-        mConditionStrings[3] = getResources().getString(R.string.fair);
-        mConditionStrings[4] = getResources().getString(R.string.good);
-        mConditionStrings[5] = getResources().getString(R.string.very_good);
-        mConditionStrings[6] = getResources().getString(R.string.excellent);
+        mConditionStrings[0] = getResources().getString(R.string.diary_entry_condition_severe);
+        mConditionStrings[1] = getResources().getString(R.string.diary_entry_condition_very_poor);
+        mConditionStrings[2] = getResources().getString(R.string.diary_entry_condition_poor);
+        mConditionStrings[3] = getResources().getString(R.string.diary_entry_condition_fair);
+        mConditionStrings[4] = getResources().getString(R.string.diary_entry_condition_good);
+        mConditionStrings[5] = getResources().getString(R.string.diary_entry_condition_very_good);
+        mConditionStrings[6] = getResources().getString(R.string.diary_entry_condition_excellent);
 
         mConditionColorIds = new int[7];
         mConditionColorIds[0] = ContextCompat.getColor(getContext(),R.color.severe);
@@ -213,6 +262,34 @@ public class DiaryEntryFragmentMain extends Fragment {
         mConditionColorIds[4] = ContextCompat.getColor(getContext(),R.color.good);
         mConditionColorIds[5] = ContextCompat.getColor(getContext(),R.color.veryGood);
         mConditionColorIds[6] = ContextCompat.getColor(getContext(),R.color.excellent);
+
+        mExerciseStrings = new String[5];
+        mExerciseStrings[0] = getResources().getString(R.string.diary_entry_slider_not_specified);
+        mExerciseStrings[1] = getResources().getString(R.string.diary_entry_slider_exercise_none);
+        mExerciseStrings[2] = getResources().getString(R.string.diary_entry_slider_exercise_light);
+        mExerciseStrings[3] = getResources().getString(R.string.diary_entry_slider_exercise_moderate);
+        mExerciseStrings[4] = getResources().getString(R.string.diary_entry_slider_exercise_intense);
+
+        mDietStrings = new String[4];
+        mDietStrings[0] = getResources().getString(R.string.diary_entry_slider_not_specified);
+        mDietStrings[1] = getResources().getString(R.string.diary_entry_condition_poor);
+        mDietStrings[2] = getResources().getString(R.string.diary_entry_condition_good);
+        mDietStrings[3] = getResources().getString(R.string.diary_entry_condition_excellent);
+
+        mHygieneStrings = new String[5];
+        mHygieneStrings[0] = getResources().getString(R.string.diary_entry_slider_not_specified);
+        mHygieneStrings[1] = getResources().getString(R.string.diary_entry_slider_exercise_none);
+        mHygieneStrings[2] = getResources().getString(R.string.diary_entry_slider_hygiene_hair_only);
+        mHygieneStrings[3] = getResources().getString(R.string.diary_entry_slider_hygiene_body_only);
+        mHygieneStrings[4] = getResources().getString(R.string.diary_entry_slider_hygiene_body_and_hair);
+
+        mWaterIntakeStrings = new String[6];
+        mWaterIntakeStrings[0] = getResources().getString(R.string.diary_entry_slider_not_specified);
+        mWaterIntakeStrings[1] = getResources().getString(R.string.diary_entry_slider_exercise_none);
+        mWaterIntakeStrings[2] = getResources().getString(R.string.diary_entry_slider_water_one_three);
+        mWaterIntakeStrings[3] = getResources().getString(R.string.diary_entry_slider_water_four_five);
+        mWaterIntakeStrings[4] = getResources().getString(R.string.diary_entry_slider_water_six_nine);
+        mWaterIntakeStrings[5] = getResources().getString(R.string.diary_entry_slider_water_ten_plus);
     }
 
     /*
@@ -226,6 +303,11 @@ public class DiaryEntryFragmentMain extends Fragment {
         mSeekBarLipsCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarChinCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
 
+        mSeekBarExercise.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarDiet.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarHygiene.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarWaterIntake.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+
         mShowMoreLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,10 +315,25 @@ public class DiaryEntryFragmentMain extends Fragment {
             }
         });
 
-        ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setOnClickListener(new View.OnClickListener() {
+        mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toggleAdditionalConditions();
+            }
+        });
+
+        mOnPeriodLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnPeriodCheckBox.setChecked(!mOnPeriodCheckBox.isChecked());
+                toggleOnPeriodCheckbox();
+            }
+        });
+
+        mOnPeriodCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleOnPeriodCheckbox();
             }
         });
 
@@ -300,6 +397,26 @@ public class DiaryEntryFragmentMain extends Fragment {
                         updateConditionBlock(mTextViewChinCondition, mSeekBarChinCondition, step);
                         mCurrentFieldValues.chinCondition = step;
                         break;
+                    case R.id.diary_entry_lifestyle_exercise_seek_bar:
+                        updateSliderLabel(mTextViewExercise, step, mExerciseStrings);
+                        diaryEntrySeekBar.setProgressToStep(step);
+                        mCurrentFieldValues.exercise = step;
+                        break;
+                    case R.id.diary_entry_lifestyle_diet_seek_bar:
+                        updateSliderLabel(mTextViewDiet, step, mDietStrings);
+                        diaryEntrySeekBar.setProgressToStep(step);
+                        mCurrentFieldValues.diet = step;
+                        break;
+                    case R.id.diary_entry_lifestyle_hygiene_seek_bar:
+                        updateSliderLabel(mTextViewHygiene, step, mHygieneStrings);
+                        diaryEntrySeekBar.setProgressToStep(step);
+                        mCurrentFieldValues.hygiene = step;
+                        break;
+                    case R.id.diary_entry_lifestyle_water_seek_bar:
+                        updateSliderLabel(mTextViewWaterIntake, step, mWaterIntakeStrings);
+                        diaryEntrySeekBar.setProgressToStep(step);
+                        mCurrentFieldValues.waterIntake = step;
+                        break;
                 }
             }
         }
@@ -357,14 +474,21 @@ public class DiaryEntryFragmentMain extends Fragment {
     }
 
     /**
+     * Called when user taps the onPeriod layout or the onPeriod checkbox. Toggles
+     * the current value of the on period field.
+     */
+    private void toggleOnPeriodCheckbox(){
+        mCurrentFieldValues.onPeriod = mOnPeriodCheckBox.isChecked() ? 1 : 0;
+    }
+
+    /**
      *  Updates the passed in textView with the appropriate label and background color.
      * @param view the view to update
      * @param step the step of the slider to set the text and color too
      */
-    public void updateSliderLabel(TextView view, int step){
-        if(step < mConditionStrings.length){
-            view.setText(mConditionStrings[step]);
-            view.setBackgroundColor(mConditionColorIds[step]);
+    public void updateSliderLabel(TextView view, int step, String[] labelArray){
+        if(step < labelArray.length){
+            view.setText(labelArray[step]);
         }
     }
 
@@ -375,8 +499,9 @@ public class DiaryEntryFragmentMain extends Fragment {
      * @param step The step to set to.
      */
     private void updateConditionBlock(TextView view, DiaryEntrySeekBar seekbar, long step){
-        updateSliderLabel(view,(int)step);
+        updateSliderLabel(view,(int)step,mConditionStrings);
         seekbar.setProgressToStep((int)step);
+        view.setBackgroundColor(mConditionColorIds[(int)step]);
     }
 
     /**
@@ -388,7 +513,12 @@ public class DiaryEntryFragmentMain extends Fragment {
                 || mInitialFieldValues.foreheadCondition != mCurrentFieldValues.foreheadCondition
                 || mInitialFieldValues.noseCondition != mCurrentFieldValues.noseCondition
                 || mInitialFieldValues.cheeksCondition != mCurrentFieldValues.cheeksCondition
-                || mInitialFieldValues.chinCondition != mCurrentFieldValues.chinCondition){
+                || mInitialFieldValues.chinCondition != mCurrentFieldValues.chinCondition
+                || mInitialFieldValues.exercise != mCurrentFieldValues.exercise
+                || mInitialFieldValues.diet != mCurrentFieldValues.diet
+                || mInitialFieldValues.hygiene != mCurrentFieldValues.hygiene
+                || mInitialFieldValues.waterIntake != mCurrentFieldValues.waterIntake
+                || mInitialFieldValues.onPeriod != mCurrentFieldValues.onPeriod){
             return true;
         }
         return false;
@@ -439,7 +569,6 @@ public class DiaryEntryFragmentMain extends Fragment {
         new LoadDiaryEntryRoutinesTask().execute(args);
     }
 
-
     /**
      * Calls to the saveDiaryEntry async task to save this diary entry.
      */
@@ -450,7 +579,12 @@ public class DiaryEntryFragmentMain extends Fragment {
                 mCurrentFieldValues.noseCondition,
                 mCurrentFieldValues.cheeksCondition,
                 mCurrentFieldValues.lipsCondition,
-                mCurrentFieldValues.chinCondition};
+                mCurrentFieldValues.chinCondition,
+                mCurrentFieldValues.exercise,
+                mCurrentFieldValues.diet,
+                mCurrentFieldValues.hygiene,
+                mCurrentFieldValues.waterIntake,
+                mCurrentFieldValues.onPeriod};
         new SaveDiaryEntryTask().execute(args);
     }
 
@@ -562,12 +696,41 @@ public class DiaryEntryFragmentMain extends Fragment {
                 updateConditionBlock(mTextViewChinCondition, mSeekBarChinCondition, chinStep);
                 mInitialFieldValues.chinCondition = chinStep;
                 mCurrentFieldValues.chinCondition = chinStep;
+
+                long exercise = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_EXERCISE));
+                updateSliderLabel(mTextViewExercise,(int)exercise,mExerciseStrings);
+                mSeekBarExercise.setProgressToStep((int)exercise);
+                mInitialFieldValues.exercise = exercise;
+                mCurrentFieldValues.exercise = exercise;
+
+                long diet = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_DIET));
+                updateSliderLabel(mTextViewDiet,(int)diet,mDietStrings);
+                mSeekBarDiet.setProgressToStep((int)diet);
+                mInitialFieldValues.diet = diet;
+                mCurrentFieldValues.diet = diet;
+
+                long hygiene = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_HYGIENE));
+                updateSliderLabel(mTextViewHygiene,(int)hygiene,mHygieneStrings);
+                mSeekBarHygiene.setProgressToStep((int)hygiene);
+                mInitialFieldValues.hygiene = hygiene;
+                mCurrentFieldValues.hygiene = hygiene;
+
+                long waterIntake = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE));
+                updateSliderLabel(mTextViewWaterIntake,(int)waterIntake,mWaterIntakeStrings);
+                mSeekBarWaterIntake.setProgressToStep((int)waterIntake);
+                mInitialFieldValues.waterIntake = waterIntake;
+                mCurrentFieldValues.waterIntake = waterIntake;
+
+                long onPeriod = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_ON_PERIOD));
+                mInitialFieldValues.onPeriod = onPeriod;
+                mCurrentFieldValues.onPeriod = onPeriod;
+                mOnPeriodCheckBox.setChecked(onPeriod == 1); //If onPeriod == 1 then set checked
             }else{ //A new entry was created, default values have already been set
                 mNewEntry = true;
             }
             refreshRoutinesList();
             hideLoadingScreen();
-            mInitalLoadFinished = true;
+            mInitialLoadFinished = true;
         }
     }
 
@@ -657,6 +820,11 @@ public class DiaryEntryFragmentMain extends Fragment {
          *               params[4] - cheeks condition
          *               params[5] - lips condition
          *               params[6] - chin condition
+         *               params[7] - exercise
+         *               params[8] - diet
+         *               params[9] - hygiene
+         *               params[10] - water intake
+         *               params[11] - on period
          */
         @Override
         protected Long doInBackground(Long... params) {
@@ -670,6 +838,11 @@ public class DiaryEntryFragmentMain extends Fragment {
             values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, params[4]);
             values.put(DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION, params[5]);
             values.put(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION, params[6]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_EXERCISE, params[7]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_DIET, params[8]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_HYGIENE, params[9]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE, params[10]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, params[11]);
 
             String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + mEpochTime;
             return (long) db.update(DiaryContract.DiaryEntry.TABLE_NAME,values,selection,null);
@@ -739,6 +912,13 @@ public class DiaryEntryFragmentMain extends Fragment {
         long lipsCondition;
         long chinCondition;
 
+        long exercise;
+        long diet;
+        long hygiene;
+        long waterIntake;
+
+        long onPeriod;
+
         EntryFieldCollection(){
             generalCondition = 3;
             foreheadCondition = 3;
@@ -746,6 +926,13 @@ public class DiaryEntryFragmentMain extends Fragment {
             cheeksCondition = 3;
             lipsCondition = 3;
             chinCondition = 3;
+
+            exercise = 0;
+            diet = 0;
+            hygiene = 0;
+            waterIntake = 0;
+
+            onPeriod = 0;
         }
     }
 }

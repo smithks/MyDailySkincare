@@ -37,13 +37,25 @@
     <string name="field_name_string">name</string>
 
     <!-- Diary Entry Strings -->
-    <string name="excellent">Excellent</string>
-    <string name="very_good">Very Good</string>
-    <string name="good">Good</string>
-    <string name="fair">Fair</string>
-    <string name="poor">Poor</string>
-    <string name="very_poor">Very Poor</string>
-    <string name="severe">Severe</string>
+    <string name="diary_entry_condition_excellent">Excellent</string>
+    <string name="diary_entry_condition_very_good">Very Good</string>
+    <string name="diary_entry_condition_good">Good</string>
+    <string name="diary_entry_condition_fair">Fair</string>
+    <string name="diary_entry_condition_poor">Poor</string>
+    <string name="diary_entry_condition_very_poor">Very Poor</string>
+    <string name="diary_entry_condition_severe">Severe</string>
+    <string name="diary_entry_slider_not_specified">Not Specified</string>
+    <string name="diary_entry_slider_exercise_none">None</string>
+    <string name="diary_entry_slider_exercise_light">Light</string>
+    <string name="diary_entry_slider_exercise_moderate">Moderate</string>
+    <string name="diary_entry_slider_exercise_intense">Intense</string>
+    <string name="diary_entry_slider_hygiene_body_only">Only Body</string>
+    <string name="diary_entry_slider_hygiene_hair_only">Only Hair</string>
+    <string name="diary_entry_slider_hygiene_body_and_hair">Body + Hair</string>
+    <string name="diary_entry_slider_water_one_three">1 &#8211; 3 Glasses</string>
+    <string name="diary_entry_slider_water_four_five">4 &#8211; 5 Glasses</string>
+    <string name="diary_entry_slider_water_six_nine">6 &#8211; 9 Glasses</string>
+    <string name="diary_entry_slider_water_ten_plus">10+ Glasses</string>
     <string name="diary_entry_skin_condition_string">My Skin Today</string>
     <string name="diary_entry_general_condition">General Condition</string>
     <string name="diary_entry_forehead_condition">Forehead</string>
@@ -54,7 +66,12 @@
     <string name="diary_entry_show_more_string">Show more</string>
     <string name="diary_entry_show_more_content_description">Show more skin condition sliders.</string>
     <string name="diary_entry_routines_strings">Today\'s Routines</string>
-    <string name="diary_entry_lifestyle_strings">Lifestyle</string>
+    <string name="diary_entry_lifestyle_strings">Today\'s Lifestyle</string>
+    <string name="diary_entry_lifestyle_exercise">Exercise</string>
+    <string name="diary_entry_lifestyle_diet">Diet</string>
+    <string name="diary_entry_lifestyle_hygiene">Hygiene</string>
+    <string name="diary_entry_lifestyle_water_intake">Water Intake</string>
+    <string name="diary_entry_lifestyle_on_period">On Period</string>
     <string name="diary_entry_delete_alert_dialog_message">Are you sure you want to delete this entry?</string>
     <string name="diary_entry_delete_alert_dialog_title">Delete diary entry?</string>
     <string name="diary_entry_back_alert_dialog_title">Save changes?</string>

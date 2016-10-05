@@ -74,7 +74,7 @@
                     android:background="@color/fair"
                     android:gravity="center"
                     android:padding="7dp"
-                    android:text="@string/fair"/>
+                    android:text="@string/diary_entry_condition_fair"/>
 
                 <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
                     android:id="@+id/diary_entry_general_condition_seek_bar"
@@ -160,7 +160,7 @@
                         android:background="@color/fair"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="@string/fair"/>
+                        android:text="@string/diary_entry_condition_fair"/>
 
                     <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
                         android:id="@+id/diary_entry_forehead_condition_seek_bar"
@@ -200,7 +200,7 @@
                         android:background="@color/fair"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="@string/fair"/>
+                        android:text="@string/diary_entry_condition_fair"/>
 
                     <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
                         android:id="@+id/diary_entry_nose_condition_seek_bar"
@@ -240,7 +240,7 @@
                         android:background="@color/fair"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="@string/fair"/>
+                        android:text="@string/diary_entry_condition_fair"/>
 
                     <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
                         android:id="@+id/diary_entry_cheeks_condition_seek_bar"
@@ -280,7 +280,7 @@
                         android:background="@color/fair"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="@string/fair"/>
+                        android:text="@string/diary_entry_condition_fair"/>
 
                     <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
                         android:id="@+id/diary_entry_lips_condition_seek_bar"
@@ -320,7 +320,7 @@
                         android:background="@color/fair"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="@string/fair"/>
+                        android:text="@string/diary_entry_condition_fair"/>
 
                     <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
                         android:id="@+id/diary_entry_chin_condition_seek_bar"
@@ -363,7 +363,7 @@
                 <com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView
                     android:id="@+id/diary_entry_routines_listview"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="150dp"
                     android:layout_below="@id/diary_entry_routines_divider"
                     android:background="@drawable/rectangle_border"
                     android:layout_marginTop="15dp"
@@ -406,7 +406,190 @@
                     android:layout_below="@id/diary_entry_lifestyle_text_view"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@color/black"/>
+
+                <RelativeLayout
+                    android:id="@+id/diary_entry_lifestyle_exercise_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/diary_entry_lifestyle_divider"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_exercise_title"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/diary_entry_lifestyle_exercise"/>
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_exercise_text"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_exercise_title"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="center"
+                        android:text="@string/diary_entry_condition_fair"/>
+
+                    <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
+                        android:id="@+id/diary_entry_lifestyle_exercise_seek_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_exercise_text"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="7dp"
+                        />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/diary_entry_lifestyle_diet_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/diary_entry_lifestyle_exercise_layout"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_diet_title"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/diary_entry_lifestyle_diet"/>
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_diet_text"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_diet_title"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="center"
+                        android:text="@string/diary_entry_condition_fair"/>
+
+                    <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
+                        android:id="@+id/diary_entry_lifestyle_diet_seek_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_diet_text"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="7dp"
+                        />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/diary_entry_lifestyle_hygiene_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/diary_entry_lifestyle_diet_layout"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_hygiene_title"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/diary_entry_lifestyle_hygiene"/>
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_hygiene_text"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_hygiene_title"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="center"
+                        android:text="@string/diary_entry_condition_fair"/>
+
+                    <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
+                        android:id="@+id/diary_entry_lifestyle_hygiene_seek_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_hygiene_text"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="7dp"
+                        />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/diary_entry_lifestyle_water_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/diary_entry_lifestyle_hygiene_layout"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_water_title"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/diary_entry_lifestyle_water_intake"/>
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_water_text"
+                        style="@style/diary_entry_slider_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_water_title"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="center"
+                        android:text="@string/diary_entry_condition_fair"/>
+
+                    <com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar
+                        android:id="@+id/diary_entry_lifestyle_water_seek_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/diary_entry_lifestyle_water_text"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="7dp"
+                        />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/diary_entry_lifestyle_period_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/diary_entry_lifestyle_water_layout"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/diary_entry_lifestyle_period_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/diary_entry_lifestyle_on_period"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/diary_entry_lifestyle_period_check"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/diary_entry_lifestyle_period_text"
+                        android:layout_toEndOf="@id/diary_entry_lifestyle_period_text"
+                        />
+
+                </RelativeLayout>
 
             </RelativeLayout>
         </RelativeLayout>
