@@ -286,7 +286,7 @@ public class ProductFragmentDetail extends Fragment {
         mIngredientsList = (ListView) rootView.findViewById(R.id.product_ingredient_list);
 
         mTypeSpinner = (Spinner) rootView.findViewById(R.id.product_type_spinner);
-        mSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),R.array.product_types_array,R.layout.spinner_layout);
+        mSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),R.array.product_types_array,R.layout.product_spinner_layout);
         mSpinnerAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         mTypeSpinner.setAdapter(mSpinnerAdapter);
 
