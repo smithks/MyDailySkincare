@@ -49,8 +49,8 @@
     <string name="diary_entry_slider_exercise_light">Light</string>
     <string name="diary_entry_slider_exercise_moderate">Moderate</string>
     <string name="diary_entry_slider_exercise_intense">Intense</string>
-    <string name="diary_entry_slider_hygiene_body_only">Only Body</string>
-    <string name="diary_entry_slider_hygiene_hair_only">Only Hair</string>
+    <string name="diary_entry_slider_hygiene_body_only">Body Only</string>
+    <string name="diary_entry_slider_hygiene_hair_only">Hair Only</string>
     <string name="diary_entry_slider_hygiene_body_and_hair">Body + Hair</string>
     <string name="diary_entry_slider_water_one_three">1 &#8211; 3 Glasses</string>
     <string name="diary_entry_slider_water_four_five">4 &#8211; 5 Glasses</string>

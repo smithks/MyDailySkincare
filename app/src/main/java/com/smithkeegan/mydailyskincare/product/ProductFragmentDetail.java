@@ -60,9 +60,6 @@ public class ProductFragmentDetail extends Fragment {
     private boolean mInitialLoadComplete;
     private boolean mIsNewProduct;
 
-    private int mNumIngredients;
-    private boolean mIngredientsChanged;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,14 +74,20 @@ public class ProductFragmentDetail extends Fragment {
 
         fetchViews(rootView);
 
-        Bundle args = getArguments();
-        Boolean mNewEntry = args.getBoolean(ProductActivityDetail.NEW_PRODUCT, true);
-        mProductId = args.getLong(ProductActivityDetail.ENTRY_ID,-1);
+        if (savedInstance == null) {
+            Bundle args = getArguments();
+            mIsNewProduct = args.getBoolean(ProductActivityDetail.NEW_PRODUCT, true);
+            mProductId = args.getLong(ProductActivityDetail.ENTRY_ID, -1);
 
-        if (mNewEntry || mProductId < 0) { //New entry or error loading
-            new SaveProductPlaceholderTask().execute();
-        } else{ //Load data from existing entry
-            new InitialLoadProductTask().execute(mProductId);
+            showLoadingLayout();
+
+            if (mIsNewProduct || mProductId < 0) { //New entry or error loading
+                new SaveProductPlaceholderTask().execute();
+            } else { //Load data from existing entry
+                new InitialLoadProductTask().execute(mProductId);
+            }
+        }else{
+            restoreSavedInstance(savedInstance);
         }
 
         setListeners();
@@ -123,9 +126,50 @@ public class ProductFragmentDetail extends Fragment {
         }
     }
 
+    /**
+     * Saves the current fields when the activity is destroyed by a system process to be restored
+     * later.
+     * @param outState bundle that will contain this fragments current fields.
+     */
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putLong(ProductState.PRODUCT_ID,mProductId);
+        outState.putBoolean(ProductState.NEW_PRODUCT,mIsNewProduct);
+        outState.putStringArray(ProductState.PRODUCT_NAME,new String[]{mInitialName,mNameEditText.getText().toString().trim()});
+        outState.putStringArray(ProductState.PRODUCT_BRAND,new String[]{mInitialBrand,mBrandEditText.getText().toString().trim()});
+        outState.putStringArray(ProductState.PRODUCT_TYPE,new String[]{mInitialType,mTypeSpinner.getSelectedItem().toString()});
+
+        super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * Restores fields of this fragment from the restored instance state.
+     * @param savedInstance the restored state
+     */
+    public void restoreSavedInstance(Bundle savedInstance){
+        mProductId = savedInstance.getLong(ProductState.PRODUCT_ID);
+        mIsNewProduct = savedInstance.getBoolean(ProductState.NEW_PRODUCT);
+
+        String[] names = savedInstance.getStringArray(ProductState.PRODUCT_NAME);
+        if (names != null){
+            mInitialName = names[0];
+            mNameEditText.setText(names[1]);
+        }
+
+        String[] brands = savedInstance.getStringArray(ProductState.PRODUCT_BRAND);
+        if (brands != null){
+            mInitialBrand = brands[0];
+            mBrandEditText.setText(brands[1]);
+        }
+
+        String[] types = savedInstance.getStringArray(ProductState.PRODUCT_TYPE);
+        if (types != null){
+            mInitialType = types[0];
+            int pos = mSpinnerAdapter.getPosition(types[1]);
+            mTypeSpinner.setSelection(pos);
+        }
+
+        mInitialLoadComplete = true;
     }
 
     /**
@@ -139,7 +183,7 @@ public class ProductFragmentDetail extends Fragment {
         if(mTypeSpinner.getSelectedItem() != null) {
             currentType = mTypeSpinner.getSelectedItem().toString();
         }
-        return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)) || (mNumIngredients > 0 && mIngredientsChanged));
+        return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)));
     }
 
     /**
@@ -222,29 +266,8 @@ public class ProductFragmentDetail extends Fragment {
      * Asks the user if they want to save changes if there are changes to save.
      */
     public void onBackButtonPressed(){
-        if (entryHasChanged() || (mIsNewProduct && entryHasChanged())) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.product_back_alert_dialog_message)
-                    .setTitle(R.string.product_back_alert_dialog_title)
-                    .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            saveCurrentProduct();
-                        }
-                    })
-                    .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if(mIsNewProduct) new DeleteProductTask().execute(false);
-                            dialog.dismiss();
-                            getActivity().finish();
-                        }
-                    }).setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+        if (entryHasChanged()) {
+            saveCurrentProduct();
         } else if (mIsNewProduct) {
             new DeleteProductTask().execute(false);
         } else {
@@ -269,7 +292,6 @@ public class ProductFragmentDetail extends Fragment {
 
         mProgressLayout = rootView.findViewById(R.id.product_loading_layout);
         mDetailLayout = rootView.findViewById(R.id.product_fragment_detail_layout);
-        showLoadingLayout();
     }
 
     /**
@@ -389,7 +411,6 @@ public class ProductFragmentDetail extends Fragment {
                     String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
                     int[] toViews = {R.id.product_detail_ingredient_listview_item};
                     SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, ingredientCursor, fromColumns, toViews, 0);
-                    mNumIngredients = ingredientAdapter.getCount();
                     mIngredientsList.setAdapter(ingredientAdapter);
                 }
             }
@@ -447,12 +468,8 @@ public class ProductFragmentDetail extends Fragment {
                 String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
                 int[] toViews = {R.id.product_detail_ingredient_listview_item};
                 SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, result, fromColumns, toViews, 0);
-                mNumIngredients = ingredientAdapter.getCount();
                 mIngredientsList.setAdapter(ingredientAdapter);
-            }else{
-                mNumIngredients = 0;
             }
-            mIngredientsChanged = true;
         }
     }
 
@@ -547,5 +564,16 @@ public class ProductFragmentDetail extends Fragment {
             }
             getActivity().finish();
         }
+    }
+
+    /**
+     * Class to hold keys to be used when saving and restoring instance state.
+     */
+    protected static class ProductState {
+        protected static final String PRODUCT_ID = "PRODUCT_ID";
+        protected static final String NEW_PRODUCT = "NEW_PRODUCT";
+        protected static final String PRODUCT_NAME = "PRODUCT_NAME";
+        protected static final String PRODUCT_BRAND = "PRODUCT_BRAND";
+        protected static final String PRODUCT_TYPE = "PRODUCT_TYPE";
     }
 }

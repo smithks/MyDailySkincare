@@ -9,6 +9,7 @@
         android:id="@+id/product_loading_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="invisible"
         android:gravity="center">
 
         <ProgressBar

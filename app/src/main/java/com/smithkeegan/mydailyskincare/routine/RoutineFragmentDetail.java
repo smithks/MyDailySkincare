@@ -59,9 +59,6 @@ public class RoutineFragmentDetail extends Fragment {
     private boolean mIsNewRoutine;
     private Long mRoutineID;
 
-    private boolean mProductsChanged;
-    private int mNumProducts;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,18 +70,22 @@ public class RoutineFragmentDetail extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_routine_detail,container,false);
 
         mDbHelper = DiaryDbHelper.getInstance(getContext());
-
-        Bundle args = getArguments();
-        Boolean newEntry = args.getBoolean(RoutineActivityDetail.NEW_ROUTINE,true);
-        mRoutineID = args.getLong(RoutineActivityDetail.ENTRY_ID,-1);
-
         fetchViews(rootView);
-        showLoadingLayout();
 
-        if (newEntry || mRoutineID < 0){ //New entry or error loading
-            new SaveRoutinePlaceholderTask().execute();
-        }else{ //Existing entry
-            new InitialLoadRoutineTask().execute(mRoutineID);
+        if (savedInstanceState == null) {
+            Bundle args = getArguments();
+            mIsNewRoutine = args.getBoolean(RoutineActivityDetail.NEW_ROUTINE, true);
+            mRoutineID = args.getLong(RoutineActivityDetail.ENTRY_ID, -1);
+
+            showLoadingLayout();
+
+            if (mIsNewRoutine || mRoutineID < 0) { //New entry or error loading
+                new SaveRoutinePlaceholderTask().execute();
+            } else { //Existing entry
+                new InitialLoadRoutineTask().execute(mRoutineID);
+            }
+        }else{
+            restoreSavedInstance(savedInstanceState);
         }
 
         setListeners();
@@ -134,6 +135,51 @@ public class RoutineFragmentDetail extends Fragment {
     }
 
     /**
+     * Saves the current fields when the activity is destroyed by a system process to be restored
+     * later.
+     * @param outState bundle that will contain this fragments current fields.
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putLong(RoutineState.ROUTINE_ID,mRoutineID);
+        outState.putBoolean(RoutineState.NEW_ROUTINE,mIsNewRoutine);
+        outState.putStringArray(RoutineState.ROUTINE_NAME,new String[]{mInitialName,mNameEditText.getText().toString().trim()});
+        outState.putStringArray(RoutineState.ROUTINE_TIME,new String[]{mInitialTime,((RadioButton) mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString()});
+        outState.putStringArray(RoutineState.ROUTINE_COMMENT,new String[]{mInitialComment,mCommentEditText.getText().toString().trim()});
+
+        super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * Restores fields of this fragment from the restored instance state.
+     * @param savedInstance the restored state
+     */
+    public void restoreSavedInstance(Bundle savedInstance){
+        mRoutineID = savedInstance.getLong(RoutineState.ROUTINE_ID);
+        mIsNewRoutine = savedInstance.getBoolean(RoutineState.NEW_ROUTINE);
+
+        String[] names = savedInstance.getStringArray(RoutineState.ROUTINE_NAME);
+        if (names != null){
+            mInitialName = names[0];
+            mNameEditText.setText(names[1]);
+        }
+
+        String[] time = savedInstance.getStringArray(RoutineState.ROUTINE_TIME);
+        if (time != null){
+            mInitialTime = time[0];
+            setSelectedRadioButton(time[1]);
+        }
+
+        String[] comment = savedInstance.getStringArray(RoutineState.ROUTINE_COMMENT);
+        if (comment != null){
+            mInitialComment = comment[0];
+            mCommentEditText.setText(comment[1]);
+        }
+
+        mInitialLoadComplete = true;
+    }
+
+    /**
      * Refreshes the list of products belonging to this routine.
      */
     public void refreshProducts(){
@@ -176,7 +222,7 @@ public class RoutineFragmentDetail extends Fragment {
         RadioButton selectedButton = (RadioButton) mTimeRadioGroup.findViewById(id);
         String currTime = selectedButton.getText().toString();
         String currComment = mCommentEditText.getText().toString().trim();
-        return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment) || (mNumProducts > 0 && mProductsChanged));
+        return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment));
     }
 
     /**
@@ -275,30 +321,8 @@ public class RoutineFragmentDetail extends Fragment {
      * Asks the user if they want to save changes if there are changes to save.
      */
     public void onBackButtonPressed(){
-        if (entryHasChanged() || (mIsNewRoutine && entryHasChanged())) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.routine_back_alert_dialog_message)
-                    .setTitle(R.string.routine_back_alert_dialog_title)
-                    .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            saveCurrentRoutine();
-                        }
-                    })
-                    .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if(mIsNewRoutine) new DeleteRoutineTask().execute(false);
-                            dialog.dismiss();
-                            getActivity().finish();
-                        }
-                    })
-                    .setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+        if (entryHasChanged()) {
+            saveCurrentRoutine();
         } else if (mIsNewRoutine) {
             new DeleteRoutineTask().execute(false);
         } else {
@@ -405,7 +429,6 @@ public class RoutineFragmentDetail extends Fragment {
                             return false;
                         }
                     });
-                    mNumProducts = adapter.getCount();
                     mProductsListView.setAdapter(adapter);
                 }
             }
@@ -495,12 +518,8 @@ public class RoutineFragmentDetail extends Fragment {
                             return false;
                         }
                     });
-                    mNumProducts = adapter.getCount();
-                    mProductsChanged = true;
                     mProductsListView.setAdapter(adapter);
                 }
-            }else{
-                mNumProducts = 0; //No products loaded
             }
         }
     }
@@ -600,5 +619,16 @@ public class RoutineFragmentDetail extends Fragment {
             }
             getActivity().finish();
         }
+    }
+
+    /**
+     * Class to hold static strings used as keys when saving or restoring instance state.
+     */
+    protected static class RoutineState{
+        protected static final String ROUTINE_ID = "ROUTINE_ID";
+        protected static final String NEW_ROUTINE = "NEW_ROUTINE";
+        protected static final String ROUTINE_NAME = "ROUTINE_NAME";
+        protected static final String ROUTINE_TIME = "ROUTINE_TIME";
+        protected static final String ROUTINE_COMMENT = "ROUTINE_COMMENT";
     }
 }

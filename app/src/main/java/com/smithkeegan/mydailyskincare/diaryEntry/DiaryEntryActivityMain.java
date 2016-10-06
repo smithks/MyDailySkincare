@@ -21,39 +21,38 @@ import java.util.Date;
  * TODO: load data from database based on date
  * TODO: don't show year in title if current year
  */
-public class DiaryEntryActivityMain extends AppCompatActivity implements DialogClosedListener{
+public class DiaryEntryActivityMain extends AppCompatActivity implements DialogClosedListener {
 
     public static final String DATE_EXTRA = "DATE_EXTRA";
 
     @Override
-    public void onCreate(Bundle savedInstance){
+    public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_diary_entry_main);
 
         Intent intent = getIntent();
-        Date date = new Date(intent.getLongExtra(CalendarActivityMain.INTENT_DATE,0));
+        Date date = new Date(intent.getLongExtra(CalendarActivityMain.INTENT_DATE, 0));
         DateFormat df = DateFormat.getDateInstance();
         setTitle(df.format(date));
 
-        //Place date in bundle and send to fragment
-        Bundle bundle = new Bundle();
-        bundle.putLong(DATE_EXTRA,date.getTime());
-        DiaryEntryFragmentMain fragment = new DiaryEntryFragmentMain();
-        fragment.setArguments(bundle);
+        if (savedInstance == null) {
+            //Place date in bundle and send to fragment
+            Bundle bundle = new Bundle();
+            bundle.putLong(DATE_EXTRA, date.getTime());
+            DiaryEntryFragmentMain fragment = new DiaryEntryFragmentMain();
+            fragment.setArguments(bundle);
 
-        if(savedInstance == null){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.add(R.id.diary_entry_main, fragment);
             transaction.commit();
         }
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home: //Handle user pressing navigate up button.
-                ((DiaryEntryFragmentMain)getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).backButtonPressed();
+                ((DiaryEntryFragmentMain) getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).onBackButtonPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -63,12 +62,12 @@ public class DiaryEntryActivityMain extends AppCompatActivity implements DialogC
     @Override
     public void onBackPressed() {
         //Handle user pressing back button
-        ((DiaryEntryFragmentMain)getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).backButtonPressed();
+        ((DiaryEntryFragmentMain) getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).onBackButtonPressed();
     }
 
     @Override
     public void onEditListDialogClosed() {
         //On return from item list dialog
-        ((DiaryEntryFragmentMain)getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).refreshRoutinesList();
+        ((DiaryEntryFragmentMain) getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).refreshRoutinesList();
     }
 }
