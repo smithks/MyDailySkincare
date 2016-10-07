@@ -31,8 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/item_list_new_string"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@color/white"
+            style="@style/primary_button_style"
             android:layout_gravity="center_vertical"
             />
     </LinearLayout>

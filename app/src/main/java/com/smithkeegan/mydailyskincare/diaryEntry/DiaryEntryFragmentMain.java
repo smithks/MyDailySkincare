@@ -116,14 +116,14 @@ public class DiaryEntryFragmentMain extends Fragment {
         mEpochTime = date.getTime(); //Set time long
         setSliderArrays();
 
-        View rootView = inflater.inflate(R.layout.fragment_diary_entry_main,container,false);
+        View rootView = inflater.inflate(R.layout.fragment_diary_entry_main, container, false);
 
         setMemberViews(rootView);
         if (savedInstanceState == null) {
             showLoadingScreen();
             setDefaultMemberValues();
             new LoadDiaryEntryTask().execute(mEpochTime);
-        }else{
+        } else {
             restoreSavedInstance(savedInstanceState);
         }
 
@@ -134,12 +134,12 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_item_detail,menu);
+        inflater.inflate(R.menu.menu_item_detail, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_action_save:
                 saveCurrentDiaryEntry();
                 return true;
@@ -157,7 +157,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(mInitialLoadFinished){
+        if (mInitialLoadFinished) {
             refreshRoutinesList();
         }
     }
@@ -169,12 +169,12 @@ public class DiaryEntryFragmentMain extends Fragment {
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putLong(DiaryEntryState.DIARY_ENTRY_ID,mDiaryEntryID);
-        outState.putLong(DiaryEntryState.DIARY_ENTRY_TIME,mEpochTime);
-        outState.putBoolean(DiaryEntryState.NEW_DIARY_ENTRY,mNewEntry);
-        outState.putBoolean(DiaryEntryState.ADDITIONAL_SHOWN,mAdditionalConditionsShown);
-        outState.putParcelable(DiaryEntryState.INITIAL_FIELD_VALUES,mInitialFieldValues);
-        outState.putParcelable(DiaryEntryState.CURRENT_FIELD_VALUES,mCurrentFieldValues);
+        outState.putLong(DiaryEntryState.DIARY_ENTRY_ID, mDiaryEntryID);
+        outState.putLong(DiaryEntryState.DIARY_ENTRY_TIME, mEpochTime);
+        outState.putBoolean(DiaryEntryState.NEW_DIARY_ENTRY, mNewEntry);
+        outState.putBoolean(DiaryEntryState.ADDITIONAL_SHOWN, mAdditionalConditionsShown);
+        outState.putParcelable(DiaryEntryState.INITIAL_FIELD_VALUES, mInitialFieldValues);
+        outState.putParcelable(DiaryEntryState.CURRENT_FIELD_VALUES, mCurrentFieldValues);
 
         super.onSaveInstanceState(outState);
     }
@@ -183,7 +183,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Restores fields of this fragment from the restored instance state.
      * @param savedInstance the restored state
      */
-    public void restoreSavedInstance(Bundle savedInstance){
+    public void restoreSavedInstance(Bundle savedInstance) {
         mDiaryEntryID = savedInstance.getLong(DiaryEntryState.DIARY_ENTRY_ID);
         mEpochTime = savedInstance.getLong(DiaryEntryState.DIARY_ENTRY_TIME);
         mNewEntry = savedInstance.getBoolean(DiaryEntryState.NEW_DIARY_ENTRY);
@@ -204,7 +204,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /*
         Fetches properties to be used with the condition label's from xml resources.
          */
-    private void setSliderArrays(){
+    private void setSliderArrays() {
         mConditionStrings = new String[7];
         mConditionStrings[0] = getResources().getString(R.string.diary_entry_condition_severe);
         mConditionStrings[1] = getResources().getString(R.string.diary_entry_condition_very_poor);
@@ -215,13 +215,13 @@ public class DiaryEntryFragmentMain extends Fragment {
         mConditionStrings[6] = getResources().getString(R.string.diary_entry_condition_excellent);
 
         mConditionColorIds = new int[7];
-        mConditionColorIds[0] = ContextCompat.getColor(getContext(),R.color.severe);
-        mConditionColorIds[1] = ContextCompat.getColor(getContext(),R.color.veryPoor);
-        mConditionColorIds[2] = ContextCompat.getColor(getContext(),R.color.poor);
-        mConditionColorIds[3] = ContextCompat.getColor(getContext(),R.color.fair);
-        mConditionColorIds[4] = ContextCompat.getColor(getContext(),R.color.good);
-        mConditionColorIds[5] = ContextCompat.getColor(getContext(),R.color.veryGood);
-        mConditionColorIds[6] = ContextCompat.getColor(getContext(),R.color.excellent);
+        mConditionColorIds[0] = ContextCompat.getColor(getContext(), R.color.severe);
+        mConditionColorIds[1] = ContextCompat.getColor(getContext(), R.color.veryPoor);
+        mConditionColorIds[2] = ContextCompat.getColor(getContext(), R.color.poor);
+        mConditionColorIds[3] = ContextCompat.getColor(getContext(), R.color.fair);
+        mConditionColorIds[4] = ContextCompat.getColor(getContext(), R.color.good);
+        mConditionColorIds[5] = ContextCompat.getColor(getContext(), R.color.veryGood);
+        mConditionColorIds[6] = ContextCompat.getColor(getContext(), R.color.excellent);
 
         mExerciseStrings = new String[5];
         mExerciseStrings[0] = getResources().getString(R.string.diary_entry_slider_not_specified);
@@ -257,7 +257,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Retrieves the views for this fragment.
      * @param rootView the rootview of this fragment
      */
-    private void setMemberViews(View rootView){
+    private void setMemberViews(View rootView) {
         mLoadingView = rootView.findViewById(R.id.diary_entry_loading_layout);
         mEntryDetailView = rootView.findViewById(R.id.diary_entry_detail_layout);
 
@@ -297,7 +297,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Set the default values of fields of this diary entry.
      */
-    private void setDefaultMemberValues(){
+    private void setDefaultMemberValues() {
         //Set the default value of sliders, will be changed on load from database.
         updateSliderLabel(mTextViewGeneralCondition, 3, mConditionStrings);
         updateSliderLabel(mTextViewForeheadCondition, 3, mConditionStrings);
@@ -341,7 +341,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /*
     Sets the listeners of views in this fragment.
      */
-    private void setListeners(){
+    private void setListeners() {
         mSeekBarGeneralCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarForeheadCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarNoseCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
@@ -387,11 +387,11 @@ public class DiaryEntryFragmentMain extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putString(ItemListDialogFragment.DISPLAYED_DATA,ItemListDialogFragment.ROUTINES);
-                args.putLong(ItemListDialogFragment.ITEM_ID,mDiaryEntryID);
+                args.putString(ItemListDialogFragment.DISPLAYED_DATA, ItemListDialogFragment.ROUTINES);
+                args.putLong(ItemListDialogFragment.ITEM_ID, mDiaryEntryID);
                 DialogFragment fragment = new ItemListDialogFragment();
                 fragment.setArguments(args);
-                fragment.show(getFragmentManager(),"dialog");
+                fragment.show(getFragmentManager(), "dialog");
             }
         });
 
@@ -399,8 +399,8 @@ public class DiaryEntryFragmentMain extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), RoutineActivityDetail.class);
-                intent.putExtra(RoutineActivityDetail.NEW_ROUTINE,false);
-                intent.putExtra(RoutineActivityDetail.ENTRY_ID,id);
+                intent.putExtra(RoutineActivityDetail.NEW_ROUTINE, false);
+                intent.putExtra(RoutineActivityDetail.ENTRY_ID, id);
                 startActivity(intent);
             }
         });
@@ -410,14 +410,14 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Listener for this diary entries seek bars. Updates the corresponding textView and value for this
      * seekbar.
      */
-    private class DiaryEntrySeekBarChangeListener implements SeekBar.OnSeekBarChangeListener{
+    private class DiaryEntrySeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if(fromUser) { //Only change if the user changed the progress
+            if (fromUser) { //Only change if the user changed the progress
                 DiaryEntrySeekBar diaryEntrySeekBar = ((DiaryEntrySeekBar) seekBar);
                 int step = diaryEntrySeekBar.getNearestStep(progress);
-                switch (diaryEntrySeekBar.getId()){ //Set the text, color and current value for this seek bar's corresponding views
+                switch (diaryEntrySeekBar.getId()) { //Set the text, color and current value for this seek bar's corresponding views
                     case R.id.diary_entry_general_condition_seek_bar:
                         updateConditionBlock(mTextViewGeneralCondition, mSeekBarGeneralCondition, step);
                         mCurrentFieldValues.generalCondition = step;
@@ -467,16 +467,18 @@ public class DiaryEntryFragmentMain extends Fragment {
         }
 
         @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {}
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
 
         @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {}
+        public void onStopTrackingTouch(SeekBar seekBar) {
+        }
     }
 
     /**
      * Shows the loading screen while hiding the detail layout.
      */
-    private void showLoadingScreen(){
+    private void showLoadingScreen() {
         mLoadingView.setVisibility(View.VISIBLE);
         mEntryDetailView.setVisibility(View.INVISIBLE);
     }
@@ -484,7 +486,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Hides the loading screen and shows the detail layout.
      */
-    private void hideLoadingScreen(){
+    private void hideLoadingScreen() {
         mLoadingView.setVisibility(View.INVISIBLE);
         mEntryDetailView.setVisibility(View.VISIBLE);
     }
@@ -493,22 +495,22 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Called when the users toggles the show more conditions button. Displays
      * additional conditions if they are hidden, hides them if they are shown.
      */
-    private void toggleAdditionalConditions(){
+    private void toggleAdditionalConditions() {
 
-        if(mAdditionalConditionsShown){
+        if (mAdditionalConditionsShown) {
             mAdditionalConditionsLayout.setVisibility(View.INVISIBLE);
-            ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.ic_add_circle_black_24dp));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_circle_black_24dp));
             //Move the layout below additional conditions up
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.BELOW, mShowMoreLayout.getId());
             mRoutinesLayout.setLayoutParams(layoutParams);
             mAdditionalConditionsShown = false;
-        }else{
+        } else {
             mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
-            ((ImageButton)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(),R.drawable.ic_remove_circle_black_24dp));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_remove_circle_black_24dp));
             //Move the layout below the additional conditions down
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW,mAdditionalConditionsLayout.getId());
+            layoutParams.addRule(RelativeLayout.BELOW, mAdditionalConditionsLayout.getId());
             mRoutinesLayout.setLayoutParams(layoutParams);
             mAdditionalConditionsShown = true;
         }
@@ -518,25 +520,25 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Sets the views of this fragment to correspond with the passed in collection of values.
      * @param values values for each view
      */
-    private void updateFieldViews(DiaryEntryFieldCollection values){
-        updateConditionBlock(mTextViewGeneralCondition,mSeekBarGeneralCondition,values.generalCondition);
+    private void updateFieldViews(DiaryEntryFieldCollection values) {
+        updateConditionBlock(mTextViewGeneralCondition, mSeekBarGeneralCondition, values.generalCondition);
         updateConditionBlock(mTextViewForeheadCondition, mSeekBarForeheadCondition, values.foreheadCondition);
-        updateConditionBlock(mTextViewNoseCondition,mSeekBarNoseCondition,values.noseCondition);
-        updateConditionBlock(mTextViewCheeksCondition,mSeekBarCheeksCondition,values.cheeksCondition);
-        updateConditionBlock(mTextViewLipsCondition,mSeekBarLipsCondition,values.lipsCondition);
-        updateConditionBlock(mTextViewChinCondition,mSeekBarChinCondition,values.chinCondition);
+        updateConditionBlock(mTextViewNoseCondition, mSeekBarNoseCondition, values.noseCondition);
+        updateConditionBlock(mTextViewCheeksCondition, mSeekBarCheeksCondition, values.cheeksCondition);
+        updateConditionBlock(mTextViewLipsCondition, mSeekBarLipsCondition, values.lipsCondition);
+        updateConditionBlock(mTextViewChinCondition, mSeekBarChinCondition, values.chinCondition);
 
-        updateSliderLabel(mTextViewExercise,(int)values.exercise,mExerciseStrings);
-        mSeekBarExercise.setProgressToStep((int)values.exercise);
+        updateSliderLabel(mTextViewExercise, (int) values.exercise, mExerciseStrings);
+        mSeekBarExercise.setProgressToStep((int) values.exercise);
 
-        updateSliderLabel(mTextViewDiet,(int)values.diet,mDietStrings);
-        mSeekBarDiet.setProgressToStep((int)values.diet);
+        updateSliderLabel(mTextViewDiet, (int) values.diet, mDietStrings);
+        mSeekBarDiet.setProgressToStep((int) values.diet);
 
-        updateSliderLabel(mTextViewHygiene,(int)values.hygiene,mHygieneStrings);
-        mSeekBarHygiene.setProgressToStep((int)values.hygiene);
+        updateSliderLabel(mTextViewHygiene, (int) values.hygiene, mHygieneStrings);
+        mSeekBarHygiene.setProgressToStep((int) values.hygiene);
 
-        updateSliderLabel(mTextViewWaterIntake,(int)values.waterIntake,mWaterIntakeStrings);
-        mSeekBarWaterIntake.setProgressToStep((int)values.waterIntake);
+        updateSliderLabel(mTextViewWaterIntake, (int) values.waterIntake, mWaterIntakeStrings);
+        mSeekBarWaterIntake.setProgressToStep((int) values.waterIntake);
 
         mOnPeriodCheckBox.setChecked(values.onPeriod == 1); //If onPeriod == 1 then set checked
     }
@@ -545,39 +547,39 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Called when user taps the onPeriod layout or the onPeriod checkbox. Toggles
      * the current value of the on period field.
      */
-    private void toggleOnPeriodCheckbox(){
+    private void toggleOnPeriodCheckbox() {
         mCurrentFieldValues.onPeriod = mOnPeriodCheckBox.isChecked() ? 1 : 0;
     }
 
     /**
-     *  Updates the passed in textView with the appropriate label and background color.
+     * Updates the passed in textView with the appropriate label and background color.
      * @param view the view to update
      * @param step the step of the slider to set the text and color too
      */
-    public void updateSliderLabel(TextView view, int step, String[] labelArray){
-        if(step < labelArray.length){
+    public void updateSliderLabel(TextView view, int step, String[] labelArray) {
+        if (step < labelArray.length) {
             view.setText(labelArray[step]);
         }
     }
 
     /**
      * Sets a condition block to the provided step.
-     * @param view The textview to update
+     * @param view    The textview to update
      * @param seekbar The seekbar to update
-     * @param step The step to set to.
+     * @param step    The step to set to.
      */
-    private void updateConditionBlock(TextView view, DiaryEntrySeekBar seekbar, long step){
-        updateSliderLabel(view,(int)step,mConditionStrings);
-        seekbar.setProgressToStep((int)step);
-        view.setBackgroundColor(mConditionColorIds[(int)step]);
+    private void updateConditionBlock(TextView view, DiaryEntrySeekBar seekbar, long step) {
+        updateSliderLabel(view, (int) step, mConditionStrings);
+        seekbar.setProgressToStep((int) step);
+        view.setBackgroundColor(mConditionColorIds[(int) step]);
     }
 
     /**
      * Checks if the current values of any field is different from its value at creation.
      * @return true if this entry has changed
      */
-    private boolean entryHasChanged(){
-        if(mInitialFieldValues.generalCondition != mCurrentFieldValues.generalCondition
+    private boolean entryHasChanged() {
+        if (mInitialFieldValues.generalCondition != mCurrentFieldValues.generalCondition
                 || mInitialFieldValues.foreheadCondition != mCurrentFieldValues.foreheadCondition
                 || mInitialFieldValues.noseCondition != mCurrentFieldValues.noseCondition
                 || mInitialFieldValues.cheeksCondition != mCurrentFieldValues.cheeksCondition
@@ -586,7 +588,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 || mInitialFieldValues.diet != mCurrentFieldValues.diet
                 || mInitialFieldValues.hygiene != mCurrentFieldValues.hygiene
                 || mInitialFieldValues.waterIntake != mCurrentFieldValues.waterIntake
-                || mInitialFieldValues.onPeriod != mCurrentFieldValues.onPeriod){
+                || mInitialFieldValues.onPeriod != mCurrentFieldValues.onPeriod) {
             return true;
         }
         return false;
@@ -596,14 +598,27 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Called when the user presses the back button or the navigate up button.
      * Called by parent activity.
      */
-    public void onBackButtonPressed(){
-        saveCurrentDiaryEntry();
+    public void onBackButtonPressed() {
+        if (entryHasChanged())
+            saveCurrentDiaryEntry();
+        else
+            getActivity().finish();
+    }
+
+    /**
+     * Called by parent activity when the edit list dialog is closed.
+     * @param listModified true if the list of routines was modified.
+     */
+    public void onEditDialogClosed(boolean listModified){
+        if (listModified){
+            refreshRoutinesList();
+        }
     }
 
     /**
      * Refreshes the listview containing this diary entries routines.
      */
-    public void refreshRoutinesList(){
+    public void refreshRoutinesList() {
         Long[] args = {mDiaryEntryID};
         new LoadDiaryEntryRoutinesTask().execute(args);
     }
@@ -611,7 +626,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Calls to the saveDiaryEntry async task to save this diary entry.
      */
-    private void saveCurrentDiaryEntry(){
+    private void saveCurrentDiaryEntry() {
         Long[] args = {mEpochTime,
                 mCurrentFieldValues.generalCondition,
                 mCurrentFieldValues.foreheadCondition,
@@ -630,8 +645,8 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Calls to deleteDiaryEntry task to delete this entry.
      */
-    private void deleteCurrentDiaryEntry(boolean askUser){
-        if(askUser) {
+    private void deleteCurrentDiaryEntry(boolean askUser) {
+        if (askUser) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.diary_entry_delete_alert_dialog_message)
                     .setTitle(R.string.diary_entry_delete_alert_dialog_title)
@@ -649,7 +664,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                             dialog.dismiss();
                         }
                     }).show();
-        }else{
+        } else {
             Boolean[] args = {false};
             new DeleteDiaryEntryTask().execute(args);
         }
@@ -659,7 +674,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Background task used to fetch data from the database corresponding to this date.
      * If there is no existing entry for this date then one is created.
      */
-    private class LoadDiaryEntryTask extends AsyncTask<Long,Void,Cursor>{
+    private class LoadDiaryEntryTask extends AsyncTask<Long, Void, Cursor> {
 
         /**
          * @param params params[0] contains the date to fetch from database
@@ -684,14 +699,14 @@ public class DiaryEntryFragmentMain extends Fragment {
                     DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE,
                     DiaryContract.DiaryEntry.COLUMN_ON_PERIOD};
 
-            String selection = DiaryContract.DiaryEntry.COLUMN_DATE +" = "+epochTime; // TODO add date
+            String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + epochTime; // TODO add date
 
-            Cursor rows = db.query(DiaryContract.DiaryEntry.TABLE_NAME,columns,selection,null,null,null,null);
+            Cursor rows = db.query(DiaryContract.DiaryEntry.TABLE_NAME, columns, selection, null, null, null, null);
 
-            if(rows != null && rows.getCount() == 0){ //No entry found for this date, create a new one.
+            if (rows != null && rows.getCount() == 0) { //No entry found for this date, create a new one.
                 ContentValues values = new ContentValues();
-                values.put(DiaryContract.DiaryEntry.COLUMN_DATE,epochTime);
-                mDiaryEntryID = db.insert(DiaryContract.DiaryEntry.TABLE_NAME,null,values); //Set returned row ID to this diary entry's ID
+                values.put(DiaryContract.DiaryEntry.COLUMN_DATE, epochTime);
+                mDiaryEntryID = db.insert(DiaryContract.DiaryEntry.TABLE_NAME, null, values); //Set returned row ID to this diary entry's ID
             }
 
             return rows;
@@ -703,7 +718,7 @@ public class DiaryEntryFragmentMain extends Fragment {
          */
         @Override
         protected void onPostExecute(Cursor result) {
-            if(result != null && result.moveToFirst()){ //Row was returned from query, an entry for this date exists
+            if (result != null && result.moveToFirst()) { //Row was returned from query, an entry for this date exists
                 mDiaryEntryID = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry._ID));
 
                 long generalStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION));
@@ -751,7 +766,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 mCurrentFieldValues.onPeriod = onPeriod;
 
                 updateFieldViews(mCurrentFieldValues);
-            }else{ //A new entry was created, default values have already been set
+            } else { //A new entry was created, default values have already been set
                 mNewEntry = true;
             }
             refreshRoutinesList();
@@ -763,7 +778,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * AsyncTask to populate the routines listview for this diary entry.
      */
-    private class LoadDiaryEntryRoutinesTask extends AsyncTask<Long,Void,Cursor>{
+    private class LoadDiaryEntryRoutinesTask extends AsyncTask<Long, Void, Cursor> {
 
         /**
          * Grabs this diary entry's routines from the DiaryEntryRoutines table and
@@ -780,21 +795,21 @@ public class DiaryEntryFragmentMain extends Fragment {
 
             String[] columns = {DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID};
             String where = DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + " = " + Long.toString(diaryEntryID);
-            Cursor routineIDsCursor = db.query(DiaryContract.DiaryEntryRoutine.TABLE_NAME,columns,where,null,null,null,null);
+            Cursor routineIDsCursor = db.query(DiaryContract.DiaryEntryRoutine.TABLE_NAME, columns, where, null, null, null, null);
 
             String[] routineColumns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
             String routineWhere = "";
-            if(routineIDsCursor.moveToFirst()){
+            if (routineIDsCursor.moveToFirst()) {
                 do {
                     long routineID = routineIDsCursor.getLong(routineIDsCursor.getColumnIndex(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID));
                     if (routineWhere.length() > 0) { //Append OR to every ID past the first.
                         routineWhere = routineWhere + " OR ";
                     }
-                    routineWhere = routineWhere +DiaryContract.Routine._ID + " = " + routineID;
-                }while(routineIDsCursor.moveToNext());
+                    routineWhere = routineWhere + DiaryContract.Routine._ID + " = " + routineID;
+                } while (routineIDsCursor.moveToNext());
 
                 String routineOrderBy = DiaryContract.Routine.COLUMN_NAME + " ASC";
-                routineCursor = db.query(DiaryContract.Routine.TABLE_NAME,routineColumns,routineWhere,null,null,null,routineOrderBy);
+                routineCursor = db.query(DiaryContract.Routine.TABLE_NAME, routineColumns, routineWhere, null, null, null, routineOrderBy);
             }
 
             return routineCursor;
@@ -807,10 +822,10 @@ public class DiaryEntryFragmentMain extends Fragment {
         @Override
         protected void onPostExecute(Cursor cursor) {
             mRoutinesListView.setAdapter(null);//Clear current adapter
-            if(cursor != null){
-                String [] fromColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
-                int[] toViews = {R.id.routine_listview_name,R.id.routine_listView_time};
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.listview_item_routine_main,cursor,fromColumns,toViews,0);
+            if (cursor != null) {
+                String[] fromColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
+                int[] toViews = {R.id.routine_listview_name, R.id.routine_listView_time};
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_routine_main, cursor, fromColumns, toViews, 0);
                 adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
                     @Override
                     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -818,7 +833,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                             TextView nameView = (TextView) view;
                             nameView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
                             return true;
-                        }else if (columnIndex == cursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)){
+                        } else if (columnIndex == cursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)) {
                             TextView timeView = (TextView) view;
                             timeView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
                             return true;
@@ -836,7 +851,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * AsyncTask for saving this diary entry to the database. Called when the user explicitly presses the save button or when the
      * user chooses to save changes when leaving the fragment.
      */
-    private class SaveDiaryEntryTask extends AsyncTask<Long,Void,Long>{
+    private class SaveDiaryEntryTask extends AsyncTask<Long, Void, Long> {
 
         /**
          * @param params params[0] - todays date as milliseconds from epoch
@@ -857,8 +872,8 @@ public class DiaryEntryFragmentMain extends Fragment {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
 
-            values.put(DiaryContract.DiaryEntry.COLUMN_DATE,params[0]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION,params[1]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_DATE, params[0]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION, params[1]);
             values.put(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION, params[2]);
             values.put(DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION, params[3]);
             values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, params[4]);
@@ -871,19 +886,19 @@ public class DiaryEntryFragmentMain extends Fragment {
             values.put(DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, params[11]);
 
             String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + mEpochTime;
-            return (long) db.update(DiaryContract.DiaryEntry.TABLE_NAME,values,selection,null);
+            return (long) db.update(DiaryContract.DiaryEntry.TABLE_NAME, values, selection, null);
         }
 
         @Override
         protected void onPostExecute(Long result) {
-            if(result == -1){
-                Toast.makeText(getContext(),R.string.toast_save_failed, Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(getContext(),R.string.toast_save_success,Toast.LENGTH_SHORT).show();
+            if (result == -1) {
+                Toast.makeText(getContext(), R.string.toast_save_failed, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), R.string.toast_save_success, Toast.LENGTH_SHORT).show();
             }
             Intent returnIntent = new Intent();
-            returnIntent.putExtra(CalendarActivityMain.INTENT_DATE,mEpochTime);
-            getActivity().setResult(Activity.RESULT_OK,returnIntent);
+            returnIntent.putExtra(CalendarActivityMain.INTENT_DATE, mEpochTime);
+            getActivity().setResult(Activity.RESULT_OK, returnIntent);
             getActivity().finish();
         }
     }
@@ -891,7 +906,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * AsyncTask for deleting a diary entry.
      */
-    private class DeleteDiaryEntryTask extends AsyncTask<Boolean,Void,Integer>{
+    private class DeleteDiaryEntryTask extends AsyncTask<Boolean, Void, Integer> {
 
         private boolean showToast;
 
@@ -906,12 +921,12 @@ public class DiaryEntryFragmentMain extends Fragment {
 
             String where = DiaryContract.DiaryEntry.COLUMN_DATE + " = ?";
             String[] whereArgs = {Long.toString(mEpochTime)};
-            return db.delete(DiaryContract.DiaryEntry.TABLE_NAME,where,whereArgs);
+            return db.delete(DiaryContract.DiaryEntry.TABLE_NAME, where, whereArgs);
         }
 
         @Override
         protected void onPostExecute(Integer result) {
-            if(result == 0) {
+            if (result == 0) {
                 if (showToast)
                     Toast.makeText(getContext(), R.string.toast_delete_failed, Toast.LENGTH_SHORT).show();
             } else {
@@ -921,8 +936,8 @@ public class DiaryEntryFragmentMain extends Fragment {
 
             //Return to calendar activity with delete flag set
             Intent returnIntent = new Intent();
-            returnIntent.putExtra(CalendarActivityMain.INTENT_DATE_DELETED,mEpochTime);
-            getActivity().setResult(Activity.RESULT_OK,returnIntent);
+            returnIntent.putExtra(CalendarActivityMain.INTENT_DATE_DELETED, mEpochTime);
+            getActivity().setResult(Activity.RESULT_OK, returnIntent);
             getActivity().finish();
         }
     }
@@ -930,7 +945,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Holds static strings used as keys when saving and restoring state.
      */
-    protected static class DiaryEntryState{
+    protected static class DiaryEntryState {
         protected static final String DIARY_ENTRY_ID = "DIARY_ENTRY_ID";
         protected static final String DIARY_ENTRY_TIME = "DIARY_ENTRY_TIME";
         protected static final String NEW_DIARY_ENTRY = "NEW_DIARY_ENTRY";

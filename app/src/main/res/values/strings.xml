@@ -30,8 +30,9 @@
     <string name="toast_delete_failed">Error deleting entry</string>
     <string name="toast_create_failed">Error creating entry</string>
     <string name="alert_delete_confirm">delete</string>
-    <string name="done_string">done</string>
+    <string name="done_string">DONE</string>
     <string name="no_string">no</string>
+    <string name="ok_string">OK</string>
     <string name="add_remove_string">Add/Remove</string>
     <string name="toast_enter_valid_name">Please enter a name</string>
     <string name="field_name_string">name</string>
@@ -88,8 +89,8 @@
     <string name="new_ingredient">New ingredient</string>
     <string name="ingredient_delete_alert_dialog_message">Are you sure you want to delete this ingredient?</string>
     <string name="ingredient_delete_alert_dialog_title">Delete ingredient?</string>
-    <string name="ingredient_back_alert_dialog_title">Save changes?</string>
-    <string name="ingredient_back_alert_dialog_message">Save changes made to this ingredient?</string>
+    <string name="ingredient_back_alert_dialog_title">Save ingredient?</string>
+    <string name="ingredient_back_alert_dialog_message">Do you want to save this new ingredient?</string>
 
     <!-- Product Strings -->
     <string name="product_name_string">product Name</string>
@@ -101,8 +102,8 @@
     <string name="product_type">Type</string>
     <string name="product_delete_alert_dialog_message">Are you sure you want to delete this product?</string>
     <string name="product_delete_alert_dialog__title">Delete product?</string>
-    <string name="product_back_alert_dialog_title">Save changes?</string>
-    <string name="product_back_alert_dialog_message">Save changes made to this product?</string>
+    <string name="product_back_alert_dialog_title">Save product?</string>
+    <string name="product_back_alert_dialog_message">Do you want to save this new product?</string>
     <string-array name="product_types_array">
         <item>--</item>
         <item>Cleanser</item>

@@ -66,7 +66,7 @@ public class RoutineActivityDetail extends AppCompatActivity implements DialogCl
     }
 
     @Override
-    public void onEditListDialogClosed() { //Refresh product list when returning from edit dialog
-        ((RoutineFragmentDetail) getSupportFragmentManager().findFragmentById(R.id.routine_activity_detail)).refreshProducts();
+    public void onEditListDialogClosed(boolean listModified) { //Refresh product list when returning from edit dialog
+        ((RoutineFragmentDetail) getSupportFragmentManager().findFragmentById(R.id.routine_activity_detail)).onEditDialogClosed(listModified);
     }
 }

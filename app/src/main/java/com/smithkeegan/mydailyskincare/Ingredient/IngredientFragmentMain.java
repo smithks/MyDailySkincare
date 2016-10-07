@@ -38,7 +38,6 @@ public class IngredientFragmentMain extends Fragment {
         setButtonListener();
 
         mIngredientsList = (ListView)rootView.findViewById(R.id.ingredient_main_list_view);
-
         return rootView;
     }
 

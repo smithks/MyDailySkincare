@@ -59,6 +59,7 @@ public class ProductFragmentDetail extends Fragment {
     private String mInitialType;
     private boolean mInitialLoadComplete;
     private boolean mIsNewProduct;
+    private boolean mIngredientsListModified;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +74,8 @@ public class ProductFragmentDetail extends Fragment {
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
         fetchViews(rootView);
+
+        mIngredientsListModified = false;
 
         if (savedInstance == null) {
             Bundle args = getArguments();
@@ -183,7 +186,7 @@ public class ProductFragmentDetail extends Fragment {
         if(mTypeSpinner.getSelectedItem() != null) {
             currentType = mTypeSpinner.getSelectedItem().toString();
         }
-        return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)));
+        return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)) || mIngredientsListModified);
     }
 
     /**
@@ -217,6 +220,17 @@ public class ProductFragmentDetail extends Fragment {
     public void refreshIngredients(){
         mIngredientsList.setAdapter(null);
         new LoadProductIngredientsTask().execute(mProductId);
+    }
+
+    /**
+     * Called by parent activity when edit dialog is closed.
+     * @param listModified true if the list of ingredients was modified.
+     */
+    public void onEditDialogClosed(boolean listModified){
+        if (listModified){
+            refreshIngredients();
+            mIngredientsListModified = true;
+        }
     }
 
     /**
@@ -267,7 +281,30 @@ public class ProductFragmentDetail extends Fragment {
      */
     public void onBackButtonPressed(){
         if (entryHasChanged()) {
-            saveCurrentProduct();
+            if (mIsNewProduct){ //Ask user if this is a new entry and changes have been made.
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.product_back_alert_dialog_message)
+                        .setTitle(R.string.product_back_alert_dialog_title)
+                        .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveCurrentProduct();
+                            }
+                        })
+                        .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new DeleteProductTask().execute(false);
+                            }
+                        }).setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+            }else {
+                saveCurrentProduct();
+            }
         } else if (mIsNewProduct) {
             new DeleteProductTask().execute(false);
         } else {

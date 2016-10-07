@@ -1,12 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
 
     <DatePicker
+        android:id="@+id/date_picker_dialog_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:calendarViewShown="false"
+        android:layout_marginStart="7dp"
+        android:layout_marginLeft="7dp"
         android:spinnersShown="true"/>
+
+    <RelativeLayout
+        android:layout_alignEnd="@id/date_picker_dialog_picker"
+        android:layout_alignRight="@id/date_picker_dialog_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/date_picker_dialog_picker"
+        android:layout_marginBottom="5dp">
+
+        <Button
+            android:id="@+id/date_picker_dialog_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/cancel_string"
+            android:textAllCaps="true"/>
+
+        <Button
+            android:id="@+id/date_picker_dialog_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/ok_string"
+            android:layout_toEndOf="@id/date_picker_dialog_cancel_button"
+            android:layout_toRightOf="@id/date_picker_dialog_cancel_button"/>
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -71,7 +71,7 @@ public class IngredientFragmentDetail extends Fragment {
             } else { //Load data from existing entry
                 new LoadIngredientTask().execute(mExistingId);
             }
-        }else{ //Restore from saved instance state
+        } else { //Restore from saved instance state
             restoreSavedState(savedInstance);
         }
 
@@ -84,29 +84,32 @@ public class IngredientFragmentDetail extends Fragment {
      */
     public void onBackButtonPressed() {
         if (entryHasChanged()) {
-            saveCurrentIngredient();
-//            Display an alert if changes should be saved.
-//            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//            builder.setMessage(R.string.ingredient_back_alert_dialog_message)
-//                    .setTitle(R.string.ingredient_back_alert_dialog_title)
-//                    .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            saveCurrentIngredient();
-//                        }
-//                    })
-//                    .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.dismiss();
-//                            getActivity().finish();
-//                        }
-//                    }).setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    dialog.dismiss();
-//                }
-//            }).show();
+            if (mNewEntry) {
+                //Display an alert if changes should be saved.
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.ingredient_back_alert_dialog_message)
+                        .setTitle(R.string.ingredient_back_alert_dialog_title)
+                        .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveCurrentIngredient();
+                            }
+                        })
+                        .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                getActivity().finish();
+                            }
+                        }).setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                }).show();
+            } else {
+                saveCurrentIngredient();
+            }
         } else {
             getActivity().finish();
         }
@@ -140,10 +143,10 @@ public class IngredientFragmentDetail extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putLong(IngredientState.INGREDIENT_ID, mExistingId);
-        outState.putBoolean(IngredientState.NEW_ENTRY,mNewEntry);
-        outState.putStringArray(IngredientState.INGREDIENT_NAME,new String[]{mInitialName,mNameEditText.getText().toString().trim()});
-        outState.putBooleanArray(IngredientState.INGREDIENT_IRRITANT,new boolean[]{mInitialCheck,mIrritantCheckbox.isChecked()});
-        outState.putStringArray(IngredientState.INGREDIENT_COMMENT,new String[]{mInitialComment,mCommentEditText.getText().toString().trim()});
+        outState.putBoolean(IngredientState.NEW_ENTRY, mNewEntry);
+        outState.putStringArray(IngredientState.INGREDIENT_NAME, new String[]{mInitialName, mNameEditText.getText().toString().trim()});
+        outState.putBooleanArray(IngredientState.INGREDIENT_IRRITANT, new boolean[]{mInitialCheck, mIrritantCheckbox.isChecked()});
+        outState.putStringArray(IngredientState.INGREDIENT_COMMENT, new String[]{mInitialComment, mCommentEditText.getText().toString().trim()});
 
         super.onSaveInstanceState(outState);
     }
@@ -152,7 +155,7 @@ public class IngredientFragmentDetail extends Fragment {
      * Restores fields of this fragment from the restored instance state.
      * @param savedInstance the restored state
      */
-    public void restoreSavedState(Bundle savedInstance){
+    public void restoreSavedState(Bundle savedInstance) {
         mExistingId = savedInstance.getLong(IngredientState.INGREDIENT_ID);
         mNewEntry = savedInstance.getBoolean(IngredientState.NEW_ENTRY);
 
@@ -163,13 +166,13 @@ public class IngredientFragmentDetail extends Fragment {
         }
 
         boolean[] irritants = savedInstance.getBooleanArray(IngredientState.INGREDIENT_IRRITANT);
-        if (irritants != null){
+        if (irritants != null) {
             mInitialCheck = irritants[0];
             mIrritantCheckbox.setChecked(irritants[1]);
         }
 
         String[] comments = savedInstance.getStringArray(IngredientState.INGREDIENT_COMMENT);
-        if(comments != null){
+        if (comments != null) {
             mInitialComment = comments[0];
             mCommentEditText.setText(comments[1]);
         }

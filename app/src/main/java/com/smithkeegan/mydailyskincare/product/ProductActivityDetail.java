@@ -67,10 +67,10 @@ public class ProductActivityDetail extends AppCompatActivity implements DialogCl
     }
 
     @Override
-    public void onEditListDialogClosed() {
+    public void onEditListDialogClosed(boolean listModified) {
         //Refresh the ingredient when the edit dialog closes.
         FragmentManager manager = getSupportFragmentManager();
         ProductFragmentDetail fragment = (ProductFragmentDetail) manager.findFragmentById(R.id.product_activity_detail);
-        fragment.refreshIngredients();
+        fragment.onEditDialogClosed(listModified);
     }
 }

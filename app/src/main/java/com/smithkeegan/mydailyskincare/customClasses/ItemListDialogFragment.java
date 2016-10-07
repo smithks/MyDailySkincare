@@ -49,7 +49,6 @@ import java.util.List;
  * @since 7/12/2016
  */
 //TODO would be nice to have ripple effect in listview
-    //TODO save currently selected items before calling on resume
 public class ItemListDialogFragment extends DialogFragment {
 
     //String constants to denote the data displayed in this fragment
@@ -60,13 +59,14 @@ public class ItemListDialogFragment extends DialogFragment {
     public static final String ROUTINES = "Routines";
     public static final int NEW_ITEM_ID_REQUEST = 1;
 
-    private ListView listView;
+    private ListView mListView;
 
     private DiaryDbHelper mDbHelper;
     private long mPrimaryItemID;
     private String mDisplayedData;
-    private ArrayList<ItemListDialogItem> mItemsList;
     private long mNewItemID;
+
+    private boolean mListModified;
 
     @Override
     public void onStart() {
@@ -96,7 +96,7 @@ public class ItemListDialogFragment extends DialogFragment {
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()){
                     saveCurrentItems(false);
-                    ((DialogClosedListener) getActivity()).onEditListDialogClosed();
+                    ((DialogClosedListener) getActivity()).onEditListDialogClosed(mListModified);
                 }
                 return false;
             }
@@ -104,7 +104,7 @@ public class ItemListDialogFragment extends DialogFragment {
 
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
-        listView = (ListView) v.findViewById(R.id.item_dialog_list_view);
+        mListView = (ListView) v.findViewById(R.id.item_dialog_list_view);
         Button mSaveButton = (Button) v.findViewById(R.id.item_dialog_button_done);
         Button newItemButton = (Button) v.findViewById(R.id.item_dialog_button_new_item);
         TextView titleView = (TextView) v.findViewById(R.id.item_dialog_title);
@@ -112,6 +112,7 @@ public class ItemListDialogFragment extends DialogFragment {
         Bundle args = getArguments();
         mDisplayedData = args.getString(DISPLAYED_DATA);
         mPrimaryItemID = args.getLong(ITEM_ID);
+        mListModified = false;
 
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,7 +169,8 @@ public class ItemListDialogFragment extends DialogFragment {
      * @param closeOnFinish Whether the dialog should be closed when the save is completed.
      */
     private void saveCurrentItems(boolean closeOnFinish){
-        ItemListDialogArrayAdapter adapter = (ItemListDialogArrayAdapter)listView.getAdapter();
+        updateListModified();
+        ItemListDialogArrayAdapter adapter = (ItemListDialogArrayAdapter) mListView.getAdapter();
         new SaveDataTask().execute(adapter.getItems(), mDisplayedData, mPrimaryItemID, closeOnFinish);
     }
 
@@ -204,8 +206,22 @@ public class ItemListDialogFragment extends DialogFragment {
         super.onResume();
 
         Object[] taskArguments = {mDisplayedData, mPrimaryItemID};
-        listView.setAdapter(null); //Clear listview adapter
+        mListView.setAdapter(null); //Clear listview adapter
         new FetchDataTask().execute(taskArguments);
+    }
+
+    /**
+     * Checks the initial and current values of rows in the listview to see if the list
+     * has been modified.
+     */
+    private void updateListModified(){
+        ArrayList<ItemListDialogItem> items = ((ItemListDialogArrayAdapter) mListView.getAdapter()).getItems();
+
+        for (ItemListDialogItem entry: items){
+            if (entry.getInitialSelected() != entry.getFinalSelected()){
+                mListModified = true;
+            }
+        }
     }
 
     /**
@@ -265,7 +281,7 @@ public class ItemListDialogFragment extends DialogFragment {
 
         /*
           * Parses data from cursor and places result into an array adapter that is
-          * attached to the listView.
+          * attached to the mListView.
          */
         @Override
         protected void onPostExecute(Cursor result) {
@@ -336,7 +352,7 @@ public class ItemListDialogFragment extends DialogFragment {
                 }
 
                 ItemListDialogArrayAdapter arrayAdapter = new ItemListDialogArrayAdapter(getContext(),R.layout.listview_item_item_list_dialog,itemList);
-                listView.setAdapter(arrayAdapter);
+                mListView.setAdapter(arrayAdapter);
 
             }
         }
@@ -466,7 +482,6 @@ public class ItemListDialogFragment extends DialogFragment {
             displayedData = (String) params[1];
             primaryLinkedID = (long) params[2];
             closeOnFinish = (boolean) params[3];
-            boolean modified = false;
             Long result = (long) 1;
 
 
@@ -479,14 +494,12 @@ public class ItemListDialogFragment extends DialogFragment {
                 //If entry was not originally selected but is now selected, add a new row to the linked table
                 if (!initialSelected && finalSelected){
                     result = insertLinkedRow(db, primaryID);
-                    modified = true;
                 } //If entry was initially selcted but now is not, delete the entry from the linked table
                 else if (initialSelected && !finalSelected){
                     result = deleteLinkedRow(db, primaryID);
-                    modified = true;
                 }
             }
-            result = modified ? result : -2;
+            result = mListModified ? result : -2;
 
             return result;
         }
@@ -497,7 +510,7 @@ public class ItemListDialogFragment extends DialogFragment {
                 Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
             }
             if(closeOnFinish) {
-                ((DialogClosedListener) getActivity()).onEditListDialogClosed();
+                ((DialogClosedListener) getActivity()).onEditListDialogClosed(mListModified);
                 getDialog().dismiss();
             }
         }

@@ -6,5 +6,5 @@ package com.smithkeegan.mydailyskincare.customClasses;
  * @since 8/2/2016
  */
 public interface DialogClosedListener {
-    public void onEditListDialogClosed();
+    void onEditListDialogClosed(boolean listModified);
 }

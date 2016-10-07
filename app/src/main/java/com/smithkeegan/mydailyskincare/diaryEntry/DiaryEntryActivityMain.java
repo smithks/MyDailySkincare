@@ -66,8 +66,8 @@ public class DiaryEntryActivityMain extends AppCompatActivity implements DialogC
     }
 
     @Override
-    public void onEditListDialogClosed() {
+    public void onEditListDialogClosed(boolean listModified) {
         //On return from item list dialog
-        ((DiaryEntryFragmentMain) getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).refreshRoutinesList();
+        ((DiaryEntryFragmentMain) getSupportFragmentManager().findFragmentById(R.id.diary_entry_main)).onEditDialogClosed(listModified);
     }
 }

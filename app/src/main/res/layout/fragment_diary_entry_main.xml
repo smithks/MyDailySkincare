@@ -376,8 +376,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/add_remove_string"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:textColor="@color/white"
+                    style="@style/primary_button_style"
                     android:layout_below="@id/diary_entry_routines_listview"
                     android:layout_centerHorizontal="true"
                     />

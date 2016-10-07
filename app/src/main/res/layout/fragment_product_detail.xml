@@ -41,10 +41,8 @@
                     style="@style/header_name_text_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:background="@color/textBoxBackground"
-                    android:gravity="center_horizontal"
                     android:hint="@string/field_name_string"
+                    android:inputType="textNoSuggestions"
                     />
 
             </android.support.design.widget.TextInputLayout>
@@ -62,6 +60,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/brand_string"
+                    android:maxLength="30"
+                    android:inputType="textNoSuggestions"
                     />
             </android.support.design.widget.TextInputLayout>
 
@@ -124,9 +124,8 @@
                         android:id="@+id/product_edit_ingredients"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/colorPrimary"
-                        android:text="@string/add_remove_string"
-                        android:textColor="@color/white"/>
+                        style="@style/primary_button_style"
+                        android:text="@string/add_remove_string"/>
 
                 </LinearLayout>
 

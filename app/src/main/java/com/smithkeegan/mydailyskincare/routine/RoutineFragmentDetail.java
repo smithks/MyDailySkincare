@@ -57,6 +57,7 @@ public class RoutineFragmentDetail extends Fragment {
     private String mInitialComment;
     private boolean mInitialLoadComplete;
     private boolean mIsNewRoutine;
+    private boolean mProductsListModified;
     private Long mRoutineID;
 
     @Override
@@ -71,6 +72,8 @@ public class RoutineFragmentDetail extends Fragment {
 
         mDbHelper = DiaryDbHelper.getInstance(getContext());
         fetchViews(rootView);
+
+        mProductsListModified = false;
 
         if (savedInstanceState == null) {
             Bundle args = getArguments();
@@ -188,6 +191,17 @@ public class RoutineFragmentDetail extends Fragment {
     }
 
     /**
+     * Called by parent activity on products edit dialog closed. Refreshes
+     * products list if products has been modified.
+     */
+    public void onEditDialogClosed(boolean listModified){
+        if (listModified){
+            refreshProducts();
+            mProductsListModified = true;
+        }
+    }
+
+    /**
      * Hides the layout of this fragment and displays the loading icon
      */
     private void showLoadingLayout(){
@@ -222,7 +236,7 @@ public class RoutineFragmentDetail extends Fragment {
         RadioButton selectedButton = (RadioButton) mTimeRadioGroup.findViewById(id);
         String currTime = selectedButton.getText().toString();
         String currComment = mCommentEditText.getText().toString().trim();
-        return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment));
+        return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment) || mProductsListModified);
     }
 
     /**
@@ -322,7 +336,32 @@ public class RoutineFragmentDetail extends Fragment {
      */
     public void onBackButtonPressed(){
         if (entryHasChanged()) {
-            saveCurrentRoutine();
+            if (mIsNewRoutine) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.routine_back_alert_dialog_message)
+                        .setTitle(R.string.routine_back_alert_dialog_title)
+                        .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveCurrentRoutine();
+                            }
+                        })
+                        .setNegativeButton(R.string.no_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new DeleteRoutineTask().execute(false);
+                            }
+                        })
+                        .setNeutralButton(R.string.cancel_string, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            } else {
+                saveCurrentRoutine();
+            }
         } else if (mIsNewRoutine) {
             new DeleteRoutineTask().execute(false);
         } else {

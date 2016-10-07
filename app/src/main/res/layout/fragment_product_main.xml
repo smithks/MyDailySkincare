@@ -20,9 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="@string/new_product"
-        android:background="@color/colorPrimary"
-        android:textColor="#ffffff"
-        android:padding="10dp"
+        style="@style/primary_button_style"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="10dp"/>
