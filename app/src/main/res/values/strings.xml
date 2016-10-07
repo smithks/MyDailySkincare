@@ -3,7 +3,7 @@
 
     <!-- Calendar Activity Strings -->
     <string name="action_view_db">View Database</string>
-    <string name="action_go_to_date">Go to date…</string>
+    <string name="action_go_to_date">Scroll to date…</string>
 
     <!-- Navigation Drawer Options -->
     <string-array name="drawer_strings">
@@ -32,7 +32,7 @@
     <string name="alert_delete_confirm">delete</string>
     <string name="done_string">DONE</string>
     <string name="no_string">no</string>
-    <string name="ok_string">OK</string>
+    <string name="go_string">GO</string>
     <string name="add_remove_string">Add/Remove</string>
     <string name="toast_enter_valid_name">Please enter a name</string>
     <string name="field_name_string">name</string>

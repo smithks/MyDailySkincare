@@ -42,12 +42,10 @@ import java.util.Map;
 /**
  * Main calendar activity. Displays a Caldroid calendar and handles actions
  * taken on that calendar view.
- * TODO: toolbar buttons to scroll to a date
  * @author Keegan Smith
  * @since 5/3/2016
  */
-//TODO move save and delete buttons in detail fragments to toolbar
-    //TODO handle orientation change in detail fragments through onSaveInstanceState and onRestoreInstanceState
+    //TODO support nested scrolling in listview for less than api 21
 public class CalendarActivityMain extends AppCompatActivity {
 
     public static final String APPTAG = "MyDailySkincare";
@@ -75,10 +73,8 @@ public class CalendarActivityMain extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         initializeDrawer();
         initializeCalendar();
-
     }
 
     @Override
@@ -121,6 +117,10 @@ public class CalendarActivityMain extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void scrollToDate(Date date){
+        mCaldroidFragment.moveToDate(date);
     }
 
     @Override
@@ -237,8 +237,6 @@ public class CalendarActivityMain extends AppCompatActivity {
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
         t.replace(R.id.calendar, mCaldroidFragment);
         t.commit();
-
-        //testColors();
     }
 
     /**

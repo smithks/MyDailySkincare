@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:textColor="@color/colorPrimaryDark"
-            android:text="@string/ok_string"
+            android:text="@string/go_string"
             android:layout_toEndOf="@id/date_picker_dialog_cancel_button"
             android:layout_toRightOf="@id/date_picker_dialog_cancel_button"/>
     </RelativeLayout>
