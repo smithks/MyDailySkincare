@@ -56,6 +56,7 @@ public final class DiaryContract {
         public static final String COLUMN_NAME = "Name";
         public static final String COLUMN_TIME = "Time";
         public static final String COLUMN_COMMENT = "Comment";
+        public static final String COLUMN_FREQUENCY = "Frequency";
     }
 
     public static abstract class RoutineProduct implements BaseColumns{

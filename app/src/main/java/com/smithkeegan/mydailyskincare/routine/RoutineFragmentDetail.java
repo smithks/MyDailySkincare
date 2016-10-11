@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -25,11 +26,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
@@ -42,8 +44,14 @@ import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
  */
 public class RoutineFragmentDetail extends Fragment {
 
+    private static final int SELECTED = 0;
+    private static final int END_CELL = 1;
+
     private EditText mNameEditText;
     private RadioGroup mTimeRadioGroup;
+    private RadioGroup mFrequencyRadioGroup;
+    private TableLayout mFrequencyTable;
+    private TextView[] mFrequencyTableColumns;
     private ListView mProductsListView;
     private EditText mCommentEditText;
     private Button mEditProductsButton;
@@ -54,6 +62,7 @@ public class RoutineFragmentDetail extends Fragment {
     private DiaryDbHelper mDbHelper;
     private String mInitialName;
     private String mInitialTime;
+    private String mInitialFrequency;
     private String mInitialComment;
     private boolean mInitialLoadComplete;
     private boolean mIsNewRoutine;
@@ -108,9 +117,25 @@ public class RoutineFragmentDetail extends Fragment {
      */
     public void fetchViews(View rootView){
         mNameEditText = (EditText) rootView.findViewById(R.id.routine_name_edit);
-        mTimeRadioGroup = (RadioGroup) rootView.findViewById(R.id.routine_radio_group);
+        mTimeRadioGroup = (RadioGroup) rootView.findViewById(R.id.routine_time_radio_group);
         mProductsListView = (ListView) rootView.findViewById(R.id.routine_product_list_view);
         mCommentEditText = (EditText) rootView.findViewById(R.id.routine_comment_edit);
+        mFrequencyRadioGroup = (RadioGroup) rootView.findViewById(R.id.routine_frequency_radio_group);
+
+        mFrequencyTable = (TableLayout) rootView.findViewById(R.id.routine_frequency_table);
+        mFrequencyTableColumns = new TextView[7];
+        mFrequencyTableColumns[0] = (TextView) rootView.findViewById(R.id.routine_frequency_text_sunday);
+        mFrequencyTableColumns[1] = (TextView) rootView.findViewById(R.id.routine_frequency_text_monday);
+        mFrequencyTableColumns[2] = (TextView) rootView.findViewById(R.id.routine_frequency_text_tuesday);
+        mFrequencyTableColumns[3] = (TextView) rootView.findViewById(R.id.routine_frequency_text_wednesday);
+        mFrequencyTableColumns[4] = (TextView) rootView.findViewById(R.id.routine_frequency_text_thursday);
+        mFrequencyTableColumns[5] = (TextView) rootView.findViewById(R.id.routine_frequency_text_friday);
+        mFrequencyTableColumns[6] = (TextView) rootView.findViewById(R.id.routine_frequency_text_saturday);
+
+        //Set the default value for the cell tags which indicate if the cell has been selected
+        for (TextView cell : mFrequencyTableColumns){
+           cell.setTag(false);
+        }
 
         mEditProductsButton = (Button) rootView.findViewById(R.id.routine_edit_products);
 
@@ -149,6 +174,7 @@ public class RoutineFragmentDetail extends Fragment {
         outState.putStringArray(RoutineState.ROUTINE_NAME,new String[]{mInitialName,mNameEditText.getText().toString().trim()});
         outState.putStringArray(RoutineState.ROUTINE_TIME,new String[]{mInitialTime,((RadioButton) mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString()});
         outState.putStringArray(RoutineState.ROUTINE_COMMENT,new String[]{mInitialComment,mCommentEditText.getText().toString().trim()});
+        outState.putStringArray(RoutineState.ROUTINE_FREQUENCY,new String[]{mInitialFrequency,getFrequencyString()});
 
         super.onSaveInstanceState(outState);
     }
@@ -177,6 +203,12 @@ public class RoutineFragmentDetail extends Fragment {
         if (comment != null){
             mInitialComment = comment[0];
             mCommentEditText.setText(comment[1]);
+        }
+
+        String[] frequency = savedInstance.getStringArray(RoutineState.ROUTINE_FREQUENCY);
+        if (frequency != null){
+            mInitialFrequency = frequency[0];
+            setFrequencyBlock(frequency[1]);
         }
 
         mInitialLoadComplete = true;
@@ -224,6 +256,7 @@ public class RoutineFragmentDetail extends Fragment {
         mInitialName = mNameEditText.getText().toString().trim();
         mInitialTime = ((RadioButton)mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
         mInitialComment = mCommentEditText.getText().toString().trim();
+        mInitialFrequency = getFrequencyString();
     }
 
     /**
@@ -236,7 +269,8 @@ public class RoutineFragmentDetail extends Fragment {
         RadioButton selectedButton = (RadioButton) mTimeRadioGroup.findViewById(id);
         String currTime = selectedButton.getText().toString();
         String currComment = mCommentEditText.getText().toString().trim();
-        return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment) || mProductsListModified);
+        String currFrequency = getFrequencyString();
+        return (!mInitialName.equals(currName) || !mInitialTime.equals(currTime) || !mInitialComment.equals(currComment) || !mInitialFrequency.equals(currFrequency)|| mProductsListModified);
     }
 
     /**
@@ -259,6 +293,51 @@ public class RoutineFragmentDetail extends Fragment {
                 startActivity(intent);
             }
         });
+
+        //Assign a cell listener to each cell in the weekday table
+        for (TextView cell : mFrequencyTableColumns){
+            cell.setOnClickListener(new TableCellOnClickListener());
+        }
+
+
+        //Show or hide frequency table based on which radio button is selected
+        mFrequencyRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.routine_radio_button_specified){
+                    mFrequencyTable.setVisibility(View.VISIBLE);
+                }else{
+                    mFrequencyTable.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    /**
+     * Listener class for cells in the weekday frequency table.
+     */
+    private class TableCellOnClickListener implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            boolean selected = (boolean) v.getTag();
+            if (selected){ //If currently selected, set to unselected
+                if (v.getId() == R.id.routine_frequency_text_saturday){
+                    v.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.table_cell_unselected_end_background));
+                }else {
+                    v.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.table_cell_unselected_background));
+                }
+                ((TextView)v).setTextColor(ContextCompat.getColor(getContext(),R.color.newText));
+                v.setTag(false);
+            }else{ //If currently unselected, set to selected.
+                if (v.getId() == R.id.routine_frequency_text_saturday){
+                    v.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.table_cell_selected_end_background));
+                }else{
+                    v.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.table_cell_selected_background));
+                }
+                ((TextView)v).setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                v.setTag(true);
+            }
+        }
     }
 
     /**
@@ -294,16 +373,86 @@ public class RoutineFragmentDetail extends Fragment {
     private void saveCurrentRoutine(){
         if(mNameEditText.getText().toString().trim().length() == 0) {
             Toast.makeText(getContext(), R.string.toast_enter_valid_name, Toast.LENGTH_SHORT).show();
-        }else {
+        } else if ((mFrequencyRadioGroup.getCheckedRadioButtonId() == R.id.routine_radio_button_specified) && getSelectedDays().length() == 0){
+            Toast.makeText(getContext(),R.string.routine_toast_select_days,Toast.LENGTH_LONG).show();
+        }
+        else {
             if(entryHasChanged()) {
                 String name = mNameEditText.getText().toString().trim();
                 String time = ((RadioButton) mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
                 String comment = mCommentEditText.getText().toString().trim();
-                String[] params = {name, time, comment};
+                String frequency = getFrequencyString();
+
+                String[] params = {name, time, comment,frequency};
                 new SaveRoutineTask().execute(params);
             }else{
                 Toast.makeText(getContext(), R.string.toast_save_success, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
+            }
+        }
+    }
+
+    /**
+     * Gets the current value of the frequency of this routine.
+     * @return formatted string representation of this frequency.
+     */
+    private String getFrequencyString(){
+        String frequency;
+        int radioID = mFrequencyRadioGroup.getCheckedRadioButtonId();
+        if (radioID == R.id.routine_radio_button_needed || radioID == R.id.routine_radio_button_daily){
+            frequency = ((RadioButton) mFrequencyRadioGroup.findViewById(radioID)).getText().toString();
+        }else{ //Otherwise get selected days
+            frequency = getSelectedDays();
+        }
+        return frequency;
+    }
+
+    /**
+     * Returns a constructed string of days that are selected in the weekday table.
+     * @return formated string of selected days
+     */
+    private String getSelectedDays(){
+        String days = "";
+        for (TextView cell : mFrequencyTableColumns){
+            if ((boolean)cell.getTag()){
+                if (days.length() == 0) {
+                    days += cell.getText().toString();
+                }else {
+                    days += "-"+cell.getText().toString();
+                }
+            }
+        }
+        return days;
+    }
+
+    /**
+     * Sets the selected frequency radio button and selected days on the frequency table.
+     * @param frequency string value that was stored in routine table
+     */
+    private void setFrequencyBlock(String frequency){
+        if (frequency.equals(((TextView)mFrequencyRadioGroup.findViewById(R.id.routine_radio_button_needed)).getText().toString())){
+            mFrequencyRadioGroup.check(mFrequencyRadioGroup.findViewById(R.id.routine_radio_button_needed).getId());
+        }else if (frequency.equals(((TextView)mFrequencyRadioGroup.findViewById(R.id.routine_radio_button_daily)).getText().toString())){
+            mFrequencyRadioGroup.check(mFrequencyRadioGroup.findViewById(R.id.routine_radio_button_daily).getId());
+        }else{ //Otherwise select "on selected days" and populate the correct days
+            mFrequencyRadioGroup.check(mFrequencyRadioGroup.findViewById(R.id.routine_radio_button_specified).getId());
+            mFrequencyTable.setVisibility(View.VISIBLE);
+            if (frequency.length() > 0) {
+                String[] days = frequency.split("-");
+                for (int i = 0; i < days.length; i++){
+                    String day = days[i];
+                    for (TextView cell : mFrequencyTableColumns){
+                        if (day.equals(cell.getText().toString())){
+                            if (cell.getId() == R.id.routine_frequency_text_saturday){
+                                cell.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.table_cell_selected_end_background));
+                            }else{
+                                cell.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.table_cell_selected_background));
+                            }
+                            cell.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                            cell.setTag(true);
+                        }
+                    }
+                }
             }
         }
     }
@@ -382,7 +531,7 @@ public class RoutineFragmentDetail extends Fragment {
             SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
             //Fetch routine information from routine table
-            String[] routineColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME, DiaryContract.Routine.COLUMN_COMMENT};
+            String[] routineColumns = {DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME, DiaryContract.Routine.COLUMN_COMMENT, DiaryContract.Routine.COLUMN_FREQUENCY};
             String routineWhere = DiaryContract.Routine._ID + " = "+params[0];
             cursors[0] = db.query(DiaryContract.Routine.TABLE_NAME,routineColumns,routineWhere,null,null,null,null);
 
@@ -424,6 +573,7 @@ public class RoutineFragmentDetail extends Fragment {
                     String name = routineCursor.getString(routineCursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME));
                     String time = routineCursor.getString(routineCursor.getColumnIndex(DiaryContract.Routine.COLUMN_TIME));
                     String comment = routineCursor.getString(routineCursor.getColumnIndex(DiaryContract.Routine.COLUMN_COMMENT));
+                    String frequency = routineCursor.getString(routineCursor.getColumnIndex(DiaryContract.Routine.COLUMN_FREQUENCY));
 
                     mNameEditText.setText(name);
                     if(time != null)
@@ -431,6 +581,8 @@ public class RoutineFragmentDetail extends Fragment {
                     else  //Default saved time value if one was not saved.
                         setSelectedRadioButton(getString(R.string.routine_radio_AM));
                     mCommentEditText.setText(comment);
+
+                    setFrequencyBlock(frequency);
                 }
             }
             if (result[1] != null) {
@@ -577,6 +729,7 @@ public class RoutineFragmentDetail extends Fragment {
             values.put(DiaryContract.Routine.COLUMN_NAME,params[0]);
             values.put(DiaryContract.Routine.COLUMN_TIME,params[1]);
             values.put(DiaryContract.Routine.COLUMN_COMMENT,params[2]);
+            values.put(DiaryContract.Routine.COLUMN_FREQUENCY,params[3]);
 
             String where = DiaryContract.Routine._ID + " = ?";
             String[] whereArgs = {mRoutineID.toString()};
@@ -596,7 +749,6 @@ public class RoutineFragmentDetail extends Fragment {
                 getActivity().setResult(Activity.RESULT_OK,intent);
                 Toast.makeText(getContext(), R.string.toast_save_success, Toast.LENGTH_SHORT).show();
             }
-
             getActivity().finish();
         }
     }
@@ -626,6 +778,7 @@ public class RoutineFragmentDetail extends Fragment {
             mIsNewRoutine = true;
             hideLoadingLayout();
             mTimeRadioGroup.check(R.id.routine_radio_button_am);  //Set default time to AM
+            mFrequencyRadioGroup.check(R.id.routine_radio_button_needed); //Default value of frequency is as needed
             setInitialMemberValues();
             mInitialLoadComplete = true;
         }
@@ -669,5 +822,6 @@ public class RoutineFragmentDetail extends Fragment {
         protected static final String ROUTINE_NAME = "ROUTINE_NAME";
         protected static final String ROUTINE_TIME = "ROUTINE_TIME";
         protected static final String ROUTINE_COMMENT = "ROUTINE_COMMENT";
+        protected static final String ROUTINE_FREQUENCY = "ROUTINE_FREQUENCY";
     }
 }

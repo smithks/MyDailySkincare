@@ -132,7 +132,7 @@
                 <com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView
                     android:id="@+id/product_ingredient_list"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="100dp"
                     android:layout_below="@id/product_ingredient_title_layout"
                     android:background="@drawable/rectangle_border"
                     >

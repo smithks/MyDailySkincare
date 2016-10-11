@@ -26,7 +26,6 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
     private static final String NOT_NULL = " NOT NULL";
-    private static final String AUTOINCREMENT = " AUTOINCREMENT";
     private static final String COMMA_SEP = ",";
 
     //Return a single instance of the db for all needs
@@ -130,6 +129,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.Routine._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_TIME + TEXT_TYPE + COMMA_SEP +
+                    DiaryContract.Routine.COLUMN_FREQUENCY + TEXT_TYPE + COMMA_SEP +
                     DiaryContract.Routine.COLUMN_COMMENT + TEXT_TYPE +
                     " );";
 

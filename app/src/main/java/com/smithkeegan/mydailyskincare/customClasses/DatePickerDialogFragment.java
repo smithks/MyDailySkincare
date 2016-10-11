@@ -43,6 +43,9 @@ public class DatePickerDialogFragment extends DialogFragment{
         return view;
     }
 
+    /**
+     * Sets button listeners.
+     */
     private void setListeners(){
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

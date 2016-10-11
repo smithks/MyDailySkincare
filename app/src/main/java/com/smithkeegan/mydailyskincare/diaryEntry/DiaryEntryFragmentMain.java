@@ -599,7 +599,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Called by parent activity.
      */
     public void onBackButtonPressed() {
-        if (entryHasChanged())
+        if (entryHasChanged() || mNewEntry)
             saveCurrentDiaryEntry();
         else
             getActivity().finish();
