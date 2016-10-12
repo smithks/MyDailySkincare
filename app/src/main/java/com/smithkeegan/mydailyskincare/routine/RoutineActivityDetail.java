@@ -18,6 +18,7 @@ public class RoutineActivityDetail extends AppCompatActivity implements DialogCl
 
     public final static String NEW_ROUTINE = "New Routine";
     public final static String ENTRY_ID = "ID";
+    public final static String ROUTINE_DAILY = "Daily"; //String constant for searching database
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

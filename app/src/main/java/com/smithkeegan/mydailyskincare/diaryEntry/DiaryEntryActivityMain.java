@@ -11,6 +11,7 @@ import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DialogClosedListener;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -32,8 +33,9 @@ public class DiaryEntryActivityMain extends AppCompatActivity implements DialogC
 
         Intent intent = getIntent();
         Date date = new Date(intent.getLongExtra(CalendarActivityMain.INTENT_DATE, 0));
+        String dayOfWeek = getDayOfWeek(date);
         DateFormat df = DateFormat.getDateInstance();
-        setTitle(df.format(date));
+        setTitle(dayOfWeek+" "+df.format(date));
 
         if (savedInstance == null) {
             //Place date in bundle and send to fragment
@@ -57,6 +59,42 @@ public class DiaryEntryActivityMain extends AppCompatActivity implements DialogC
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Returns the current day of the week.
+     * @return the current day of the week.
+     */
+    private String getDayOfWeek(Date today){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(today);
+        String dayOfWeek = "";
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        switch (day){
+            case Calendar.SUNDAY:
+                dayOfWeek = "Sun";
+                break;
+            case Calendar.MONDAY:
+                dayOfWeek = "Mon";
+                break;
+            case Calendar.TUESDAY:
+                dayOfWeek = "Tue";
+                break;
+            case Calendar.WEDNESDAY:
+                dayOfWeek = "Wed";
+                break;
+            case Calendar.THURSDAY:
+                dayOfWeek = "Thu";
+                break;
+            case Calendar.FRIDAY:
+                dayOfWeek = "Fri";
+                break;
+            case Calendar.SATURDAY:
+                dayOfWeek = "Sat";
+                break;
+        }
+
+        return dayOfWeek;
     }
 
     @Override

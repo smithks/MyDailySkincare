@@ -38,6 +38,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -476,6 +477,44 @@ public class DiaryEntryFragmentMain extends Fragment {
     }
 
     /**
+     * Returns the day of the week as a abbreviated string.
+     * @return the day of the week: Sun,Mon,Tue,Wed,Thu,Fri,Sat
+     */
+    private String getDayOfWeek(){
+        Calendar today = Calendar.getInstance();
+        today.setTime(new Date(mEpochTime));
+        int day = today.get(Calendar.DAY_OF_WEEK);
+
+        String dayOfWeek = "";
+
+        switch (day){
+            case Calendar.SUNDAY:
+                dayOfWeek = "Sun";
+                break;
+            case Calendar.MONDAY:
+                dayOfWeek = "Mon";
+                break;
+            case Calendar.TUESDAY:
+                dayOfWeek = "Tue";
+                break;
+            case Calendar.WEDNESDAY:
+                dayOfWeek = "Wed";
+                break;
+            case Calendar.THURSDAY:
+                dayOfWeek = "Thu";
+                break;
+            case Calendar.FRIDAY:
+                dayOfWeek = "Fri";
+                break;
+            case Calendar.SATURDAY:
+                dayOfWeek = "Sat";
+                break;
+        }
+
+        return dayOfWeek;
+    }
+
+    /**
      * Shows the loading screen while hiding the detail layout.
      */
     private void showLoadingScreen() {
@@ -707,6 +746,23 @@ public class DiaryEntryFragmentMain extends Fragment {
                 ContentValues values = new ContentValues();
                 values.put(DiaryContract.DiaryEntry.COLUMN_DATE, epochTime);
                 mDiaryEntryID = db.insert(DiaryContract.DiaryEntry.TABLE_NAME, null, values); //Set returned row ID to this diary entry's ID
+
+                //Create new lines in the diary_entry_routines table
+                //Get routines that have a frequency of daily or include today's day of the week in their frequency
+                String[] routineColumns = {DiaryContract.Routine._ID};
+                String routineWhere = DiaryContract.Routine.COLUMN_FREQUENCY + " = '" + RoutineActivityDetail.ROUTINE_DAILY + "'";
+                String dayOfWeek = "'%"+getDayOfWeek()+"%'"; //Format regex for like clause
+                routineWhere = routineWhere + " OR "+ DiaryContract.Routine.COLUMN_FREQUENCY + " LIKE " + dayOfWeek;
+                Cursor routinesFromFrequency = db.query(DiaryContract.Routine.TABLE_NAME,routineColumns,routineWhere,null,null,null,null);
+                if (routinesFromFrequency != null && routinesFromFrequency.moveToFirst()){
+                    do {
+                        long routineID = routinesFromFrequency.getLong(routinesFromFrequency.getColumnIndex(DiaryContract.Routine._ID));
+                        ContentValues routineValues = new ContentValues();
+                        routineValues.put(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID,routineID);
+                        routineValues.put(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID,mDiaryEntryID);
+                        db.insert(DiaryContract.DiaryEntryRoutine.TABLE_NAME,null,routineValues);
+                    }while (routinesFromFrequency.moveToNext());
+                }
             }
 
             return rows;
@@ -770,7 +826,6 @@ public class DiaryEntryFragmentMain extends Fragment {
                 mNewEntry = true;
             }
             refreshRoutinesList();
-            hideLoadingScreen();
             mInitialLoadFinished = true;
         }
     }
@@ -797,6 +852,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             String where = DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + " = " + Long.toString(diaryEntryID);
             Cursor routineIDsCursor = db.query(DiaryContract.DiaryEntryRoutine.TABLE_NAME, columns, where, null, null, null, null);
 
+            //Search routineIDsCursor and find every routine ID to fetch from Routines
             String[] routineColumns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME};
             String routineWhere = "";
             if (routineIDsCursor.moveToFirst()) {
@@ -807,7 +863,6 @@ public class DiaryEntryFragmentMain extends Fragment {
                     }
                     routineWhere = routineWhere + DiaryContract.Routine._ID + " = " + routineID;
                 } while (routineIDsCursor.moveToNext());
-
                 String routineOrderBy = DiaryContract.Routine.COLUMN_NAME + " ASC";
                 routineCursor = db.query(DiaryContract.Routine.TABLE_NAME, routineColumns, routineWhere, null, null, null, routineOrderBy);
             }
@@ -843,6 +898,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 });
                 mRoutinesListView.setAdapter(adapter);
             }
+            hideLoadingScreen();
         }
     }
 
