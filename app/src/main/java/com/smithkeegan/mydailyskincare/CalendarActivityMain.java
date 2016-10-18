@@ -39,6 +39,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.smithkeegan.mydailyskincare.R.id.calendar;
+
 /**
  * Main calendar activity. Displays a Caldroid calendar and handles actions
  * taken on that calendar view.
@@ -149,8 +151,13 @@ public class CalendarActivityMain extends AppCompatActivity {
                         new FetchCalendarDataTask().execute(args);
                     }
                 }else if (data.hasExtra(INTENT_DATE_DELETED)){ //If the entry was deleted, clear the corresponding calendar date
-                    long date = data.getLongExtra(INTENT_DATE_DELETED,-1);
-                    mCaldroidFragment.clearBackgroundDrawableForDate(new Date(date));
+                    long dateEpoch = data.getLongExtra(INTENT_DATE_DELETED,-1);
+                    Date calendarDate = new Date(dateEpoch); //If clearing todays date, set it to todays background drawable, otherwise just clear the cell
+                    if (calendarDate.compareTo(getTodayCalendarDate().getTime()) == 0){
+                        mCaldroidFragment.setBackgroundDrawableForDate(ContextCompat.getDrawable(mContext,R.drawable.calendar_cell_background_today),calendarDate);
+                    }else {
+                        mCaldroidFragment.clearBackgroundDrawableForDate(calendarDate);
+                    }
                     mCaldroidFragment.refreshView();
                 }
             }
@@ -184,12 +191,7 @@ public class CalendarActivityMain extends AppCompatActivity {
     private void selectItem(int position){
         switch(position){
             case 0: //Go to today's diary entry
-                Calendar calendar = Calendar.getInstance(); //Fetch todays entry by creating a date corresponding to today at time 00:00.000
-                calendar.set(Calendar.HOUR_OF_DAY, 0);
-                calendar.set(Calendar.MINUTE,0);
-                calendar.set(Calendar.SECOND,0);
-                calendar.set(Calendar.MILLISECOND,0);
-                Date todaysDate = calendar.getTime();
+                Date todaysDate = getTodayCalendarDate().getTime();
                 Intent intent = new Intent(this,DiaryEntryActivityMain.class);
                 intent.putExtra(INTENT_DATE,todaysDate.getTime());
                 startActivityForResult(intent,CODE_DATE_RETURN);
@@ -220,7 +222,6 @@ public class CalendarActivityMain extends AppCompatActivity {
     /**
      * Initializes the calendar on the main activity.
      * Uses a modified caldroid calendar (https://github.com/roomorama/Caldroid).
-     * TODO: better way to highlight today
      * TODO: show select animation when selecting days with skin condition color
      */
     private void initializeCalendar(){
@@ -228,14 +229,17 @@ public class CalendarActivityMain extends AppCompatActivity {
         mCaldroidFragment = new CaldroidFragment();
         mCaldroidFragment.setCaldroidListener(listener);
         Bundle args = new Bundle();
-        Calendar cal = Calendar.getInstance();
-        args.putInt(CaldroidFragment.MONTH,cal.get(Calendar.MONTH)+1);
-        args.putInt(CaldroidFragment.YEAR,cal.get(Calendar.YEAR));
+        Calendar todayCalendar = Calendar.getInstance();
+        args.putInt(CaldroidFragment.MONTH,todayCalendar.get(Calendar.MONTH)+1);
+        args.putInt(CaldroidFragment.YEAR,todayCalendar.get(Calendar.YEAR));
         args.putBoolean(CaldroidFragment.SHOW_NAVIGATION_ARROWS,false);
         mCaldroidFragment.setArguments(args);
 
+        todayCalendar = getTodayCalendarDate();
+        mCaldroidFragment.setBackgroundDrawableForDate(ContextCompat.getDrawable(mContext,R.drawable.calendar_cell_background_today),todayCalendar.getTime());
+
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
-        t.replace(R.id.calendar, mCaldroidFragment);
+        t.replace(calendar, mCaldroidFragment);
         t.commit();
     }
 
@@ -282,6 +286,19 @@ public class CalendarActivityMain extends AppCompatActivity {
     };
 
     /**
+     * Creates and returns a calendar object that is set to today's date.
+     * @return a calendar object representing today's date
+     */
+    private Calendar getTodayCalendarDate(){
+        Calendar todayDate = Calendar.getInstance();
+        todayDate.set(Calendar.HOUR_OF_DAY,0);
+        todayDate.set(Calendar.MINUTE,0);
+        todayDate.set(Calendar.SECOND,0);
+        todayDate.set(Calendar.MILLISECOND,0);
+        return todayDate;
+    }
+
+    /**
      * Async Task to fetch data for the given range of dates. Populates the displayed dates with this data.
      */
     private class FetchCalendarDataTask extends AsyncTask<Long,Void,Cursor>{
@@ -323,16 +340,22 @@ public class CalendarActivityMain extends AppCompatActivity {
                     long dateEpoch = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_DATE));
                     int dateCondition = result.getInt(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION));
                     Date date = new Date(dateEpoch);
-                    Drawable background = getConditionBackground(dateCondition);
+                    Drawable background = getConditionBackground(dateCondition,date);
 
-                    if(mFullRefresh) //Store date and background into map if doing full refresh.
+                    if(mFullRefresh) { //Store date and background into map if doing full refresh.
                         backgroundMap.put(date, background);
-                    else //Otherwise set the single dates
-                        mCaldroidFragment.setBackgroundDrawableForDate(getConditionBackground(dateCondition),date);
+                    }else { //Otherwise set the single dates
+                        mCaldroidFragment.setBackgroundDrawableForDate(getConditionBackground(dateCondition, date), date);
+                    }
                 }while(result.moveToNext());
 
-                if(mFullRefresh) //Full refresh using the map
+                if(mFullRefresh) { //Full refresh using the map
+                    //If there is no background in the map for todays date, add the default background for todays date
+                    if (!backgroundMap.containsKey(getTodayCalendarDate().getTime())){
+                        backgroundMap.put(getTodayCalendarDate().getTime(),ContextCompat.getDrawable(mContext,R.drawable.calendar_cell_background_today));
+                    }
                     mCaldroidFragment.setBackgroundDrawableForDates(backgroundMap);
+                }
                 mCaldroidFragment.refreshView();
             }
         }
@@ -340,34 +363,60 @@ public class CalendarActivityMain extends AppCompatActivity {
         /**
          * Helper method to grab a background drawable to set the background for a date.
          * @param condition the condition value for this date
-         * @return a new colorDrawable to use as this dates background.
+         * @param date the date of the calendar cell to fetch background for
+         * @return a new drawable to use as this dates background.
          */
-        public ColorDrawable getConditionBackground(int condition){
-            int color;
+        public Drawable getConditionBackground(int condition, Date date){
+            int colorID;
+            int drawableID;
+            Drawable backgroundDrawable;
+            boolean isToday = false;
+            //See if the calendar date is todays date.
+            Calendar calendarDate = Calendar.getInstance();
+            calendarDate.setTime(date);
+
+            if (calendarDate.compareTo(getTodayCalendarDate()) == 0){
+                isToday = true;
+            }
+
             switch (condition){
                 case 0:
-                    color = R.color.severe;
+                    drawableID = R.drawable.calendar_cell_background_today_severe;
+                    colorID = R.color.severe;
                     break;
                 case 1:
-                    color = R.color.veryPoor;
+                    drawableID = R.drawable.calendar_cell_background_today_very_poor;
+                    colorID = R.color.veryPoor;
                     break;
                 case 2:
-                    color = R.color.poor;
+                    drawableID = R.drawable.calendar_cell_background_today_poor;
+                    colorID = R.color.poor;
                     break;
                 case 4:
-                    color = R.color.good;
+                    drawableID = R.drawable.calendar_cell_background_today_good;
+                    colorID = R.color.good;
                     break;
                 case 5:
-                    color = R.color.veryGood;
+                    drawableID = R.drawable.calendar_cell_background_today_very_good;
+                    colorID = R.color.veryGood;
                     break;
                 case 6:
-                    color = R.color.excellent;
+                    drawableID = R.drawable.calendar_cell_background_today_excellent;
+                    colorID = R.color.excellent;
                     break;
                 default: //Default or condition = 3
-                    color = R.color.fair;
+                    drawableID = R.drawable.calendar_cell_background_today_fair;
+                    colorID = R.color.fair;
                     break;
             }
-            return new ColorDrawable(ContextCompat.getColor(mContext,color));
+
+            //Fetch the drawable that includes the today selector if the date is today.
+            if (isToday){
+                backgroundDrawable = ContextCompat.getDrawable(mContext,drawableID);
+            }else{
+                backgroundDrawable = new ColorDrawable(ContextCompat.getColor(mContext,colorID));
+            }
+            return backgroundDrawable;
         }
     }
 }
