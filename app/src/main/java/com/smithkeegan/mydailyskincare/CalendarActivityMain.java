@@ -26,6 +26,7 @@ import android.widget.ListView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
+import com.smithkeegan.mydailyskincare.analytics.AnalyticsActivityMain;
 import com.smithkeegan.mydailyskincare.customClasses.DatePickerDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
@@ -55,6 +56,8 @@ public class CalendarActivityMain extends AppCompatActivity {
     public final static String INTENT_DATE = "Date"; //Key for intent value
     public final static String INTENT_DATE_DELETED = "DateDeleted"; //Key for activity result on entry deletion
     public final static int CODE_DATE_RETURN = 1;
+    private final static String SAVED_STATE_MONTH = "SAVED_STATE_MONTH";
+    private final static String SAVED_STATE_YEAR = "SAVED_STATE_YEAR";
 
     private Context mContext;
     private CaldroidFragment mCaldroidFragment;
@@ -76,7 +79,7 @@ public class CalendarActivityMain extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initializeDrawer();
-        initializeCalendar();
+        initializeCalendar(savedInstanceState);
     }
 
     @Override
@@ -131,6 +134,17 @@ public class CalendarActivityMain extends AppCompatActivity {
         if(mDrawerLayout.isDrawerOpen(GravityCompat.START)){
             mDrawerLayout.closeDrawer(GravityCompat.START,false);
         }
+    }
+
+    /**
+     * Saves the current month to be scrolled to on instance restore.
+     * @param outState bundle containing the month to scroll to
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(SAVED_STATE_MONTH,mCaldroidFragment.getMonth());
+        outState.putInt(SAVED_STATE_YEAR,mCaldroidFragment.getYear());
+        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -209,6 +223,8 @@ public class CalendarActivityMain extends AppCompatActivity {
                 startActivity(ingredientIntent);
                 break;
             case 4: //Analytics
+                Intent analyticsIntent = new Intent(this, AnalyticsActivityMain.class);
+                startActivity(analyticsIntent);
                 break;
             case 5: //Settings
                 break;
@@ -224,14 +240,22 @@ public class CalendarActivityMain extends AppCompatActivity {
      * Uses a modified caldroid calendar (https://github.com/roomorama/Caldroid).
      * TODO: show select animation when selecting days with skin condition color
      */
-    private void initializeCalendar(){
+    private void initializeCalendar(Bundle savedInstanceState){
+        Calendar todayCalendar = Calendar.getInstance();
+        int month = todayCalendar.get(Calendar.MONTH)+1;
+        int year = todayCalendar.get(Calendar.YEAR);
+
+        //Scroll to the saved month from the saved instance state if one exists
+        if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_STATE_MONTH) && savedInstanceState.containsKey(SAVED_STATE_YEAR)){
+            month = savedInstanceState.getInt(SAVED_STATE_MONTH);
+            year = savedInstanceState.getInt(SAVED_STATE_YEAR);
+        }
 
         mCaldroidFragment = new CaldroidFragment();
         mCaldroidFragment.setCaldroidListener(listener);
         Bundle args = new Bundle();
-        Calendar todayCalendar = Calendar.getInstance();
-        args.putInt(CaldroidFragment.MONTH,todayCalendar.get(Calendar.MONTH)+1);
-        args.putInt(CaldroidFragment.YEAR,todayCalendar.get(Calendar.YEAR));
+        args.putInt(CaldroidFragment.MONTH,month);
+        args.putInt(CaldroidFragment.YEAR,year);
         args.putBoolean(CaldroidFragment.SHOW_NAVIGATION_ARROWS,false);
         mCaldroidFragment.setArguments(args);
 

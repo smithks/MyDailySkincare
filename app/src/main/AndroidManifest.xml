@@ -53,6 +53,10 @@
                   android:parentActivityName=".ingredient.IngredientActivityMain">
 
         </activity>
+        <activity android:name=".analytics.AnalyticsActivityMain"
+                  android:parentActivityName=".CalendarActivityMain">
+
+        </activity>
         <activity android:name="com.smithkeegan.mydailyskincare.AndroidDatabaseManager"
                   android:theme="@style/Theme.AppCompat.Light"/>
 

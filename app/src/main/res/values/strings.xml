@@ -152,6 +152,9 @@
     <string name="item_list_select_routines">Select routines</string>
     <string name="item_list_new_string">New</string>
 
+    <!-- Analytics Strings -->
+    <string name="analytics_activity_title">Analytics</string>
+    <string name="analytics_query_string">Show me&#8230;</string>
 
 
 </resources>
