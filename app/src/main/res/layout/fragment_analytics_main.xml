@@ -8,7 +8,7 @@
             android:id="@+id/analytics_query_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/analytics_query_string"
+            android:text="@string/analytics_query_show_me"
             android:textSize="30sp"
             android:gravity="center"
             android:textColor="@color/black"/>
@@ -16,9 +16,11 @@
         <GridView
             android:id="@+id/analytics_grid_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
+            android:layout_height="wrap_content"
+            android:layout_below="@id/analytics_query_text_view"
+            android:numColumns="auto_fit"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
         </GridView>
 
 </RelativeLayout>

@@ -154,7 +154,14 @@
 
     <!-- Analytics Strings -->
     <string name="analytics_activity_title">Analytics</string>
-    <string name="analytics_query_string">Show me&#8230;</string>
+    <string name="analytics_query_show_me">Show me</string>
+    <string name="analytics_query_where_my">where</string>
+    <string-array name="analytics_main_strings">
+        <item>days</item>
+        <item>routines</item>
+        <item>products</item>
+        <item>ingredients</item>
+    </string-array>
 
 
 </resources>
