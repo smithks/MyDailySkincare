@@ -92,7 +92,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.DiaryEntry._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_DATE + INTEGER_TYPE + NOT_NULL + " UNIQUE" + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_PHOTO + INTEGER_TYPE + COMMA_SEP +
-                    DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION + INTEGER_TYPE + COMMA_SEP +
+                    DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION + INTEGER_TYPE + COMMA_SEP +

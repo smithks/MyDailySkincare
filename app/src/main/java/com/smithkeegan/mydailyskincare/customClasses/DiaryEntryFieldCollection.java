@@ -9,7 +9,7 @@ import android.os.Parcelable;
  * @since 10/6/2016
  */
 public class DiaryEntryFieldCollection implements Parcelable {
-    public long generalCondition;
+    public long overallCondition;
     public long foreheadCondition;
     public long noseCondition;
     public long cheeksCondition;
@@ -34,7 +34,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
     };
 
     public DiaryEntryFieldCollection(){
-        generalCondition = 3;
+        overallCondition = 3;
         foreheadCondition = 3;
         noseCondition = 3;
         cheeksCondition = 3;
@@ -48,7 +48,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
     }
 
     public DiaryEntryFieldCollection(Parcel in) {
-        generalCondition = in.readLong();
+        overallCondition = in.readLong();
         foreheadCondition = in.readLong();
         noseCondition = in.readLong();
         cheeksCondition = in.readLong();
@@ -63,7 +63,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(generalCondition);
+        dest.writeLong(overallCondition);
         dest.writeLong(foreheadCondition);
         dest.writeLong(noseCondition);
         dest.writeLong(cheeksCondition);

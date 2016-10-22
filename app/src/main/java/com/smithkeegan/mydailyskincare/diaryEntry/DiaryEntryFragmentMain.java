@@ -59,7 +59,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     private RelativeLayout mRoutinesLayout;
     private RelativeLayout mOnPeriodLayout;
 
-    private TextView mTextViewGeneralCondition;
+    private TextView mTextViewOverallCondition;
     private TextView mTextViewForeheadCondition;
     private TextView mTextViewNoseCondition;
     private TextView mTextViewCheeksCondition;
@@ -70,7 +70,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     private TextView mTextViewHygiene;
     private TextView mTextViewWaterIntake;
 
-    private DiaryEntrySeekBar mSeekBarGeneralCondition;
+    private DiaryEntrySeekBar mSeekBarOverallCondition;
     private DiaryEntrySeekBar mSeekBarForeheadCondition;
     private DiaryEntrySeekBar mSeekBarNoseCondition;
     private DiaryEntrySeekBar mSeekBarCheeksCondition;
@@ -267,7 +267,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         mRoutinesLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_routines_layout);
         mOnPeriodLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_lifestyle_period_layout);
 
-        mTextViewGeneralCondition = (TextView) rootView.findViewById(R.id.diary_entry_general_condition_text);
+        mTextViewOverallCondition = (TextView) rootView.findViewById(R.id.diary_entry_general_condition_text);
         mTextViewForeheadCondition = (TextView) rootView.findViewById(R.id.diary_entry_forehead_condition_text);
         mTextViewNoseCondition = (TextView) rootView.findViewById(R.id.diary_entry_nose_condition_text);
         mTextViewCheeksCondition = (TextView) rootView.findViewById(R.id.diary_entry_cheeks_condition_text);
@@ -278,7 +278,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         mTextViewHygiene = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_hygiene_text);
         mTextViewWaterIntake = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_water_text);
 
-        mSeekBarGeneralCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_general_condition_seek_bar);
+        mSeekBarOverallCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_general_condition_seek_bar);
         mSeekBarForeheadCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_forehead_condition_seek_bar);
         mSeekBarNoseCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_nose_condition_seek_bar);
         mSeekBarCheeksCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_cheeks_condition_seek_bar);
@@ -300,7 +300,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      */
     private void setDefaultMemberValues() {
         //Set the default value of sliders, will be changed on load from database.
-        updateSliderLabel(mTextViewGeneralCondition, 3, mConditionStrings);
+        updateSliderLabel(mTextViewOverallCondition, 3, mConditionStrings);
         updateSliderLabel(mTextViewForeheadCondition, 3, mConditionStrings);
         updateSliderLabel(mTextViewNoseCondition, 3, mConditionStrings);
         updateSliderLabel(mTextViewCheeksCondition, 3, mConditionStrings);
@@ -312,7 +312,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         updateSliderLabel(mTextViewHygiene, 0, mHygieneStrings);
         updateSliderLabel(mTextViewWaterIntake, 0, mWaterIntakeStrings);
 
-        mSeekBarGeneralCondition.setDefaultStep();
+        mSeekBarOverallCondition.setDefaultStep();
         mSeekBarForeheadCondition.setDefaultStep();
         mSeekBarNoseCondition.setDefaultStep();
         mSeekBarCheeksCondition.setDefaultStep();
@@ -343,7 +343,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     Sets the listeners of views in this fragment.
      */
     private void setListeners() {
-        mSeekBarGeneralCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
+        mSeekBarOverallCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarForeheadCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarNoseCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
         mSeekBarCheeksCondition.setOnSeekBarChangeListener(new DiaryEntrySeekBarChangeListener());
@@ -420,8 +420,8 @@ public class DiaryEntryFragmentMain extends Fragment {
                 int step = diaryEntrySeekBar.getNearestStep(progress);
                 switch (diaryEntrySeekBar.getId()) { //Set the text, color and current value for this seek bar's corresponding views
                     case R.id.diary_entry_general_condition_seek_bar:
-                        updateConditionBlock(mTextViewGeneralCondition, mSeekBarGeneralCondition, step);
-                        mCurrentFieldValues.generalCondition = step;
+                        updateConditionBlock(mTextViewOverallCondition, mSeekBarOverallCondition, step);
+                        mCurrentFieldValues.overallCondition = step;
                         break;
                     case R.id.diary_entry_forehead_condition_seek_bar:
                         updateConditionBlock(mTextViewForeheadCondition, mSeekBarForeheadCondition, step);
@@ -560,7 +560,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * @param values values for each view
      */
     private void updateFieldViews(DiaryEntryFieldCollection values) {
-        updateConditionBlock(mTextViewGeneralCondition, mSeekBarGeneralCondition, values.generalCondition);
+        updateConditionBlock(mTextViewOverallCondition, mSeekBarOverallCondition, values.overallCondition);
         updateConditionBlock(mTextViewForeheadCondition, mSeekBarForeheadCondition, values.foreheadCondition);
         updateConditionBlock(mTextViewNoseCondition, mSeekBarNoseCondition, values.noseCondition);
         updateConditionBlock(mTextViewCheeksCondition, mSeekBarCheeksCondition, values.cheeksCondition);
@@ -618,7 +618,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * @return true if this entry has changed
      */
     private boolean entryHasChanged() {
-        if (mInitialFieldValues.generalCondition != mCurrentFieldValues.generalCondition
+        if (mInitialFieldValues.overallCondition != mCurrentFieldValues.overallCondition
                 || mInitialFieldValues.foreheadCondition != mCurrentFieldValues.foreheadCondition
                 || mInitialFieldValues.noseCondition != mCurrentFieldValues.noseCondition
                 || mInitialFieldValues.cheeksCondition != mCurrentFieldValues.cheeksCondition
@@ -667,7 +667,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      */
     private void saveCurrentDiaryEntry() {
         Long[] args = {mEpochTime,
-                mCurrentFieldValues.generalCondition,
+                mCurrentFieldValues.overallCondition,
                 mCurrentFieldValues.foreheadCondition,
                 mCurrentFieldValues.noseCondition,
                 mCurrentFieldValues.cheeksCondition,
@@ -726,7 +726,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             String[] columns = {DiaryContract.DiaryEntry._ID, //Columns to retrieve
                     DiaryContract.DiaryEntry.COLUMN_DATE,
                     DiaryContract.DiaryEntry.COLUMN_PHOTO,
-                    DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION,
+                    DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION,
                     DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION,
                     DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION,
                     DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION,
@@ -777,9 +777,9 @@ public class DiaryEntryFragmentMain extends Fragment {
             if (result != null && result.moveToFirst()) { //Row was returned from query, an entry for this date exists
                 mDiaryEntryID = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry._ID));
 
-                long generalStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION));
-                mInitialFieldValues.generalCondition = generalStep;
-                mCurrentFieldValues.generalCondition = generalStep;
+                long generalStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION));
+                mInitialFieldValues.overallCondition = generalStep;
+                mCurrentFieldValues.overallCondition = generalStep;
 
                 long foreheadStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION));
                 mInitialFieldValues.foreheadCondition = foreheadStep;
@@ -911,7 +911,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         /**
          * @param params params[0] - todays date as milliseconds from epoch
-         *               params[1] - general condition
+         *               params[1] - overall condition
          *               params[2] - forehead condition
          *               params[3] - nose condition
          *               params[4] - cheeks condition
@@ -929,7 +929,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             ContentValues values = new ContentValues();
 
             values.put(DiaryContract.DiaryEntry.COLUMN_DATE, params[0]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION, params[1]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION, params[1]);
             values.put(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION, params[2]);
             values.put(DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION, params[3]);
             values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, params[4]);

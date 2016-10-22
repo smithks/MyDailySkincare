@@ -58,7 +58,7 @@
     <string name="diary_entry_slider_water_six_nine">6 &#8211; 9 Glasses</string>
     <string name="diary_entry_slider_water_ten_plus">10+ Glasses</string>
     <string name="diary_entry_skin_condition_string">My Skin Today</string>
-    <string name="diary_entry_general_condition">General Condition</string>
+    <string name="diary_entry_general_condition">Overall Condition</string>
     <string name="diary_entry_forehead_condition">Forehead</string>
     <string name="diary_entry_nose_condition">Nose</string>
     <string name="diary_entry_cheeks_condition">Cheeks</string>
@@ -155,13 +155,84 @@
     <!-- Analytics Strings -->
     <string name="analytics_activity_title">Analytics</string>
     <string name="analytics_query_show_me">Show me</string>
-    <string name="analytics_query_where_my">where</string>
-    <string-array name="analytics_main_strings">
-        <item>days</item>
-        <item>routines</item>
-        <item>products</item>
-        <item>ingredients</item>
+
+    <string name="analytics_button_days">days</string>
+    <string name="analytics_button_routines">routines</string>
+    <string name="analytics_button_products">products</string>
+    <string name="analytics_button_ingredients">ingredients</string>
+    <string-array name="analytics_main_button_strings">
+        <item>@string/analytics_button_days</item>
+        <item>@string/analytics_button_routines</item>
+        <item>@string/analytics_button_products</item>
+        <item>@string/analytics_button_ingredients</item>
     </string-array>
 
+    <string name="analytics_query_where_my">where my</string>
+    <string name="analytics_button_overall_condition">overall condition</string>
+    <string name="analytics_button_forehead_condition">forehead condition</string>
+    <string name="analytics_button_nose_condition">nose condition</string>
+    <string name="analytics_button_cheek_condition">cheek condition</string>
+    <string name="analytics_button_lips_condition">lips condition</string>
+    <string name="analytics_button_chin_condition">chin condition</string>
+    <string name="analytics_button_exercise_level">exercise level</string>
+    <string name="analytics_button_diet">diet</string>
+    <string name="analytics_button_hygiene">hygiene</string>
+    <string name="analytics_button_water_intake">water intake</string>
+    <string name="analytics_button_period_was_active">period was active</string>
+    <string-array name="analytics_days_buttons_strings">
+        <item>@string/analytics_button_overall_condition</item>
+        <item>@string/analytics_button_forehead_condition</item>
+        <item>@string/analytics_button_nose_condition</item>
+        <item>@string/analytics_button_cheek_condition</item>
+        <item>@string/analytics_button_lips_condition</item>
+        <item>@string/analytics_button_chin_condition</item>
+        <item>@string/analytics_button_exercise_level</item>
+        <item>@string/analytics_button_diet</item>
+        <item>@string/analytics_button_hygiene</item>
+        <item>@string/analytics_button_water_intake</item>
+        <item>@string/analytics_button_period_was_active</item>
+    </string-array>
+
+    <string name="analytics_days_was">was</string>
+    <string-array name="analytics_days_conditions">
+        <item>@string/diary_entry_condition_excellent</item>
+        <item>@string/diary_entry_condition_very_good</item>
+        <item>@string/diary_entry_condition_good</item>
+        <item>@string/diary_entry_condition_fair</item>
+        <item>@string/diary_entry_condition_poor</item>
+        <item>@string/diary_entry_condition_very_poor</item>
+        <item>@string/diary_entry_condition_severe</item>
+    </string-array>
+
+    <string name="analytics_routine_applied">applied</string>
+    <string name="analytics_routine_am">in the morning</string>
+    <string name="analytics_routine_pm">in the evening</string>
+    <string name="analytics_routine_as_needed">as needed</string>
+    <string name="analytics_routine_daily">daily</string>
+    <string name="analytics_routine_on_specified">on specified day</string>
+    <string-array name="analytics_routine_buttons_strings">
+        <item>@string/analytics_routine_am</item>
+        <item>@string/analytics_routine_pm</item>
+        <item>@string/analytics_routine_as_needed</item>
+        <item>@string/analytics_routine_daily</item>
+        <item>@string/analytics_routine_on_specified</item>
+    </string-array>
+
+    <string name="analytics_routine_day_sunday">sunday</string>
+    <string name="analytics_routine_day_monday">monday</string>
+    <string name="analytics_routine_day_tuesday">tuesday</string>
+    <string name="analytics_routine_day_wednesday">wednesday</string>
+    <string name="analytics_routine_day_thursday">thursday</string>
+    <string name="analytics_routine_day_friday">friday</string>
+    <string name="analytics_routine_day_saturday">saturday</string>
+    <string-array name="analytics_routine_day_buttons">
+        <item>@string/analytics_routine_day_sunday</item>
+        <item>@string/analytics_routine_day_monday</item>
+        <item>@string/analytics_routine_day_tuesday</item>
+        <item>@string/analytics_routine_day_wednesday</item>
+        <item>@string/analytics_routine_day_thursday</item>
+        <item>@string/analytics_routine_day_friday</item>
+        <item>@string/analytics_routine_day_saturday</item>
+    </string-array>
 
 </resources>

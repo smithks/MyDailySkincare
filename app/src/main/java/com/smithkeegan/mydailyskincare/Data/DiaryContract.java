@@ -16,7 +16,7 @@ public final class DiaryContract {
         public static final String TABLE_NAME = "DiaryEntry";
         public static final String COLUMN_DATE = "Date";
         public static final String COLUMN_PHOTO = "Photo";
-        public static final String COLUMN_GENERAL_CONDITION = "GeneralCondition";
+        public static final String COLUMN_OVERALL_CONDITION = "OverallCondition";
         public static final String COLUMN_FOREHEAD_CONDITION = "ForeheadCondition";
         public static final String COLUMN_NOSE_CONDITION = "NoseCondition";
         public static final String COLUMN_CHEEK_CONDITION = "CheekCondition";

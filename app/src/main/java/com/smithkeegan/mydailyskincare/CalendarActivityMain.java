@@ -346,7 +346,7 @@ public class CalendarActivityMain extends AppCompatActivity {
             else
                 mFullRefresh = false;
 
-            String columns[] = {DiaryContract.DiaryEntry._ID, DiaryContract.DiaryEntry.COLUMN_DATE, DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION};
+            String columns[] = {DiaryContract.DiaryEntry._ID, DiaryContract.DiaryEntry.COLUMN_DATE, DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION};
             String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " >= ? AND "+ DiaryContract.DiaryEntry.COLUMN_DATE+ " <= ?";
             String[] selectionArgs = {Long.toString(beginEpoch),Long.toString(endEpoch)};
             return db.query(DiaryContract.DiaryEntry.TABLE_NAME,columns,selection,selectionArgs,null,null,null);
@@ -362,7 +362,7 @@ public class CalendarActivityMain extends AppCompatActivity {
                 Map<Date, Drawable> backgroundMap = new HashMap<>();
                 do{
                     long dateEpoch = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_DATE));
-                    int dateCondition = result.getInt(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_GENERAL_CONDITION));
+                    int dateCondition = result.getInt(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION));
                     Date date = new Date(dateEpoch);
                     Drawable background = getConditionBackground(dateCondition,date);
 
