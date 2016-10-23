@@ -2,7 +2,9 @@ package com.smithkeegan.mydailyskincare.analytics;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.smithkeegan.mydailyskincare.R;
@@ -40,6 +43,8 @@ public class AnalyticsFragmentMain extends Fragment {
 
     private TextView mQueryTextView;
     private GridView mButtonGridView;
+    private View mLoadingView;
+    private ListView mResultsListView;
 
     private Stack<String> mStateStack;
     private Stack<Spannable> mQueryStringStack;
@@ -73,6 +78,8 @@ public class AnalyticsFragmentMain extends Fragment {
     private void initializeMemberViews(View rootView) {
         mQueryTextView = (TextView) rootView.findViewById(R.id.analytics_query_text_view);
         mButtonGridView = (GridView) rootView.findViewById(R.id.analytics_grid_view);
+        mLoadingView = rootView.findViewById(R.id.analytics_loading_view);
+        mResultsListView = (ListView) rootView.findViewById(R.id.analytics_results_list_view);
     }
 
     /**
@@ -86,6 +93,8 @@ public class AnalyticsFragmentMain extends Fragment {
         mQueryStringStack.push(new SpannableString(getString(R.string.analytics_query_show_me)));
 
         mQueryBuilder = new DatabaseQueryFields();
+
+        showLayout(mButtonGridView);
     }
 
     /**
@@ -106,8 +115,16 @@ public class AnalyticsFragmentMain extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(SAVE_KEY_STATE_STACK, mStateStack);
         outState.putSerializable(SAVE_KEY_TEXT_QUERY_STACK, mQueryStringStack);
-
+        //TODO save query builder status and curent displayed layout?
         super.onSaveInstanceState(outState);
+    }
+
+    private void showLayout(View v){
+        mButtonGridView.setVisibility(View.INVISIBLE);
+        mLoadingView.setVisibility(View.INVISIBLE);
+        mResultsListView.setVisibility(View.INVISIBLE);
+
+        v.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -172,7 +189,7 @@ public class AnalyticsFragmentMain extends Fragment {
         choiceButton.setText(buttonText);
         choiceButton.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
-        setButtonProperties(choiceButton); //Set the linked string to push onto the stack and other button properties
+        findButtonProperties(choiceButton); //Set the linked string to push onto the stack and other button properties
         choiceButton.setOnClickListener(getGridButtonListener()); //Set the buttons listener
 
         return choiceButton;
@@ -210,9 +227,8 @@ public class AnalyticsFragmentMain extends Fragment {
                 buttonStrings = getResources().getStringArray(R.array.analytics_routine_day_buttons);
                 break;
             case GridStackStates.STATE_FETCH_DATA: //final level //TODO fetch data from database and replace grid.
-                String table = mQueryBuilder.TABLE;
-                String where = mQueryBuilder.WHERE;
-                String whereArgs = mQueryBuilder.WHERE_ARG;
+                String[] queryArgs = {mQueryBuilder.TABLE,mQueryBuilder.WHERE,mQueryBuilder.WHERE_ARG};
+                new FetchFromDatabase().execute(queryArgs);
                 break;
         }
 
@@ -225,22 +241,19 @@ public class AnalyticsFragmentMain extends Fragment {
     }
 
     /**
-     * Sets analytics properties of this button.
+     * Sets analytics properties of this button based on which button was passed in. Provides the bulk of individual
+     * button settings so its a big one.
      * @param button the button to set
      */
-    private void setButtonProperties(AnalyticsButton button) {
+    private void findButtonProperties(AnalyticsButton button) {
         String linkedState;
 
         String buttonTitle = button.getText().toString();
         //TODO add button types and query data to all buttons
         if (buttonTitle.equals(getString(R.string.analytics_button_days))) {                    //2nd level
-            linkedState = GridStackStates.STATE_DAYS;
-            button.setButtonType(AnalyticsButton.BUTTON_TABLE);
-            button.setQueryData(DiaryContract.DiaryEntry.TABLE_NAME);
+            setButtonProperties(button,GridStackStates.STATE_DAYS,AnalyticsButton.BUTTON_TABLE, DiaryContract.DiaryEntry.TABLE_NAME,0,0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_overall_condition))) { //3rd level
-            linkedState = GridStackStates.STATE_DAYS_CONDITION;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE);
-            button.setQueryData(DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION);
+            setButtonProperties(button,GridStackStates.STATE_DAYS_CONDITION,AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION,0,0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_forehead_condition))) { //3rd level
             linkedState = GridStackStates.STATE_DAYS_CONDITION;
 
@@ -256,34 +269,20 @@ public class AnalyticsFragmentMain extends Fragment {
         } else if (buttonTitle.equals(getString(R.string.analytics_button_chin_condition))) {   //3rd level
             linkedState = GridStackStates.STATE_DAYS_CONDITION;
 
-        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_excellent))){     //4th level
-            linkedState = GridStackStates.STATE_FETCH_DATA;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE_ARG);
-            button.setQueryData(Integer.toString(6));
-        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_very_good))){     //4th level
-            linkedState = GridStackStates.STATE_FETCH_DATA;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE_ARG);
-            button.setQueryData(Integer.toString(5));
-        }else if ( buttonTitle.equals(getString(R.string.diary_entry_condition_good))){         //4th level
-            linkedState = GridStackStates.STATE_FETCH_DATA;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE_ARG);
-            button.setQueryData(Integer.toString(4));
-        }else if ( buttonTitle.equals(getString(R.string.diary_entry_condition_fair))){         //4th level
-            linkedState = GridStackStates.STATE_FETCH_DATA;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE_ARG);
-            button.setQueryData(Integer.toString(3));
-        }else if ( buttonTitle.equals(getString(R.string.diary_entry_condition_poor))) {        //4th level
-            linkedState = GridStackStates.STATE_FETCH_DATA;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE_ARG);
-            button.setQueryData(Integer.toString(2));
-        }else if ( buttonTitle.equals(getString(R.string.diary_entry_condition_very_poor))){    //4th level
-            linkedState = GridStackStates.STATE_FETCH_DATA;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE_ARG);
-            button.setQueryData(Integer.toString(1));
-        }else if ( buttonTitle.equals(getString(R.string.diary_entry_condition_severe))) {      //4th level
-            linkedState = GridStackStates.STATE_FETCH_DATA;
-            button.setButtonType(AnalyticsButton.BUTTON_WHERE_ARG);
-            button.setQueryData(Integer.toString(0));
+        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_excellent))) {     //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(6), R.color.excellent, R.color.black);
+        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_very_good))) {     //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(5), R.color.veryGood, R.color.black);
+        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_good))) {         //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(4), R.color.good, R.color.black);
+        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_fair))) {         //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(3), R.color.fair, R.color.black);
+        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_poor))) {        //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(2), R.color.poor, R.color.black);
+        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_very_poor))) {    //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), R.color.veryPoor, R.color.black);
+        } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_severe))) {      //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(0), R.color.severe, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_routines))) {        //2nd level
             linkedState = GridStackStates.STATE_ROUTINES;
         } else if (buttonTitle.equals(getString(R.string.analytics_routine_on_specified))) {   //3rd level
@@ -296,7 +295,39 @@ public class AnalyticsFragmentMain extends Fragment {
             linkedState = GridStackStates.STATE_MAIN;
         }
 
-        button.setLinkedStackString(linkedState);
+    }
+
+    /**
+     * Sets parameters and attributes of the passed in button.
+     * @param button          the button to modify
+     * @param linkedState     the linked state of this button
+     * @param buttonType      the button type of this button
+     * @param buttonQueryData the query data of this button
+     * @param buttonColor     the color to set the buttons background to
+     * @param buttonTextColor the color to set the buttons text color to
+     */
+    private void setButtonProperties(AnalyticsButton button, String linkedState, String buttonType, String buttonQueryData, int buttonColor, int buttonTextColor) {
+        if (linkedState != null) {
+            button.setLinkedStackString(linkedState);
+        }
+
+        if (buttonType != null) {
+            button.setButtonType(buttonType);
+        }
+
+        if (buttonQueryData != null) {
+            button.setQueryData(buttonQueryData);
+        }
+
+        if (buttonColor != 0) {
+            Drawable drawable = DrawableCompat.wrap(button.getBackground());
+            DrawableCompat.setTint(drawable, ContextCompat.getColor(getContext(), buttonColor));
+            button.setBackground(drawable);
+        }
+
+        if (buttonTextColor != 0) {
+            button.setTextColor(ContextCompat.getColor(getContext(), buttonTextColor));
+        }
     }
 
     /**
@@ -310,7 +341,7 @@ public class AnalyticsFragmentMain extends Fragment {
                 //When a button is pressed, push that buttons linked state string onto the stack and then update the stack
                 AnalyticsButton thisButton = (AnalyticsButton) v;
 
-                switch (thisButton.getButtonType()){
+                switch (thisButton.getButtonType()) {
                     case AnalyticsButton.BUTTON_TABLE:
                         mQueryBuilder.TABLE = thisButton.getQueryData();
                         break;
@@ -333,6 +364,21 @@ public class AnalyticsFragmentMain extends Fragment {
             }
         };
         return buttonListener;
+    }
+
+    /**
+     * Uses the database query object to build a query to perform on the database. Populates the listview with this data.
+     */
+    private class FetchFromDatabase extends AsyncTask<String,Void,Cursor>{
+
+        @Override
+        protected Cursor doInBackground(String... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+        }
     }
 
     /**

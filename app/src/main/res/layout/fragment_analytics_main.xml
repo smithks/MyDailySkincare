@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/analytics_parent_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -10,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="@string/analytics_query_show_me"
         android:textColor="@color/black"
@@ -23,16 +24,18 @@
         android:layout_below="@id/analytics_query_text_view"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="40dp"
-        android:numColumns="auto_fit">
+        android:layout_marginBottom="20dp"
+        android:numColumns="auto_fit"
+        android:visibility="invisible">
     </GridView>
 
     <ProgressBar
         android:id="@+id/analytics_loading_view"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_below="@id/analytics_query_text_view"
         android:indeterminate="true"
+        android:layout_centerInParent="true"
         android:visibility="invisible"/>
 
     <ListView
