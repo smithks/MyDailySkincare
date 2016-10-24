@@ -153,6 +153,8 @@
     <string name="item_list_new_string">New</string>
 
     <!-- Analytics Strings -->
+    <string name="analytics_menu_item_back">Back</string>
+    <string name="analytics_menu_item_start_over">Start Over</string>
     <string name="analytics_activity_title">Analytics</string>
     <string name="analytics_query_show_me">Show me</string>
 

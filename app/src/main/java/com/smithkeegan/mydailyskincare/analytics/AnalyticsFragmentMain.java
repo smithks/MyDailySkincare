@@ -2,7 +2,9 @@ package com.smithkeegan.mydailyskincare.analytics;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -17,8 +20,12 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -27,8 +34,13 @@ import android.widget.TextView;
 
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
+import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
+import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Stack;
 
 /**
@@ -52,6 +64,13 @@ public class AnalyticsFragmentMain extends Fragment {
 
     //TODO way to keep up with curent database string
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,6 +88,47 @@ public class AnalyticsFragmentMain extends Fragment {
         updateGridAndQuery();
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_analytics, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_analytics_back:
+                goBackOneLevel();
+                return true;
+            case R.id.menu_analytics_start_over:
+                startOver();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Goes back one level of the analytics query.
+     */
+    private void goBackOneLevel() {
+        if (mStateStack.size() > 1) {
+            mStateStack.pop();
+            if (mQueryStringStack.size() > 1) {
+                mQueryStringStack.pop();
+            }
+            updateGridAndQuery();
+        }
+    }
+
+    /**
+     * Returns the analytics page to the default starting point.
+     */
+    private void startOver() {
+        mStateStack.clear();
+        mStateStack.push(GridStackStates.STATE_MAIN);
+        updateGridAndQuery();
     }
 
     /**
@@ -119,18 +179,24 @@ public class AnalyticsFragmentMain extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    private void showLayout(View v){
+    /**
+     * Used to set the specified view to visible while hiding all other views.
+     * @param view the view to show
+     */
+    private void showLayout(View view) {
+        //Set all views to invisible
         mButtonGridView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.INVISIBLE);
         mResultsListView.setVisibility(View.INVISIBLE);
 
-        v.setVisibility(View.VISIBLE);
+        //Set the passed in view to visible
+        view.setVisibility(View.VISIBLE);
     }
 
     /**
      * Uses the query string stack to build the string that will be displayed at the top of the screen.
      */
-    private void updateTextViewQueryString() {
+    private void updateTextViewQueryString(boolean resultString) {
         Stack<Spannable> stackCopy = (Stack<Spannable>) mQueryStringStack.clone();
         ArrayList<Spannable> querySpannables = new ArrayList<>();
         //Fill an array with the current query strings
@@ -140,11 +206,28 @@ public class AnalyticsFragmentMain extends Fragment {
 
         //Go backwards through this array building the query string
         SpannableStringBuilder queryString = new SpannableStringBuilder();
-        for (int i = querySpannables.size() - 1; i >= 0; i--) {
-            if (i != querySpannables.size() - 1) {
-                queryString.append(" "); //append a space on all iterations other than the first
+        int i;
+        if (resultString) { //Skip "show me" string if displaying results data.
+            i = querySpannables.size() - 2;
+        } else {
+            i = querySpannables.size() - 1;
+        }
+        boolean firstString = true;
+        while (i >= 0) {
+            Spannable currSpannable = querySpannables.get(i);
+            if (firstString) { //Capitalize the first word of the string.
+                Object[] spans = currSpannable.getSpans(0, currSpannable.length(), Object.class);
+                Spannable newString = new SpannableString(Character.toString(currSpannable.charAt(0)).toUpperCase() + currSpannable.subSequence(1, currSpannable.length()));
+                if (spans.length > 0) { //Restore span if one existed.
+                    newString.setSpan(spans[0], currSpannable.getSpanStart(spans[0]), currSpannable.getSpanEnd(spans[0]), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    currSpannable = newString;
+                }
+                firstString = false;
+            } else { //Add a space to every string but the first
+                queryString.append(" ");
             }
-            queryString.append(querySpannables.get(i));
+            queryString.append(currSpannable);
+            i--;
         }
 
         mQueryTextView.setText(queryString, TextView.BufferType.SPANNABLE);
@@ -154,23 +237,72 @@ public class AnalyticsFragmentMain extends Fragment {
      * Checks the current status of the stateStack and updates the gridview accordingly.
      */
     private void updateGridAndQuery() {
-        String state = mStateStack.peek();
+        if (!mStateStack.isEmpty()) {
+            String state = mStateStack.peek();
 
-        String[] buttonStrings = checkStackState(state);
-        //Update the displayed query string
-        updateTextViewQueryString();
+            String[] buttonStrings = checkStackState(state);
+            //Update the displayed query string
 
-        //Update the displayed buttons in the grid view
-        if (buttonStrings != null) {
-            ArrayList<Button> buttons = new ArrayList<>();
+            //Update the displayed buttons in the grid view if buttonStrings array was populated
+            if (buttonStrings != null) {
+                ArrayList<Button> buttons = new ArrayList<>();
 
-            //Build arraylist of buttons to pass to gridview adapter
-            for (String title : buttonStrings) {
-                buttons.add(getGridButton(title));
+                //Build arraylist of buttons to pass to gridview adapter
+                for (String title : buttonStrings) {
+                    buttons.add(getGridButton(title));
+                }
+
+                mButtonGridView.setAdapter(new ButtonGridViewAdapter(buttons));
             }
-
-            mButtonGridView.setAdapter(new ButtonGridViewAdapter(buttons));
         }
+    }
+
+    /**
+     * Checks the current state of the stack and updates the query textview stack accordingly.
+     * Fetches the strings to use as button titles based on the top of the state stack.
+     * @param state the top of the state stack
+     * @return the list of strings to use as button text
+     */
+    private String[] checkStackState(String state) {
+        //TODO create a state for each group of buttons or listview of options
+        String[] buttonStrings = null;
+        //Spannable newQuerySpannable = null;
+        boolean resultsState = false;
+        showLayout(mButtonGridView);
+        switch (state) {
+            case GridStackStates.STATE_MAIN: //1st/Top level
+                buttonStrings = getResources().getStringArray(R.array.analytics_main_button_strings);
+                mQueryStringStack.clear(); //Clear the query string if at top level
+                Spannable newQuerySpannable = new SpannableString(getString(R.string.analytics_query_show_me));
+                mQueryStringStack.push(newQuerySpannable);
+                break;
+            case GridStackStates.STATE_DAYS: //2nd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_days_buttons_strings);
+                //newQuerySpannable = new SpannableString(getString(R.string.analytics_query_where_my));
+                mQueryBuilder.setColumns(new String[]{DiaryContract.DiaryEntry._ID, DiaryContract.DiaryEntry.COLUMN_DATE});
+                mQueryBuilder.ORDER_BY = DiaryContract.DiaryEntry.COLUMN_DATE + " ASC";
+                break;
+            case GridStackStates.STATE_DAYS_CONDITION: //3rd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_days_conditions);
+                //newQuerySpannable = new SpannableString(getString(R.string.analytics_days_was));
+                break;
+            case GridStackStates.STATE_ROUTINES: //2nd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_routine_buttons_strings);
+                //newQuerySpannable = new SpannableString(getString(R.string.analytics_routine_applied));
+                break;
+            case GridStackStates.STATE_ROUTINES_DAYS: //3rd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_routine_day_buttons);
+                break;
+            case GridStackStates.STATE_FETCH_DATA: //final level //TODO fetch data from database and replace grid.
+                resultsState = true;
+                showLayout(mLoadingView);
+                new FetchFromDatabase().execute();
+                break;
+        }
+
+        updateTextViewQueryString(resultsState);
+
+        return buttonStrings;
     }
 
     /**
@@ -196,51 +328,6 @@ public class AnalyticsFragmentMain extends Fragment {
     }
 
     /**
-     * Checks the current state of the stack and updates the query textview stack accordingly.
-     * Fetches the strings to use as button titles based on the top of the state stack.
-     * @param state the top of the state stack
-     * @return the list of strings to use as button text
-     */
-    private String[] checkStackState(String state) {
-        //TODO create a state for each group of buttons or listview of options
-        String[] buttonStrings = null;
-        Spannable newQuerySpannable = null;
-        switch (state) {
-            case GridStackStates.STATE_MAIN: //1st/Top level
-                buttonStrings = getResources().getStringArray(R.array.analytics_main_button_strings);
-                mQueryStringStack.clear(); //Clear the query string if at top level
-                newQuerySpannable = new SpannableString(getString(R.string.analytics_query_show_me));
-                break;
-            case GridStackStates.STATE_DAYS: //2nd level
-                buttonStrings = getResources().getStringArray(R.array.analytics_days_buttons_strings);
-                newQuerySpannable = new SpannableString(getString(R.string.analytics_query_where_my));
-                break;
-            case GridStackStates.STATE_DAYS_CONDITION: //3rd level
-                buttonStrings = getResources().getStringArray(R.array.analytics_days_conditions);
-                newQuerySpannable = new SpannableString(getString(R.string.analytics_days_was));
-                break;
-            case GridStackStates.STATE_ROUTINES: //2nd level
-                buttonStrings = getResources().getStringArray(R.array.analytics_routine_buttons_strings);
-                newQuerySpannable = new SpannableString(getString(R.string.analytics_routine_applied));
-                break;
-            case GridStackStates.STATE_ROUTINES_DAYS: //3rd level
-                buttonStrings = getResources().getStringArray(R.array.analytics_routine_day_buttons);
-                break;
-            case GridStackStates.STATE_FETCH_DATA: //final level //TODO fetch data from database and replace grid.
-                String[] queryArgs = {mQueryBuilder.TABLE,mQueryBuilder.WHERE,mQueryBuilder.WHERE_ARG};
-                new FetchFromDatabase().execute(queryArgs);
-                break;
-        }
-
-        //Update the query string if needed.
-        if (newQuerySpannable != null) {
-            mQueryStringStack.push(newQuerySpannable);
-        }
-
-        return buttonStrings;
-    }
-
-    /**
      * Sets analytics properties of this button based on which button was passed in. Provides the bulk of individual
      * button settings so its a big one.
      * @param button the button to set
@@ -248,12 +335,18 @@ public class AnalyticsFragmentMain extends Fragment {
     private void findButtonProperties(AnalyticsButton button) {
         String linkedState;
 
+        SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+
         String buttonTitle = button.getText().toString();
+        stringBuilder.append(buttonTitle.toLowerCase());
+        stringBuilder.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, button.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         //TODO add button types and query data to all buttons
         if (buttonTitle.equals(getString(R.string.analytics_button_days))) {                    //2nd level
-            setButtonProperties(button,GridStackStates.STATE_DAYS,AnalyticsButton.BUTTON_TABLE, DiaryContract.DiaryEntry.TABLE_NAME,0,0);
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_query_where_my));
+            setButtonProperties(button, GridStackStates.STATE_DAYS, AnalyticsButton.BUTTON_TABLE, DiaryContract.DiaryEntry.TABLE_NAME, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_overall_condition))) { //3rd level
-            setButtonProperties(button,GridStackStates.STATE_DAYS_CONDITION,AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION,0,0);
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_CONDITION, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_forehead_condition))) { //3rd level
             linkedState = GridStackStates.STATE_DAYS_CONDITION;
 
@@ -270,19 +363,19 @@ public class AnalyticsFragmentMain extends Fragment {
             linkedState = GridStackStates.STATE_DAYS_CONDITION;
 
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_excellent))) {     //4th level
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(6), R.color.excellent, R.color.black);
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(6), stringBuilder, R.color.excellent, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_very_good))) {     //4th level
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(5), R.color.veryGood, R.color.black);
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(5), stringBuilder, R.color.veryGood, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_good))) {         //4th level
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(4), R.color.good, R.color.black);
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(4), stringBuilder, R.color.good, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_fair))) {         //4th level
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(3), R.color.fair, R.color.black);
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(3), stringBuilder, R.color.fair, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_poor))) {        //4th level
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(2), R.color.poor, R.color.black);
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(2), stringBuilder, R.color.poor, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_very_poor))) {    //4th level
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), R.color.veryPoor, R.color.black);
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), stringBuilder, R.color.veryPoor, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_severe))) {      //4th level
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(0), R.color.severe, R.color.black);
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(0), stringBuilder, R.color.severe, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_routines))) {        //2nd level
             linkedState = GridStackStates.STATE_ROUTINES;
         } else if (buttonTitle.equals(getString(R.string.analytics_routine_on_specified))) {   //3rd level
@@ -306,13 +399,17 @@ public class AnalyticsFragmentMain extends Fragment {
      * @param buttonColor     the color to set the buttons background to
      * @param buttonTextColor the color to set the buttons text color to
      */
-    private void setButtonProperties(AnalyticsButton button, String linkedState, String buttonType, String buttonQueryData, int buttonColor, int buttonTextColor) {
+    private void setButtonProperties(AnalyticsButton button, String linkedState, String buttonType, String buttonQueryData, Spannable queryStackString, int buttonColor, int buttonTextColor) {
         if (linkedState != null) {
             button.setLinkedStackString(linkedState);
         }
 
         if (buttonType != null) {
             button.setButtonType(buttonType);
+        }
+
+        if (queryStackString != null) {
+            button.setQueryStackString(queryStackString);
         }
 
         if (buttonQueryData != null) {
@@ -355,10 +452,7 @@ public class AnalyticsFragmentMain extends Fragment {
                         break;
                 }
 
-                Spannable newQueryString = new SpannableString(thisButton.getText());
-                newQueryString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, newQueryString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                mQueryStringStack.push(newQueryString); //Push the new colored spannable onto the query stack
-
+                mQueryStringStack.push(thisButton.getQueryStackString()); //Push query string onto string stack
                 mStateStack.push(thisButton.getLinkedStackString()); //Push the new state onto the stack
                 updateGridAndQuery(); //Update the grid and query based on new stack
             }
@@ -369,15 +463,70 @@ public class AnalyticsFragmentMain extends Fragment {
     /**
      * Uses the database query object to build a query to perform on the database. Populates the listview with this data.
      */
-    private class FetchFromDatabase extends AsyncTask<String,Void,Cursor>{
+    private class FetchFromDatabase extends AsyncTask<Void, Void, Cursor> {
 
         @Override
-        protected Cursor doInBackground(String... params) {
-            return null;
+        protected Cursor doInBackground(Void... params) {
+            SQLiteDatabase db = DiaryDbHelper.getInstance(getContext()).getReadableDatabase();
+
+            String table = mQueryBuilder.TABLE;
+            String[] columns = mQueryBuilder.COLUMNS;
+            String where = mQueryBuilder.WHERE + " = ?";
+            String whereArg[] = {mQueryBuilder.WHERE_ARG};
+            String orderBy = mQueryBuilder.ORDER_BY;
+
+            return db.query(table, columns, where, whereArg, null, null, orderBy);
         }
 
         @Override
         protected void onPostExecute(Cursor cursor) {
+
+            if (cursor != null) {
+                switch (mQueryBuilder.TABLE) {
+                    case DiaryContract.DiaryEntry.TABLE_NAME: //If populating list of diary entries
+                        populateDiaryEntryList(cursor);
+                        break;
+                }
+            }
+            showLayout(mResultsListView);
+        }
+
+        /**
+         * Called when the returned cursor contains diary entry rows.
+         * @param cursor
+         */
+        private void populateDiaryEntryList(final Cursor cursor) {
+            final HashMap<Long, Long> idDateMap = new HashMap<>();
+
+            String[] fromColumns = {DiaryContract.DiaryEntry.COLUMN_DATE};
+            int[] toViews = {R.id.analytics_list_view_diary_entry_date};
+            SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_analytics_diary_entry, cursor, fromColumns, toViews, 0);
+            cursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                @Override
+                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    if (columnIndex == cursor.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_DATE)) {
+                        TextView dateView = (TextView) view;
+                        long dateID = cursor.getLong(cursor.getColumnIndex(DiaryContract.DiaryEntry._ID));
+                        long epochTime = cursor.getLong(cursor.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_DATE));
+                        idDateMap.put(dateID, epochTime);
+                        Date date = new Date(epochTime);
+                        DateFormat df = DateFormat.getDateInstance();
+                        dateView.setText(df.format(date));
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            mResultsListView.setAdapter(cursorAdapter);
+            mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent diaryEntryIntent = new Intent(getContext(), DiaryEntryActivityMain.class);
+                    long epochTime = idDateMap.get(id);
+                    diaryEntryIntent.putExtra(DiaryEntryActivityMain.DATE_EXTRA, epochTime);
+                    startActivity(diaryEntryIntent);
+                }
+            });
         }
     }
 
@@ -449,6 +598,7 @@ public class AnalyticsFragmentMain extends Fragment {
         public static final String BUTTON_WHERE_ARG = "BUTTON_WHERE_ARG";
 
         private String mLinkedStackString;
+        private Spannable mQueryStackString;
         private String mQueryData;
         private String mButtonType;
 
@@ -494,6 +644,14 @@ public class AnalyticsFragmentMain extends Fragment {
             return mButtonType;
         }
 
+        public void setQueryStackString(Spannable query) {
+            mQueryStackString = query;
+        }
+
+        public Spannable getQueryStackString() {
+            return mQueryStackString;
+        }
+
     }
 
     /**
@@ -501,13 +659,21 @@ public class AnalyticsFragmentMain extends Fragment {
      */
     private class DatabaseQueryFields {
         public String TABLE;
+        public String[] COLUMNS;
+        public String ORDER_BY;
         public String WHERE;
         public String WHERE_ARG;
 
         DatabaseQueryFields() {
             TABLE = "";
+            COLUMNS = null;
+            ORDER_BY = "";
             WHERE = "";
             WHERE_ARG = "";
+        }
+
+        public void setColumns(String[] columns) {
+            COLUMNS = columns;
         }
     }
 }

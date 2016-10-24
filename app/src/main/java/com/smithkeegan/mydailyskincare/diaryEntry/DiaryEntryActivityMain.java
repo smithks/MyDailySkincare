@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DialogClosedListener;
 
@@ -32,7 +31,7 @@ public class DiaryEntryActivityMain extends AppCompatActivity implements DialogC
         setContentView(R.layout.activity_diary_entry_main);
 
         Intent intent = getIntent();
-        Date date = new Date(intent.getLongExtra(CalendarActivityMain.INTENT_DATE, 0));
+        Date date = new Date(intent.getLongExtra(DATE_EXTRA, 0));
         String dayOfWeek = getDayOfWeek(date);
         DateFormat df = DateFormat.getDateInstance();
         setTitle(dayOfWeek+" "+df.format(date));

@@ -207,7 +207,7 @@ public class CalendarActivityMain extends AppCompatActivity {
             case 0: //Go to today's diary entry
                 Date todaysDate = getTodayCalendarDate().getTime();
                 Intent intent = new Intent(this,DiaryEntryActivityMain.class);
-                intent.putExtra(INTENT_DATE,todaysDate.getTime());
+                intent.putExtra(DiaryEntryActivityMain.DATE_EXTRA,todaysDate.getTime());
                 startActivityForResult(intent,CODE_DATE_RETURN);
                 break;
             case 1: //Routines
@@ -275,7 +275,7 @@ public class CalendarActivityMain extends AppCompatActivity {
         @Override
         public void onSelectDate(Date date, View view) {
             Intent intent = new Intent(getApplicationContext(),DiaryEntryActivityMain.class);
-            intent.putExtra(INTENT_DATE,date.getTime());
+            intent.putExtra(DiaryEntryActivityMain.DATE_EXTRA,date.getTime());
             startActivityForResult(intent,CODE_DATE_RETURN);
         }
 
