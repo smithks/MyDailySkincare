@@ -50,4 +50,18 @@
         android:background="@drawable/rectangle_border"
         />
 
+    <TextView
+        android:id="@+id/analytics_list_view_empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/analytics_query_text_view"
+        android:visibility="invisible"
+        android:text="@string/analytics_no_results_string"
+        android:textSize="20sp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rectangle_border"
+        android:gravity="center"/>
+
 </RelativeLayout>

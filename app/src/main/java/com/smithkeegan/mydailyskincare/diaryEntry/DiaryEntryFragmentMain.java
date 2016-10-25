@@ -245,13 +245,13 @@ public class DiaryEntryFragmentMain extends Fragment {
         mHygieneStrings[3] = getResources().getString(R.string.diary_entry_slider_hygiene_hair_only);
         mHygieneStrings[4] = getResources().getString(R.string.diary_entry_slider_hygiene_body_and_hair);
 
-        mWaterIntakeStrings = new String[6];
+        mWaterIntakeStrings = new String[5];
         mWaterIntakeStrings[0] = getResources().getString(R.string.diary_entry_slider_not_specified);
-        mWaterIntakeStrings[1] = getResources().getString(R.string.diary_entry_slider_exercise_none);
-        mWaterIntakeStrings[2] = getResources().getString(R.string.diary_entry_slider_water_one_three);
-        mWaterIntakeStrings[3] = getResources().getString(R.string.diary_entry_slider_water_four_five);
-        mWaterIntakeStrings[4] = getResources().getString(R.string.diary_entry_slider_water_six_nine);
-        mWaterIntakeStrings[5] = getResources().getString(R.string.diary_entry_slider_water_ten_plus);
+        //mWaterIntakeStrings[1] = getResources().getString(R.string.diary_entry_slider_exercise_none);
+        mWaterIntakeStrings[1] = getResources().getString(R.string.diary_entry_slider_water_one_three);
+        mWaterIntakeStrings[2] = getResources().getString(R.string.diary_entry_slider_water_four_six);
+        mWaterIntakeStrings[3] = getResources().getString(R.string.diary_entry_slider_water_seven_nine);
+        mWaterIntakeStrings[4] = getResources().getString(R.string.diary_entry_slider_water_ten_plus);
     }
 
     /**

@@ -54,8 +54,8 @@
     <string name="diary_entry_slider_hygiene_hair_only">Hair Only</string>
     <string name="diary_entry_slider_hygiene_body_and_hair">Body + Hair</string>
     <string name="diary_entry_slider_water_one_three">1 &#8211; 3 Glasses</string>
-    <string name="diary_entry_slider_water_four_five">4 &#8211; 5 Glasses</string>
-    <string name="diary_entry_slider_water_six_nine">6 &#8211; 9 Glasses</string>
+    <string name="diary_entry_slider_water_four_six">4 &#8211; 6 Glasses</string>
+    <string name="diary_entry_slider_water_seven_nine">7 &#8211; 9 Glasses</string>
     <string name="diary_entry_slider_water_ten_plus">10+ Glasses</string>
     <string name="diary_entry_skin_condition_string">My Skin Today</string>
     <string name="diary_entry_general_condition">Overall Condition</string>
@@ -157,6 +157,7 @@
     <string name="analytics_menu_item_start_over">Start Over</string>
     <string name="analytics_activity_title">Analytics</string>
     <string name="analytics_query_show_me">Show me</string>
+    <string name="analytics_no_results_string">no entries found</string>
 
     <string name="analytics_button_days">days</string>
     <string name="analytics_button_routines">routines</string>
@@ -206,6 +207,38 @@
         <item>@string/diary_entry_condition_poor</item>
         <item>@string/diary_entry_condition_very_poor</item>
         <item>@string/diary_entry_condition_severe</item>
+    </string-array>
+
+    <string-array name="analytics_days_exercise_strings">
+        <item>@string/diary_entry_slider_exercise_intense</item>
+        <item>@string/diary_entry_slider_exercise_moderate</item>
+        <item>@string/diary_entry_slider_exercise_light</item>
+        <item>@string/diary_entry_slider_exercise_none</item>
+    </string-array>
+
+    <string name="analytics_days_diet_excellent">excellent diet</string>
+    <string name="analytics_days_diet_good">good diet</string>
+    <string name="analytics_days_diet_fair">fair diet</string>
+    <string name="analytics_days_diet_poor">poor diet</string>
+    <string-array name="analytics_days_diet_strings">
+        <item>@string/analytics_days_diet_excellent</item>
+        <item>@string/analytics_days_diet_good</item>
+        <item>@string/analytics_days_diet_fair</item>
+        <item>@string/analytics_days_diet_poor</item>
+    </string-array>
+
+    <string-array name="analytics_days_hygiene_strings">
+        <item>@string/diary_entry_slider_hygiene_body_and_hair</item>
+        <item>@string/diary_entry_slider_hygiene_hair_only</item>
+        <item>@string/diary_entry_slider_hygiene_body_only</item>
+        <item>@string/diary_entry_slider_exercise_none</item>
+    </string-array>
+
+    <string-array name="analytics_days_water_strings">
+        <item>@string/diary_entry_slider_water_ten_plus</item>
+        <item>@string/diary_entry_slider_water_seven_nine</item>
+        <item>@string/diary_entry_slider_water_four_six</item>
+        <item>@string/diary_entry_slider_water_one_three</item>
     </string-array>
 
     <string name="analytics_routine_applied">applied</string>

@@ -57,6 +57,7 @@ public class AnalyticsFragmentMain extends Fragment {
     private GridView mButtonGridView;
     private View mLoadingView;
     private ListView mResultsListView;
+    private TextView mResultsEmptyText;
 
     private Stack<String> mStateStack;
     private Stack<Spannable> mQueryStringStack;
@@ -140,6 +141,7 @@ public class AnalyticsFragmentMain extends Fragment {
         mButtonGridView = (GridView) rootView.findViewById(R.id.analytics_grid_view);
         mLoadingView = rootView.findViewById(R.id.analytics_loading_view);
         mResultsListView = (ListView) rootView.findViewById(R.id.analytics_results_list_view);
+        mResultsEmptyText = (TextView) rootView.findViewById(R.id.analytics_list_view_empty_text);
     }
 
     /**
@@ -188,6 +190,7 @@ public class AnalyticsFragmentMain extends Fragment {
         mButtonGridView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.INVISIBLE);
         mResultsListView.setVisibility(View.INVISIBLE);
+        mResultsEmptyText.setVisibility(View.INVISIBLE);
 
         //Set the passed in view to visible
         view.setVisibility(View.VISIBLE);
@@ -276,6 +279,7 @@ public class AnalyticsFragmentMain extends Fragment {
                 Spannable newQuerySpannable = new SpannableString(getString(R.string.analytics_query_show_me));
                 mQueryStringStack.push(newQuerySpannable);
                 break;
+
             case GridStackStates.STATE_DAYS: //2nd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_days_buttons_strings);
                 //newQuerySpannable = new SpannableString(getString(R.string.analytics_query_where_my));
@@ -284,16 +288,29 @@ public class AnalyticsFragmentMain extends Fragment {
                 break;
             case GridStackStates.STATE_DAYS_CONDITION: //3rd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_days_conditions);
-                //newQuerySpannable = new SpannableString(getString(R.string.analytics_days_was));
+                break;
+            case GridStackStates.STATE_DAYS_EXERCISE: //3rd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_days_exercise_strings);
+                break;
+            case GridStackStates.STATE_DAYS_DIET:  //3rd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_days_diet_strings);
+                break;
+            case GridStackStates.STATE_DAYS_HYGIENE: //3rd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_days_hygiene_strings);
+                break;
+            case GridStackStates.STATE_DAYS_WATER_INTAKE: //3rd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_days_water_strings);
                 break;
             case GridStackStates.STATE_DAYS_ROUTINES:  //3rd level load all routines
                 useMemberQuery = false;
                 showLayout(mLoadingView);
                 String[] columns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME};
                 String orderBy = DiaryContract.Routine.COLUMN_NAME + " ASC";
-                Object[] args = {useMemberQuery, DiaryContract.Routine.TABLE_NAME,columns,null,null, orderBy};
+                Object[] args = {useMemberQuery, DiaryContract.Routine.TABLE_NAME, columns, null, null, orderBy};
                 new FetchFromDatabase().execute(args);
                 break;
+
+
             case GridStackStates.STATE_ROUTINES: //2nd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_routine_buttons_strings);
                 //newQuerySpannable = new SpannableString(getString(R.string.analytics_routine_applied));
@@ -301,6 +318,8 @@ public class AnalyticsFragmentMain extends Fragment {
             case GridStackStates.STATE_ROUTINES_WEEKDAYS: //3rd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_routine_weekday_buttons);
                 break;
+
+
             case GridStackStates.STATE_FETCH_DATA: //final level //TODO fetch data from database and replace grid.
                 resultsState = true;
                 showLayout(mLoadingView);
@@ -348,28 +367,31 @@ public class AnalyticsFragmentMain extends Fragment {
         String buttonTitle = button.getText().toString();
         stringBuilder.append(buttonTitle.toLowerCase());
         stringBuilder.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, button.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        //TODO add button types and query data to all buttons
+        //Button for Days
         if (buttonTitle.equals(getString(R.string.analytics_button_days))) {                    //2nd level
             stringBuilder.append(" ").append(getResources().getString(R.string.analytics_query_where_my));
             setButtonProperties(button, GridStackStates.STATE_DAYS, AnalyticsButton.BUTTON_TABLE, DiaryContract.DiaryEntry.TABLE_NAME, stringBuilder, 0, 0);
-        } else if (buttonTitle.equals(getString(R.string.analytics_button_overall_condition))) { //3rd level
+        }
+
+        //Buttons for Days -> Skin Conditions
+        else if (buttonTitle.equals(getString(R.string.analytics_button_overall_condition))) { //3rd level
             stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
             setButtonProperties(button, GridStackStates.STATE_DAYS_CONDITION, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_forehead_condition))) { //3rd level
-            linkedState = GridStackStates.STATE_DAYS_CONDITION;
-
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_CONDITION, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_nose_condition))) {     //3rd level
-            linkedState = GridStackStates.STATE_DAYS_CONDITION;
-
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_CONDITION, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_cheek_condition))) {   //3rd level
-            linkedState = GridStackStates.STATE_DAYS_CONDITION;
-
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_CONDITION, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_lips_condition))) {   //3rd level
-            linkedState = GridStackStates.STATE_DAYS_CONDITION;
-
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_CONDITION, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_chin_condition))) {   //3rd level
-            linkedState = GridStackStates.STATE_DAYS_CONDITION;
-
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_CONDITION, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION, stringBuilder, 0, 0);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_excellent))) {     //4th level
             setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(6), stringBuilder, R.color.excellent, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_very_good))) {     //4th level
@@ -384,18 +406,97 @@ public class AnalyticsFragmentMain extends Fragment {
             setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), stringBuilder, R.color.veryPoor, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_severe))) {      //4th level
             setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(0), stringBuilder, R.color.severe, R.color.black);
-        } else if(buttonTitle.equals(getResources().getString(R.string.analytics_days_button_routines))){
-            setButtonProperties(button,GridStackStates.STATE_DAYS_ROUTINES,null, null,stringBuilder,0,0);
-        } else if (buttonTitle.equals(getString(R.string.analytics_button_routines))) {        //2nd level
+        }
+
+        //Button for Days -> Contains Selected Routines
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_days_button_routines))) {  //3rd level
+            setButtonProperties(button, GridStackStates.STATE_DAYS_ROUTINES, null, null, stringBuilder, 0, 0);
+        }
+
+        //Buttons for Days -> Exercise
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_button_exercise_level))) { //3rd level
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_EXERCISE, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_EXERCISE, stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_exercise_intense))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(4), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_exercise_moderate))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(3), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_exercise_light))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(2), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_exercise_none))) { //4th level, shared with "none" from hygiene
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), stringBuilder, 0, 0);
+        }
+
+        //Buttons for Days -> Diet
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_button_diet))) { //3rd level
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_DIET, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_DIET, stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_days_diet_excellent))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(4), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_days_diet_good))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(3), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_days_diet_fair))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(2), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_days_diet_poor))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), stringBuilder, 0, 0);
+        }
+
+        //Buttons for Days -> Hygiene
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_button_hygiene))) { //3rd level
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_HYGIENE, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_HYGIENE, stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_hygiene_body_and_hair))) {
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(4), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_hygiene_hair_only))) {
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(3), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_hygiene_body_only))) { //4th level, final hygiene shares "none" button with exercise
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(2), stringBuilder, 0, 0);
+        }
+
+        //Buttons for Days -> Water Intake
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_button_water_intake))) { //3rd level
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_DAYS_WATER_INTAKE, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE, stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_water_ten_plus))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(4), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_water_seven_nine))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(3), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_water_four_six))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(2), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.diary_entry_slider_water_one_three))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), stringBuilder, 0, 0);
+        }
+
+        //Button for Days -> Period Active
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_button_period_was_active))) { //3rd level
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, stringBuilder, 0, 0);
+            mQueryBuilder.WHERE_ARG = "1"; //This doesnt follow the flow of logic but this button skips the where arg step
+        }
+
+        //Buttons for Routines
+        else if (buttonTitle.equals(getString(R.string.analytics_button_routines))) {        //2nd level
             linkedState = GridStackStates.STATE_ROUTINES;
-        } else if (buttonTitle.equals(getString(R.string.analytics_routine_on_specified))) {   //3rd level
+        }
+
+        //Button for Routines -> On Specified Day
+        else if (buttonTitle.equals(getString(R.string.analytics_routine_on_specified))) {   //3rd level
             linkedState = GridStackStates.STATE_ROUTINES_WEEKDAYS;
-        } else if (buttonTitle.equals(getString(R.string.analytics_button_products))) {        //2nd level
+        }
+
+        //Button For Products
+        else if (buttonTitle.equals(getString(R.string.analytics_button_products))) {        //2nd level
             linkedState = GridStackStates.STATE_PRODUCTS;
-        } else if (buttonTitle.equals(getString(R.string.analytics_button_ingredients))) {     //2nd level
+        }
+
+        //Button For Ingredients
+        else if (buttonTitle.equals(getString(R.string.analytics_button_ingredients))) {     //2nd level
             linkedState = GridStackStates.STATE_INGREDIENTS;
-        } else { //Return to main if unexpected button pressed
-            linkedState = GridStackStates.STATE_MAIN;
+        }
+
+        //Return to main if unexpected button pressed
+        else {
+            button.setLinkedStackString(GridStackStates.STATE_MAIN);
         }
 
     }
@@ -482,12 +583,12 @@ public class AnalyticsFragmentMain extends Fragment {
             SQLiteDatabase db = DiaryDbHelper.getInstance(getContext()).getReadableDatabase();
 
             boolean useMemberQuery = true;
-            if (params[0] != null){
+            if (params[0] != null) {
                 useMemberQuery = (boolean) params[0];
             }
 
-            String table,where,orderBy;
-            String[] columns,whereArg;
+            String table, where, orderBy;
+            String[] columns, whereArg;
 
             if (useMemberQuery) {
                 table = mQueryBuilder.TABLE;
@@ -495,7 +596,7 @@ public class AnalyticsFragmentMain extends Fragment {
                 where = mQueryBuilder.WHERE + " = ?";
                 whereArg = new String[]{mQueryBuilder.WHERE_ARG};
                 orderBy = mQueryBuilder.ORDER_BY;
-            }else{
+            } else {
                 table = (String) params[1];
                 columns = (String[]) params[2];
                 where = (String) params[3];
@@ -504,6 +605,13 @@ public class AnalyticsFragmentMain extends Fragment {
             }
 
             queryTable = table;
+            //If using linked tables set table to join on linked tables before performing query.
+            if (table.equals(DiaryContract.DiaryEntry.TABLE_NAME) && where.equals(DiaryContract.Routine._ID + " = ?")) {
+                columns = new String[]{DiaryContract.DiaryEntry._ID, DiaryContract.DiaryEntry.COLUMN_DATE};
+                table = DiaryContract.DiaryEntry.TABLE_NAME + " JOIN " + DiaryContract.DiaryEntryRoutine.TABLE_NAME + " ON " +
+                        DiaryContract.DiaryEntry._ID + " = " + DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID;
+                where = DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + " = ?";
+            }
 
             return db.query(table, columns, where, whereArg, null, null, orderBy);
         }
@@ -512,25 +620,29 @@ public class AnalyticsFragmentMain extends Fragment {
         protected void onPostExecute(Cursor cursor) {
 
             if (cursor != null) {
-                if (mStateStack.peek().equals(GridStackStates.STATE_FETCH_DATA)){ //Reached final state, query builder used
-                    switch (mQueryBuilder.TABLE) {
-                        case DiaryContract.DiaryEntry.TABLE_NAME: //If populating list of diary entries
-                            populateDiaryEntryList(cursor);
-                            break;
+                if (cursor.getCount() > 0) {
+                    if (mStateStack.peek().equals(GridStackStates.STATE_FETCH_DATA)) { //Reached final state, query builder used
+                        switch (mQueryBuilder.TABLE) {
+                            case DiaryContract.DiaryEntry.TABLE_NAME: //If populating list of diary entries
+                                populateDiaryEntryList(cursor);
+                                break;
+                        }
+                    } else { //Did not reach final state, intermittent load.
+                        switch (queryTable) {
+                            case DiaryContract.Routine.TABLE_NAME:
+                                populateRoutineOptionsList(cursor);
+                                break;
+                            case DiaryContract.Product.TABLE_NAME:
+                                break;
+                            case DiaryContract.Ingredient.TABLE_NAME:
+                                break;
+                        }
                     }
-                }else { //Did not reach final state, intermittent load.
-                    //TODO load routines
-                    switch (queryTable){
-                        case DiaryContract.Routine.TABLE_NAME:
-                            break;
-                        case DiaryContract.Product.TABLE_NAME:
-                            break;
-                        case DiaryContract.Ingredient.TABLE_NAME:
-                            break;
-                    }
+                    showLayout(mResultsListView);
+                } else {
+                    showLayout(mResultsEmptyText);
                 }
             }
-            showLayout(mResultsListView);
         }
 
         /**
@@ -567,6 +679,41 @@ public class AnalyticsFragmentMain extends Fragment {
                     long epochTime = idDateMap.get(id);
                     diaryEntryIntent.putExtra(DiaryEntryActivityMain.DATE_EXTRA, epochTime);
                     startActivity(diaryEntryIntent);
+                }
+            });
+        }
+
+        /**
+         * Called when returned cursor contains routine rows and is an intermittent load.
+         * @param cursor query result cursor
+         */
+        private void populateRoutineOptionsList(final Cursor cursor) {
+            String[] fromColumns = {DiaryContract.Routine.COLUMN_NAME};
+            int[] toViews = {R.id.routine_listview_name};
+            SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_routine_main, cursor, fromColumns, toViews, 0);
+            cursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                @Override
+                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    if (columnIndex == cursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)) {
+                        TextView routineView = (TextView) view;
+                        routineView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            mResultsListView.setAdapter(cursorAdapter);
+            mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    TextView textView = (TextView) view.findViewById(R.id.routine_listview_name);
+                    Spannable spannable = new SpannableString(textView.getText().toString().toLowerCase());
+                    spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    mQueryStringStack.push(spannable);
+                    mQueryBuilder.WHERE = DiaryContract.Routine._ID;
+                    mQueryBuilder.WHERE_ARG = Long.toString(id);
+                    mStateStack.push(GridStackStates.STATE_FETCH_DATA);
+                    updateGridAndQuery();
                 }
             });
         }
@@ -620,6 +767,10 @@ public class AnalyticsFragmentMain extends Fragment {
 
         public static final String STATE_DAYS = "STATE_DAYS";
         public static final String STATE_DAYS_CONDITION = "STATE_DAYS_CONDITION";
+        public static final String STATE_DAYS_EXERCISE = "STATE_DAYS_EXERCISE";
+        public static final String STATE_DAYS_DIET = "STATE_DAYS_DIET";
+        public static final String STATE_DAYS_HYGIENE = "STATE_DAYS_HYGIENE";
+        public static final String STATE_DAYS_WATER_INTAKE = "STATE_DAYS_WATER_INTAKE";
         public static final String STATE_DAYS_ROUTINES = "STATE_DAYS_ROUTINES";
 
         public static final String STATE_ROUTINES = "STATE_ROUTINES";
