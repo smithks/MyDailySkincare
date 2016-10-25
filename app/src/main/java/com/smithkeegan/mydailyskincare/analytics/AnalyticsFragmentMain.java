@@ -241,7 +241,6 @@ public class AnalyticsFragmentMain extends Fragment {
             String state = mStateStack.peek();
 
             String[] buttonStrings = checkStackState(state);
-            //Update the displayed query string
 
             //Update the displayed buttons in the grid view if buttonStrings array was populated
             if (buttonStrings != null) {
@@ -268,6 +267,7 @@ public class AnalyticsFragmentMain extends Fragment {
         String[] buttonStrings = null;
         //Spannable newQuerySpannable = null;
         boolean resultsState = false;
+        boolean useMemberQuery = true;
         showLayout(mButtonGridView);
         switch (state) {
             case GridStackStates.STATE_MAIN: //1st/Top level
@@ -286,17 +286,25 @@ public class AnalyticsFragmentMain extends Fragment {
                 buttonStrings = getResources().getStringArray(R.array.analytics_days_conditions);
                 //newQuerySpannable = new SpannableString(getString(R.string.analytics_days_was));
                 break;
+            case GridStackStates.STATE_DAYS_ROUTINES:  //3rd level load all routines
+                useMemberQuery = false;
+                showLayout(mLoadingView);
+                String[] columns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME};
+                String orderBy = DiaryContract.Routine.COLUMN_NAME + " ASC";
+                Object[] args = {useMemberQuery, DiaryContract.Routine.TABLE_NAME,columns,null,null, orderBy};
+                new FetchFromDatabase().execute(args);
+                break;
             case GridStackStates.STATE_ROUTINES: //2nd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_routine_buttons_strings);
                 //newQuerySpannable = new SpannableString(getString(R.string.analytics_routine_applied));
                 break;
-            case GridStackStates.STATE_ROUTINES_DAYS: //3rd level
-                buttonStrings = getResources().getStringArray(R.array.analytics_routine_day_buttons);
+            case GridStackStates.STATE_ROUTINES_WEEKDAYS: //3rd level
+                buttonStrings = getResources().getStringArray(R.array.analytics_routine_weekday_buttons);
                 break;
             case GridStackStates.STATE_FETCH_DATA: //final level //TODO fetch data from database and replace grid.
                 resultsState = true;
                 showLayout(mLoadingView);
-                new FetchFromDatabase().execute();
+                new FetchFromDatabase().execute(useMemberQuery);
                 break;
         }
 
@@ -376,10 +384,12 @@ public class AnalyticsFragmentMain extends Fragment {
             setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), stringBuilder, R.color.veryPoor, R.color.black);
         } else if (buttonTitle.equals(getString(R.string.diary_entry_condition_severe))) {      //4th level
             setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(0), stringBuilder, R.color.severe, R.color.black);
+        } else if(buttonTitle.equals(getResources().getString(R.string.analytics_days_button_routines))){
+            setButtonProperties(button,GridStackStates.STATE_DAYS_ROUTINES,null, null,stringBuilder,0,0);
         } else if (buttonTitle.equals(getString(R.string.analytics_button_routines))) {        //2nd level
             linkedState = GridStackStates.STATE_ROUTINES;
         } else if (buttonTitle.equals(getString(R.string.analytics_routine_on_specified))) {   //3rd level
-            linkedState = GridStackStates.STATE_ROUTINES_DAYS;
+            linkedState = GridStackStates.STATE_ROUTINES_WEEKDAYS;
         } else if (buttonTitle.equals(getString(R.string.analytics_button_products))) {        //2nd level
             linkedState = GridStackStates.STATE_PRODUCTS;
         } else if (buttonTitle.equals(getString(R.string.analytics_button_ingredients))) {     //2nd level
@@ -463,17 +473,37 @@ public class AnalyticsFragmentMain extends Fragment {
     /**
      * Uses the database query object to build a query to perform on the database. Populates the listview with this data.
      */
-    private class FetchFromDatabase extends AsyncTask<Void, Void, Cursor> {
+    private class FetchFromDatabase extends AsyncTask<Object, Void, Cursor> {
+
+        String queryTable;
 
         @Override
-        protected Cursor doInBackground(Void... params) {
+        protected Cursor doInBackground(Object... params) {
             SQLiteDatabase db = DiaryDbHelper.getInstance(getContext()).getReadableDatabase();
 
-            String table = mQueryBuilder.TABLE;
-            String[] columns = mQueryBuilder.COLUMNS;
-            String where = mQueryBuilder.WHERE + " = ?";
-            String whereArg[] = {mQueryBuilder.WHERE_ARG};
-            String orderBy = mQueryBuilder.ORDER_BY;
+            boolean useMemberQuery = true;
+            if (params[0] != null){
+                useMemberQuery = (boolean) params[0];
+            }
+
+            String table,where,orderBy;
+            String[] columns,whereArg;
+
+            if (useMemberQuery) {
+                table = mQueryBuilder.TABLE;
+                columns = mQueryBuilder.COLUMNS;
+                where = mQueryBuilder.WHERE + " = ?";
+                whereArg = new String[]{mQueryBuilder.WHERE_ARG};
+                orderBy = mQueryBuilder.ORDER_BY;
+            }else{
+                table = (String) params[1];
+                columns = (String[]) params[2];
+                where = (String) params[3];
+                whereArg = (String[]) params[4];
+                orderBy = (String) params[5];
+            }
+
+            queryTable = table;
 
             return db.query(table, columns, where, whereArg, null, null, orderBy);
         }
@@ -482,10 +512,22 @@ public class AnalyticsFragmentMain extends Fragment {
         protected void onPostExecute(Cursor cursor) {
 
             if (cursor != null) {
-                switch (mQueryBuilder.TABLE) {
-                    case DiaryContract.DiaryEntry.TABLE_NAME: //If populating list of diary entries
-                        populateDiaryEntryList(cursor);
-                        break;
+                if (mStateStack.peek().equals(GridStackStates.STATE_FETCH_DATA)){ //Reached final state, query builder used
+                    switch (mQueryBuilder.TABLE) {
+                        case DiaryContract.DiaryEntry.TABLE_NAME: //If populating list of diary entries
+                            populateDiaryEntryList(cursor);
+                            break;
+                    }
+                }else { //Did not reach final state, intermittent load.
+                    //TODO load routines
+                    switch (queryTable){
+                        case DiaryContract.Routine.TABLE_NAME:
+                            break;
+                        case DiaryContract.Product.TABLE_NAME:
+                            break;
+                        case DiaryContract.Ingredient.TABLE_NAME:
+                            break;
+                    }
                 }
             }
             showLayout(mResultsListView);
@@ -578,9 +620,10 @@ public class AnalyticsFragmentMain extends Fragment {
 
         public static final String STATE_DAYS = "STATE_DAYS";
         public static final String STATE_DAYS_CONDITION = "STATE_DAYS_CONDITION";
+        public static final String STATE_DAYS_ROUTINES = "STATE_DAYS_ROUTINES";
 
         public static final String STATE_ROUTINES = "STATE_ROUTINES";
-        public static final String STATE_ROUTINES_DAYS = "STATE_ROUTINES_DAYS";
+        public static final String STATE_ROUTINES_WEEKDAYS = "STATE_ROUTINES_WEEKDAYS";
 
         public static final String STATE_PRODUCTS = "STATE_PRODUCTS";
         public static final String STATE_INGREDIENTS = "STATE_INGREDIENTS";

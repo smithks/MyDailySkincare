@@ -181,6 +181,7 @@
     <string name="analytics_button_hygiene">hygiene</string>
     <string name="analytics_button_water_intake">water intake</string>
     <string name="analytics_button_period_was_active">period was active</string>
+    <string name="analytics_days_button_routines">selected routine was applied</string>
     <string-array name="analytics_days_buttons_strings">
         <item>@string/analytics_button_overall_condition</item>
         <item>@string/analytics_button_forehead_condition</item>
@@ -193,6 +194,7 @@
         <item>@string/analytics_button_hygiene</item>
         <item>@string/analytics_button_water_intake</item>
         <item>@string/analytics_button_period_was_active</item>
+        <item>@string/analytics_days_button_routines</item>
     </string-array>
 
     <string name="analytics_days_was">was</string>
@@ -227,7 +229,7 @@
     <string name="analytics_routine_day_thursday">thursday</string>
     <string name="analytics_routine_day_friday">friday</string>
     <string name="analytics_routine_day_saturday">saturday</string>
-    <string-array name="analytics_routine_day_buttons">
+    <string-array name="analytics_routine_weekday_buttons">
         <item>@string/analytics_routine_day_sunday</item>
         <item>@string/analytics_routine_day_monday</item>
         <item>@string/analytics_routine_day_tuesday</item>
