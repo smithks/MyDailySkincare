@@ -36,6 +36,8 @@ import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
+import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
+import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -282,7 +284,6 @@ public class AnalyticsFragmentMain extends Fragment {
 
             case GridStackStates.STATE_DAYS: //2nd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_days_buttons_strings);
-                //newQuerySpannable = new SpannableString(getString(R.string.analytics_query_where_my));
                 mQueryBuilder.setColumns(new String[]{DiaryContract.DiaryEntry._ID, DiaryContract.DiaryEntry.COLUMN_DATE});
                 mQueryBuilder.ORDER_BY = DiaryContract.DiaryEntry.COLUMN_DATE + " ASC";
                 break;
@@ -304,21 +305,53 @@ public class AnalyticsFragmentMain extends Fragment {
             case GridStackStates.STATE_DAYS_ROUTINES:  //3rd level load all routines
                 useMemberQuery = false;
                 showLayout(mLoadingView);
-                String[] columns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME};
-                String orderBy = DiaryContract.Routine.COLUMN_NAME + " ASC";
-                Object[] args = {useMemberQuery, DiaryContract.Routine.TABLE_NAME, columns, null, null, orderBy};
-                new FetchFromDatabase().execute(args);
+                String[] routineColumns = {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME};
+                String routineOrderBy = DiaryContract.Routine.COLUMN_NAME + " ASC";
+                Object[] routineArgs = {useMemberQuery, DiaryContract.Routine.TABLE_NAME, routineColumns, null, null, routineOrderBy};
+                new FetchFromDatabase().execute(routineArgs);
                 break;
 
 
             case GridStackStates.STATE_ROUTINES: //2nd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_routine_buttons_strings);
-                //newQuerySpannable = new SpannableString(getString(R.string.analytics_routine_applied));
+                mQueryBuilder.setColumns(new String[]{DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME});
+                mQueryBuilder.ORDER_BY = DiaryContract.Routine.COLUMN_NAME + " ASC";
                 break;
             case GridStackStates.STATE_ROUTINES_WEEKDAYS: //3rd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_routine_weekday_buttons);
                 break;
+            case GridStackStates.STATE_ROUTINES_PRODUCTS: //3rd level, load all products
+                useMemberQuery = false;
+                showLayout(mLoadingView);
+                String[] productColumns = {DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME};
+                String productOrderBy = DiaryContract.Product.COLUMN_NAME + " ASC";
+                Object[] productArgs = {useMemberQuery, DiaryContract.Product.TABLE_NAME, productColumns, null, null, productOrderBy};
+                new FetchFromDatabase().execute(productArgs);
+                break;
 
+
+            case GridStackStates.STATE_PRODUCTS:
+                buttonStrings = getResources().getStringArray(R.array.analytics_products_buttons);
+                mQueryBuilder.setColumns(new String[]{DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME});
+                mQueryBuilder.ORDER_BY = DiaryContract.Product.COLUMN_NAME + " ASC";
+                break;
+            case GridStackStates.STATE_PRODUCTS_TYPES:
+                buttonStrings = getResources().getStringArray(R.array.product_types_array);
+                break;
+            case GridStackStates.STATE_PRODUCTS_INGREDIENTS:
+                useMemberQuery = false;
+                showLayout(mLoadingView);
+                String[] ingredientColumns = {DiaryContract.Ingredient._ID, DiaryContract.Ingredient.COLUMN_NAME};
+                String ingredientOrderBy = DiaryContract.Ingredient.COLUMN_NAME + " ASC";
+                Object[] ingredientArgs = {useMemberQuery, DiaryContract.Ingredient.TABLE_NAME, ingredientColumns, null, null, ingredientOrderBy};
+                new FetchFromDatabase().execute(ingredientArgs);
+                break;
+
+            case GridStackStates.STATE_INGREDIENTS:
+                buttonStrings = getResources().getStringArray(R.array.analytics_ingredients_buttons);
+                mQueryBuilder.setColumns(new String[]{DiaryContract.Ingredient._ID, DiaryContract.Ingredient.COLUMN_NAME});
+                mQueryBuilder.ORDER_BY = DiaryContract.Ingredient.COLUMN_NAME + " ASC";
+                break;
 
             case GridStackStates.STATE_FETCH_DATA: //final level //TODO fetch data from database and replace grid.
                 resultsState = true;
@@ -367,6 +400,7 @@ public class AnalyticsFragmentMain extends Fragment {
         String buttonTitle = button.getText().toString();
         stringBuilder.append(buttonTitle.toLowerCase());
         stringBuilder.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, button.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
         //Button for Days
         if (buttonTitle.equals(getString(R.string.analytics_button_days))) {                    //2nd level
             stringBuilder.append(" ").append(getResources().getString(R.string.analytics_query_where_my));
@@ -469,29 +503,94 @@ public class AnalyticsFragmentMain extends Fragment {
 
         //Button for Days -> Period Active
         else if (buttonTitle.equals(getResources().getString(R.string.analytics_button_period_was_active))) { //3rd level
-            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_days_was));
-            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, stringBuilder, 0, 0);
-            mQueryBuilder.WHERE_ARG = "1"; //This doesnt follow the flow of logic but this button skips the where arg step
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, AnalyticsButton.BUTTON_WHERE_ARG, "1", stringBuilder, 0, 0);
         }
 
         //Buttons for Routines
         else if (buttonTitle.equals(getString(R.string.analytics_button_routines))) {        //2nd level
-            linkedState = GridStackStates.STATE_ROUTINES;
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_routine_that));
+            setButtonProperties(button, GridStackStates.STATE_ROUTINES, AnalyticsButton.BUTTON_TABLE, DiaryContract.Routine.TABLE_NAME, stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_am))) { //3rd level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.Routine.COLUMN_TIME, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.routine_radio_AM), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_pm))) { //3rd level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.Routine.COLUMN_TIME, AnalyticsButton.BUTTON_WHERE_ARG, mQueryBuilder.WHERE_ARG = getResources().getString(R.string.routine_radio_PM), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_as_needed))) { //3rd level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.Routine.COLUMN_FREQUENCY, AnalyticsButton.BUTTON_WHERE_ARG, mQueryBuilder.WHERE_ARG = getResources().getString(R.string.routine_radio_frequency_needed), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_daily))) { //3rd level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.Routine.COLUMN_FREQUENCY, AnalyticsButton.BUTTON_WHERE_ARG, mQueryBuilder.WHERE_ARG = getResources().getString(R.string.routine_radio_frequency_daily), stringBuilder, 0, 0);
         }
 
         //Button for Routines -> On Specified Day
         else if (buttonTitle.equals(getString(R.string.analytics_routine_on_specified))) {   //3rd level
-            linkedState = GridStackStates.STATE_ROUTINES_WEEKDAYS;
+            setButtonProperties(button, GridStackStates.STATE_ROUTINES_WEEKDAYS, AnalyticsButton.BUTTON_WHERE, DiaryContract.Routine.COLUMN_FREQUENCY + " LIKE ?", stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_day_sunday))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, "%" + getResources().getString(R.string.routine_frequency_sunday) + "%", stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_day_monday))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, "%" + getResources().getString(R.string.routine_frequency_monday) + "%", stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_day_tuesday))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, "%" + getResources().getString(R.string.routine_frequency_tuesday) + "%", stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_day_wednesday))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, "%" + getResources().getString(R.string.routine_frequency_wednesday) + "%", stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_day_thursday))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, "%" + getResources().getString(R.string.routine_frequency_thursday) + "%", stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_day_friday))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, "%" + getResources().getString(R.string.routine_frequency_friday) + "%", stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_day_saturday))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, "%" + getResources().getString(R.string.routine_frequency_saturday) + "%", stringBuilder, 0, 0);
+        }
+
+        //Button for Routines -> selected products
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_contains_product))) { //3rd level
+            setButtonProperties(button, GridStackStates.STATE_ROUTINES_PRODUCTS, null, null, stringBuilder, 0, 0);
         }
 
         //Button For Products
         else if (buttonTitle.equals(getString(R.string.analytics_button_products))) {        //2nd level
-            linkedState = GridStackStates.STATE_PRODUCTS;
+            setButtonProperties(button, GridStackStates.STATE_PRODUCTS, AnalyticsButton.BUTTON_TABLE, DiaryContract.Product.TABLE_NAME, stringBuilder, 0, 0);
+        }
+
+        //Buttons for Products -> Of type
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_products_of_type))) {
+            setButtonProperties(button, GridStackStates.STATE_PRODUCTS_TYPES, AnalyticsButton.BUTTON_WHERE, DiaryContract.Product.COLUMN_TYPE, stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_none))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_none), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_cleanser))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_cleanser), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_exfoliator))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_exfoliator), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_eye))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_eye), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_lip))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_lip), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_mask))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_mask), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_moisturizer))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_moisturizer), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_other))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_other), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_self))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_self), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_serum))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_serum), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_sun))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_sun), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_toner))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_toner), stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.product_types_treatment))) { //4th level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE_ARG, getResources().getString(R.string.product_types_treatment), stringBuilder, 0, 0);
+        }
+
+        //Button for Product -> with ingredients
+        else if (buttonTitle.equals(getResources().getString(R.string.analytics_products_with_ingredients))) {
+            setButtonProperties(button, GridStackStates.STATE_PRODUCTS_INGREDIENTS, null, null, stringBuilder, 0, 0);
         }
 
         //Button For Ingredients
         else if (buttonTitle.equals(getString(R.string.analytics_button_ingredients))) {     //2nd level
-            linkedState = GridStackStates.STATE_INGREDIENTS;
+            stringBuilder.append(" ").append(getResources().getString(R.string.analytics_ingredients_that));
+            setButtonProperties(button, GridStackStates.STATE_INGREDIENTS, AnalyticsButton.BUTTON_TABLE, DiaryContract.Ingredient.TABLE_NAME, stringBuilder, 0, 0);
+        } else if (buttonTitle.equals(getResources().getString(R.string.analytics_ingredients_are_irritants))) { //3rd level
+            setButtonProperties(button, GridStackStates.STATE_FETCH_DATA, AnalyticsButton.BUTTON_WHERE, DiaryContract.Ingredient.COLUMN_IRRITANT, AnalyticsButton.BUTTON_WHERE_ARG, Integer.toString(1), stringBuilder, 0, 0);
         }
 
         //Return to main if unexpected button pressed
@@ -539,6 +638,30 @@ public class AnalyticsFragmentMain extends Fragment {
     }
 
     /**
+     * Sets parameters and attributes of the passed in button.
+     * @param button          the button to modify
+     * @param linkedState     the linked state of this button
+     * @param buttonType      the button type of this button
+     * @param buttonQueryData the query data of this button
+     * @param secondaryType   the secondary type if needed
+     * @param secondaryData   the secondary data if needed
+     * @param buttonColor     the color to set the buttons background to
+     * @param buttonTextColor the color to set the buttons text color to
+     */
+    private void setButtonProperties(AnalyticsButton button, String linkedState, String buttonType, String buttonQueryData, String secondaryType, String secondaryData, Spannable queryStackString, int buttonColor, int buttonTextColor) {
+        setButtonProperties(button, linkedState, buttonType, buttonQueryData, queryStackString, buttonColor, buttonTextColor);
+
+        if (secondaryType != null) {
+            button.setSecondaryButtonType(secondaryType);
+        }
+
+        if (secondaryData != null) {
+            button.setSecondaryQueryData(secondaryData);
+        }
+    }
+
+
+    /**
      * Creates and returns a button listener for a grid button.
      * @return listener for a grid button
      */
@@ -558,6 +681,21 @@ public class AnalyticsFragmentMain extends Fragment {
                         break;
                     case AnalyticsButton.BUTTON_WHERE_ARG:
                         mQueryBuilder.WHERE_ARG = thisButton.getQueryData();
+                        break;
+                    default: //No button type assigned
+                        break;
+                }
+
+                //Fetch data from secondary button type if used
+                switch (thisButton.getSecondaryButtonType()) {
+                    case AnalyticsButton.BUTTON_TABLE:
+                        mQueryBuilder.TABLE = thisButton.getSecondaryQueryData();
+                        break;
+                    case AnalyticsButton.BUTTON_WHERE:
+                        mQueryBuilder.WHERE = thisButton.getSecondaryQueryData();
+                        break;
+                    case AnalyticsButton.BUTTON_WHERE_ARG:
+                        mQueryBuilder.WHERE_ARG = thisButton.getSecondaryQueryData();
                         break;
                     default: //No button type assigned
                         break;
@@ -593,7 +731,10 @@ public class AnalyticsFragmentMain extends Fragment {
             if (useMemberQuery) {
                 table = mQueryBuilder.TABLE;
                 columns = mQueryBuilder.COLUMNS;
-                where = mQueryBuilder.WHERE + " = ?";
+                where = mQueryBuilder.WHERE;
+                if (!(where.substring(where.length() - 1).equals("?"))) { //If the passed in query does not end in a where arg flag (?), add one
+                    where = where + " = ?";
+                }
                 whereArg = new String[]{mQueryBuilder.WHERE_ARG};
                 orderBy = mQueryBuilder.ORDER_BY;
             } else {
@@ -606,11 +747,22 @@ public class AnalyticsFragmentMain extends Fragment {
 
             queryTable = table;
             //If using linked tables set table to join on linked tables before performing query.
-            if (table.equals(DiaryContract.DiaryEntry.TABLE_NAME) && where.equals(DiaryContract.Routine._ID + " = ?")) {
+            //the where variable will be null if attempting to load all records from a table
+            if (where != null && table.equals(DiaryContract.DiaryEntry.TABLE_NAME) && where.equals(DiaryContract.Routine._ID + " = ?")) { //Searching days for routines
                 columns = new String[]{DiaryContract.DiaryEntry._ID, DiaryContract.DiaryEntry.COLUMN_DATE};
                 table = DiaryContract.DiaryEntry.TABLE_NAME + " JOIN " + DiaryContract.DiaryEntryRoutine.TABLE_NAME + " ON " +
                         DiaryContract.DiaryEntry._ID + " = " + DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID;
                 where = DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + " = ?";
+            } else if (where != null && table.equals(DiaryContract.Routine.TABLE_NAME) && where.equals(DiaryContract.Product._ID + " = ?")) { //Searching routines for products
+                columns = new String[]{DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME};
+                table = DiaryContract.Routine.TABLE_NAME + " JOIN " + DiaryContract.RoutineProduct.TABLE_NAME + " ON " +
+                        DiaryContract.Routine._ID + " = " + DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID;
+                where = DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + " = ?";
+            } else if (where != null && table.equals(DiaryContract.Product.TABLE_NAME) && where.equals(DiaryContract.Ingredient._ID + " = ?")) { //Searching products for ingredients
+                columns = new String[]{DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME};
+                table = DiaryContract.Product.TABLE_NAME + " JOIN " + DiaryContract.ProductIngredient.TABLE_NAME + " ON " +
+                        DiaryContract.Product._ID + " = " + DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID;
+                where = DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + " = ?";
             }
 
             return db.query(table, columns, where, whereArg, null, null, orderBy);
@@ -621,20 +773,32 @@ public class AnalyticsFragmentMain extends Fragment {
 
             if (cursor != null) {
                 if (cursor.getCount() > 0) {
+                    mResultsListView.setAdapter(null);
                     if (mStateStack.peek().equals(GridStackStates.STATE_FETCH_DATA)) { //Reached final state, query builder used
                         switch (mQueryBuilder.TABLE) {
                             case DiaryContract.DiaryEntry.TABLE_NAME: //If populating list of diary entries
                                 populateDiaryEntryList(cursor);
                                 break;
+                            case DiaryContract.Routine.TABLE_NAME:
+                                populateRoutineList(cursor, true);
+                                break;
+                            case DiaryContract.Product.TABLE_NAME:
+                                populateProductList(cursor, true);
+                                break;
+                            case DiaryContract.Ingredient.TABLE_NAME:
+                                populateIngredientList(cursor, true);
+                                break;
                         }
                     } else { //Did not reach final state, intermittent load.
                         switch (queryTable) {
                             case DiaryContract.Routine.TABLE_NAME:
-                                populateRoutineOptionsList(cursor);
+                                populateRoutineList(cursor, false);
                                 break;
                             case DiaryContract.Product.TABLE_NAME:
+                                populateProductList(cursor, false);
                                 break;
                             case DiaryContract.Ingredient.TABLE_NAME:
+                                populateIngredientList(cursor, false);
                                 break;
                         }
                     }
@@ -685,9 +849,10 @@ public class AnalyticsFragmentMain extends Fragment {
 
         /**
          * Called when returned cursor contains routine rows and is an intermittent load.
-         * @param cursor query result cursor
+         * @param cursor      query result cursor
+         * @param finalResult true if the cursor contains final results, false if these are intermediate
          */
-        private void populateRoutineOptionsList(final Cursor cursor) {
+        private void populateRoutineList(final Cursor cursor, boolean finalResult) {
             String[] fromColumns = {DiaryContract.Routine.COLUMN_NAME};
             int[] toViews = {R.id.routine_listview_name};
             SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_routine_main, cursor, fromColumns, toViews, 0);
@@ -703,19 +868,130 @@ public class AnalyticsFragmentMain extends Fragment {
                 }
             });
             mResultsListView.setAdapter(cursorAdapter);
-            mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            //Set listener based on whether this is a final result or an intermediate result
+            if (finalResult) {
+                mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getContext(), RoutineActivityDetail.class);
+                        intent.putExtra(RoutineActivityDetail.NEW_ROUTINE, false);
+                        intent.putExtra(RoutineActivityDetail.ENTRY_ID, id);
+                        startActivity(intent);
+                    }
+                });
+            } else {
+                mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        TextView textView = (TextView) view.findViewById(R.id.routine_listview_name);
+                        Spannable spannable = new SpannableString(textView.getText().toString().toLowerCase());
+                        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        mQueryStringStack.push(spannable);
+                        mQueryBuilder.WHERE = DiaryContract.Routine._ID;
+                        mQueryBuilder.WHERE_ARG = Long.toString(id);
+                        mStateStack.push(GridStackStates.STATE_FETCH_DATA);
+                        updateGridAndQuery();
+                    }
+                });
+            }
+        }
+
+        /**
+         * Populates the listview with products
+         * @param cursor      the returned cursor
+         * @param finalResult true if this was a final result, false if it was intermediate
+         */
+        private void populateProductList(Cursor cursor, boolean finalResult) {
+            String[] fromColumns = {DiaryContract.Product.COLUMN_NAME};
+            int[] toViews = {R.id.product_listview_name};
+            SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_main, cursor, fromColumns, toViews, 0);
+            cursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    TextView textView = (TextView) view.findViewById(R.id.routine_listview_name);
-                    Spannable spannable = new SpannableString(textView.getText().toString().toLowerCase());
-                    spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    mQueryStringStack.push(spannable);
-                    mQueryBuilder.WHERE = DiaryContract.Routine._ID;
-                    mQueryBuilder.WHERE_ARG = Long.toString(id);
-                    mStateStack.push(GridStackStates.STATE_FETCH_DATA);
-                    updateGridAndQuery();
+                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    if (columnIndex == cursor.getColumnIndex(DiaryContract.Product.COLUMN_NAME)) {
+                        TextView nameView = (TextView) view.findViewById(R.id.product_listview_name);
+                        nameView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Product.COLUMN_NAME)));
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
             });
+            mResultsListView.setAdapter(cursorAdapter);
+            if (finalResult) {
+                mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
+                        intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, false);
+                        intent.putExtra(IngredientActivityDetail.ENTRY_ID, id);
+                        startActivity(intent);
+                    }
+                });
+            } else {
+                mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        TextView textView = (TextView) view.findViewById(R.id.product_listview_name);
+                        Spannable spannable = new SpannableString(textView.getText().toString().toLowerCase());
+                        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        mQueryStringStack.push(spannable);
+                        mQueryBuilder.WHERE = DiaryContract.Product._ID;
+                        mQueryBuilder.WHERE_ARG = Long.toString(id);
+                        mStateStack.push(GridStackStates.STATE_FETCH_DATA);
+                        updateGridAndQuery();
+                    }
+                });
+            }
+        }
+
+        /**
+         * Populates the listview with ingredients.
+         * @param cursor      the returned cursor
+         * @param finalResult true if this was a final result, false if it was intermediate
+         */
+        private void populateIngredientList(Cursor cursor, boolean finalResult) {
+            String[] fromColumns = new String[]{DiaryContract.Ingredient.COLUMN_NAME};
+            final int[] toViews = {R.id.ingredient_list_view_item};
+            SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_ingredient_main, cursor, fromColumns, toViews, 0);
+            cursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                @Override
+                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    if (columnIndex == cursor.getColumnIndex(DiaryContract.Ingredient.COLUMN_NAME)) {
+                        TextView nameView = (TextView) view;
+                        nameView.setText(cursor.getString(cursor.getColumnIndex(DiaryContract.Ingredient.COLUMN_NAME)));
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            mResultsListView.setAdapter(cursorAdapter);
+            if (finalResult) {
+                mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
+                        intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, false);
+                        intent.putExtra(IngredientActivityDetail.ENTRY_ID, id);
+                        startActivity(intent);
+                    }
+                });
+            } else {
+                mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        TextView textView = (TextView) view;
+                        Spannable spannable = new SpannableString(textView.getText().toString().toLowerCase());
+                        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.colorAccent)), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        mQueryStringStack.push(spannable);
+                        mQueryBuilder.WHERE = DiaryContract.Ingredient._ID;
+                        mQueryBuilder.WHERE_ARG = Long.toString(id);
+                        mStateStack.push(GridStackStates.STATE_FETCH_DATA);
+                        updateGridAndQuery();
+                    }
+                });
+            }
         }
     }
 
@@ -775,8 +1051,12 @@ public class AnalyticsFragmentMain extends Fragment {
 
         public static final String STATE_ROUTINES = "STATE_ROUTINES";
         public static final String STATE_ROUTINES_WEEKDAYS = "STATE_ROUTINES_WEEKDAYS";
+        public static final String STATE_ROUTINES_PRODUCTS = "STATE_ROUTINES_PRODUCTS";
 
         public static final String STATE_PRODUCTS = "STATE_PRODUCTS";
+        public static final String STATE_PRODUCTS_TYPES = "STATE_PRODUCT_TYPES";
+        public static final String STATE_PRODUCTS_INGREDIENTS = "STATE_PRODUCTS_INGREDIENTS";
+
         public static final String STATE_INGREDIENTS = "STATE_INGREDIENTS";
 
         public static final String STATE_FETCH_DATA = "STATE_FETCH_DATA";
@@ -795,10 +1075,13 @@ public class AnalyticsFragmentMain extends Fragment {
         private Spannable mQueryStackString;
         private String mQueryData;
         private String mButtonType;
+        private String mSecondaryButtonType;
+        private String mSecondaryQueryData;
 
         public AnalyticsButton(Context context) {
             super(context);
             mButtonType = "";
+            mSecondaryButtonType = "";
         }
 
         public AnalyticsButton(Context context, AttributeSet attrs) {
@@ -836,6 +1119,22 @@ public class AnalyticsFragmentMain extends Fragment {
 
         public String getButtonType() {
             return mButtonType;
+        }
+
+        public void setSecondaryButtonType(String type) {
+            mSecondaryButtonType = type;
+        }
+
+        public String getSecondaryButtonType() {
+            return mSecondaryButtonType;
+        }
+
+        public void setSecondaryQueryData(String data) {
+            mSecondaryQueryData = data;
+        }
+
+        public String getSecondaryQueryData() {
+            return mSecondaryQueryData;
         }
 
         public void setQueryStackString(Spannable query) {

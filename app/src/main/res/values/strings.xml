@@ -104,20 +104,34 @@
     <string name="product_delete_alert_dialog__title">Delete product?</string>
     <string name="product_back_alert_dialog_title">Save product?</string>
     <string name="product_back_alert_dialog_message">Do you want to save this new product?</string>
+
+    <string name="product_types_none">--</string>
+    <string name="product_types_cleanser">Cleanser</string>
+    <string name="product_types_toner">Toner</string>
+    <string name="product_types_serum">Serum</string>
+    <string name="product_types_moisturizer">Moisturizer</string>
+    <string name="product_types_exfoliator">Exfoliator</string>
+    <string name="product_types_treatment">Treatment</string>
+    <string name="product_types_mask">Mask</string>
+    <string name="product_types_sun">Sun Care</string>
+    <string name="product_types_eye">Eye Care</string>
+    <string name="product_types_lip">Lip Care</string>
+    <string name="product_types_self">Self Tanner</string>
+    <string name="product_types_other">Other</string>
     <string-array name="product_types_array">
-        <item>--</item>
-        <item>Cleanser</item>
-        <item>Toner</item>
-        <item>Serum</item>
-        <item>Moisturizer</item>
-        <item>Exfoliator</item>
-        <item>Treatment</item>
-        <item>Mask</item>
-        <item>Sun Care</item>
-        <item>Eye Care</item>
-        <item>Lip Care</item>
-        <item>Self Tanner</item>
-        <item>Other</item>
+        <item>@string/product_types_none</item>
+        <item>@string/product_types_cleanser</item>
+        <item>@string/product_types_toner</item>
+        <item>@string/product_types_serum</item>
+        <item>@string/product_types_moisturizer</item>
+        <item>@string/product_types_exfoliator</item>
+        <item>@string/product_types_treatment</item>
+        <item>@string/product_types_mask</item>
+        <item>@string/product_types_sun</item>
+        <item>@string/product_types_eye</item>
+        <item>@string/product_types_lip</item>
+        <item>@string/product_types_self</item>
+        <item>@string/product_types_other</item>
     </string-array>
 
     <!-- Routine Strings -->
@@ -241,18 +255,20 @@
         <item>@string/diary_entry_slider_water_one_three</item>
     </string-array>
 
-    <string name="analytics_routine_applied">applied</string>
+    <string name="analytics_routine_that">that are applied</string>
     <string name="analytics_routine_am">in the morning</string>
     <string name="analytics_routine_pm">in the evening</string>
     <string name="analytics_routine_as_needed">as needed</string>
     <string name="analytics_routine_daily">daily</string>
     <string name="analytics_routine_on_specified">on specified day</string>
+    <string name="analytics_routine_contains_product">that contain specified product</string>
     <string-array name="analytics_routine_buttons_strings">
         <item>@string/analytics_routine_am</item>
         <item>@string/analytics_routine_pm</item>
         <item>@string/analytics_routine_as_needed</item>
         <item>@string/analytics_routine_daily</item>
         <item>@string/analytics_routine_on_specified</item>
+        <item>@string/analytics_routine_contains_product</item>
     </string-array>
 
     <string name="analytics_routine_day_sunday">sunday</string>
@@ -270,6 +286,19 @@
         <item>@string/analytics_routine_day_thursday</item>
         <item>@string/analytics_routine_day_friday</item>
         <item>@string/analytics_routine_day_saturday</item>
+    </string-array>
+
+    <string name="analytics_products_of_type">of type</string>
+    <string name="analytics_products_with_ingredients">with ingredients</string>
+    <string-array name="analytics_products_buttons">
+        <item>@string/analytics_products_of_type</item>
+        <item>@string/analytics_products_with_ingredients</item>
+    </string-array>
+
+    <string name="analytics_ingredients_that">that</string>
+    <string name="analytics_ingredients_are_irritants">are irritants</string>
+    <string-array name="analytics_ingredients_buttons">
+        <item>@string/analytics_ingredients_are_irritants</item>
     </string-array>
 
 </resources>

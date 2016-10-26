@@ -489,25 +489,25 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         switch (day){
             case Calendar.SUNDAY:
-                dayOfWeek = "Sun";
+                dayOfWeek = getResources().getString(R.string.routine_frequency_sunday);
                 break;
             case Calendar.MONDAY:
-                dayOfWeek = "Mon";
+                dayOfWeek = getResources().getString(R.string.routine_frequency_monday);
                 break;
             case Calendar.TUESDAY:
-                dayOfWeek = "Tue";
+                dayOfWeek = getResources().getString(R.string.routine_frequency_tuesday);
                 break;
             case Calendar.WEDNESDAY:
-                dayOfWeek = "Wed";
+                dayOfWeek = getResources().getString(R.string.routine_frequency_wednesday);
                 break;
             case Calendar.THURSDAY:
-                dayOfWeek = "Thu";
+                dayOfWeek = getResources().getString(R.string.routine_frequency_thursday);
                 break;
             case Calendar.FRIDAY:
-                dayOfWeek = "Fri";
+                dayOfWeek = getResources().getString(R.string.routine_frequency_friday);
                 break;
             case Calendar.SATURDAY:
-                dayOfWeek = "Sat";
+                dayOfWeek = getResources().getString(R.string.routine_frequency_saturday);
                 break;
         }
 
