@@ -28,4 +28,11 @@ public class AnalyticsActivityMain extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        boolean handled = ((AnalyticsFragmentMain) getSupportFragmentManager().findFragmentById(R.id.analytics_activity_main)).backButtonPressed();
+        if (!handled) { //Handle the back press normally if not caught by fragment.
+            super.onBackPressed();
+        }
+    }
 }

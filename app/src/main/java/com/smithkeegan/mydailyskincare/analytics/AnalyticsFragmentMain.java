@@ -33,6 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.customClasses.DatabaseQueryFieldCollection;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
@@ -54,19 +55,19 @@ public class AnalyticsFragmentMain extends Fragment {
 
     private static final String SAVE_KEY_STATE_STACK = "SAVE_KEY_STATE_STACK";
     private static final String SAVE_KEY_TEXT_QUERY_STACK = "SAVE_KEY_TEXT_QUERY_STACK";
+    private static final String SAVE_KEY_QUERY_BUILDER = "SAVE_KEY_QUERY_BUILDER";
+    private static final String SAVE_KEY_VISIBLE_LAYOUT = "SAVE_KEY_VISIBLE_LAYOUT";
 
     private TextView mQueryTextView;
     private GridView mButtonGridView;
     private View mLoadingView;
     private ListView mResultsListView;
     private TextView mResultsEmptyText;
+    private Menu mMenu;
 
     private Stack<String> mStateStack;
     private Stack<Spannable> mQueryStringStack;
-    private DatabaseQueryFields mQueryBuilder;
-
-    //TODO way to keep up with curent database string
-
+    private DatabaseQueryFieldCollection mQueryBuilder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,7 +96,14 @@ public class AnalyticsFragmentMain extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        mMenu = menu;
         inflater.inflate(R.menu.menu_analytics, menu);
+        //Set the default state of this menu.
+        if (mStateStack != null && mStateStack.size() > 0 && mStateStack.peek().equals(GridStackStates.STATE_MAIN)){
+            setBackMenuVisibility(false);
+        }else{
+            setBackMenuVisibility(true);
+        }
     }
 
     @Override
@@ -109,6 +117,34 @@ public class AnalyticsFragmentMain extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Called to change the visibility of the options in the menu bar. The options will not be
+     * visible if the analytics fragment is at the top level.
+     * @param visible whether the option is visible or not
+     */
+    private void setBackMenuVisibility(boolean visible){
+        if (mMenu != null) {
+            MenuItem backMenuItem = mMenu.findItem(R.id.menu_analytics_back);
+            MenuItem startOverBackItem = mMenu.findItem(R.id.menu_analytics_start_over);
+            backMenuItem.setVisible(visible);
+            startOverBackItem.setVisible(visible);
+            getActivity().invalidateOptionsMenu();
+        }
+    }
+
+    /**
+     * Called when the user presses the back button within the analytics fragment. If top level then back proceeds normally, otherwise
+     * the goBackOneLevel method is called to go up one level in the analytics.
+     */
+    public boolean backButtonPressed(){
+        if (mStateStack != null && mStateStack.size() > 0 && !(mStateStack.peek().equals(GridStackStates.STATE_MAIN))){
+            goBackOneLevel();
+            return true;
+        }else { //At top level, handle back button in activity
+            return false;
         }
     }
 
@@ -156,7 +192,7 @@ public class AnalyticsFragmentMain extends Fragment {
         mQueryStringStack = new Stack<>();
         mQueryStringStack.push(new SpannableString(getString(R.string.analytics_query_show_me)));
 
-        mQueryBuilder = new DatabaseQueryFields();
+        mQueryBuilder = new DatabaseQueryFieldCollection();
 
         showLayout(mButtonGridView);
     }
@@ -168,7 +204,23 @@ public class AnalyticsFragmentMain extends Fragment {
     private void restoreSavedState(Bundle savedInstanceState) {
         mStateStack = (Stack<String>) savedInstanceState.getSerializable(SAVE_KEY_STATE_STACK);
         mQueryStringStack = (Stack<Spannable>) savedInstanceState.getSerializable(SAVE_KEY_TEXT_QUERY_STACK);
+        mQueryBuilder = savedInstanceState.getParcelable(SAVE_KEY_QUERY_BUILDER);
 
+        //Get the currently visible layout based
+        int currentLayout = savedInstanceState.getInt(SAVE_KEY_VISIBLE_LAYOUT);
+        switch (currentLayout){
+            case 1:
+                showLayout(mLoadingView);
+                break;
+            case 2:
+                showLayout(mResultsListView);
+                break;
+            case 3:
+                showLayout(mResultsEmptyText);
+                break;
+            default:
+                showLayout(mButtonGridView);
+        }
     }
 
     /**
@@ -179,6 +231,20 @@ public class AnalyticsFragmentMain extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(SAVE_KEY_STATE_STACK, mStateStack);
         outState.putSerializable(SAVE_KEY_TEXT_QUERY_STACK, mQueryStringStack);
+        outState.putParcelable(SAVE_KEY_QUERY_BUILDER,mQueryBuilder);
+
+        //Save an int representing the currently visible layout.
+        int currentLayout;
+        if (mLoadingView.getVisibility() == View.VISIBLE){
+            currentLayout = 1;
+        } else if (mResultsListView.getVisibility() == View.VISIBLE){
+            currentLayout = 2;
+        } else if (mResultsEmptyText.getVisibility() == View.VISIBLE){
+            currentLayout = 3;
+        }else { //Default is button gridview layout.
+            currentLayout = 0;
+        }
+        outState.putInt(SAVE_KEY_VISIBLE_LAYOUT,currentLayout);
         //TODO save query builder status and curent displayed layout?
         super.onSaveInstanceState(outState);
     }
@@ -274,14 +340,15 @@ public class AnalyticsFragmentMain extends Fragment {
         boolean resultsState = false;
         boolean useMemberQuery = true;
         showLayout(mButtonGridView);
+        setBackMenuVisibility(true); //Will be visible for all levels but the top
         switch (state) {
             case GridStackStates.STATE_MAIN: //1st/Top level
                 buttonStrings = getResources().getStringArray(R.array.analytics_main_button_strings);
                 mQueryStringStack.clear(); //Clear the query string if at top level
                 Spannable newQuerySpannable = new SpannableString(getString(R.string.analytics_query_show_me));
                 mQueryStringStack.push(newQuerySpannable);
+                setBackMenuVisibility(false);
                 break;
-
             case GridStackStates.STATE_DAYS: //2nd level
                 buttonStrings = getResources().getStringArray(R.array.analytics_days_buttons_strings);
                 mQueryBuilder.setColumns(new String[]{DiaryContract.DiaryEntry._ID, DiaryContract.DiaryEntry.COLUMN_DATE});
@@ -361,7 +428,7 @@ public class AnalyticsFragmentMain extends Fragment {
         }
 
         updateTextViewQueryString(resultsState);
-
+        //getActivity().invalidateOptionsMenu(); //refresh the options menu
         return buttonStrings;
     }
 
@@ -1023,15 +1090,7 @@ public class AnalyticsFragmentMain extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Button button;
-
-            if (convertView == null) {
-                button = mGridViewButtons.get(position);
-            } else {
-                button = (Button) convertView;
-            }
-
-            return button;
+            return mGridViewButtons.get(position);
         }
     }
 
@@ -1147,26 +1206,4 @@ public class AnalyticsFragmentMain extends Fragment {
 
     }
 
-    /**
-     * Object to hold the fields that will be used in this database access
-     */
-    private class DatabaseQueryFields {
-        public String TABLE;
-        public String[] COLUMNS;
-        public String ORDER_BY;
-        public String WHERE;
-        public String WHERE_ARG;
-
-        DatabaseQueryFields() {
-            TABLE = "";
-            COLUMNS = null;
-            ORDER_BY = "";
-            WHERE = "";
-            WHERE_ARG = "";
-        }
-
-        public void setColumns(String[] columns) {
-            COLUMNS = columns;
-        }
-    }
 }

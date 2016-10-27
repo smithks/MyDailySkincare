@@ -60,6 +60,7 @@ public class ItemListDialogFragment extends DialogFragment {
     public static final int NEW_ITEM_ID_REQUEST = 1;
 
     private ListView mListView;
+    private TextView mEmptyTextView;
 
     private DiaryDbHelper mDbHelper;
     private long mPrimaryItemID;
@@ -76,9 +77,9 @@ public class ItemListDialogFragment extends DialogFragment {
             Point size = new Point();
             Display display = getActivity().getWindowManager().getDefaultDisplay();
             display.getSize(size);
-            if(size.x > size.y){ //Phone is in landscape orientation
+            if (size.x > size.y) { //Phone is in landscape orientation
                 dialog.getWindow().setLayout(size.x, WindowManager.LayoutParams.WRAP_CONTENT);
-            }else{ //Phone is in portrait orientation
+            } else { //Phone is in portrait orientation
                 dialog.getWindow().setLayout(size.x, WindowManager.LayoutParams.WRAP_CONTENT);
             }
 
@@ -86,15 +87,15 @@ public class ItemListDialogFragment extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState){
-        View v = inflater.inflate(R.layout.fragment_item_list_dialog,container,false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_item_list_dialog, container, false);
         getDialog().setCanceledOnTouchOutside(false);
 
         //Listen for back button touch
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()){
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                     saveCurrentItems(false);
                     ((DialogClosedListener) getActivity()).onEditListDialogClosed(mListModified);
                 }
@@ -105,6 +106,7 @@ public class ItemListDialogFragment extends DialogFragment {
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
         mListView = (ListView) v.findViewById(R.id.item_dialog_list_view);
+        mEmptyTextView = (TextView) v.findViewById(R.id.item_dialog_no_entries_text);
         Button mSaveButton = (Button) v.findViewById(R.id.item_dialog_button_done);
         Button newItemButton = (Button) v.findViewById(R.id.item_dialog_button_new_item);
         TextView titleView = (TextView) v.findViewById(R.id.item_dialog_title);
@@ -123,19 +125,19 @@ public class ItemListDialogFragment extends DialogFragment {
 
 
         //Set the behavior of the new item button based on which fragment this dialog was called from
-        if(mDisplayedData.equals(INGREDIENTS)){
+        if (mDisplayedData.equals(INGREDIENTS)) {
             titleView.setText(R.string.item_list_select_ingredients);
             newItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     saveCurrentItems(false);
                     mNewItemID = 0; //Set newitemid to default 0
-                    Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
-                    intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,true);
-                    startActivityForResult(intent,NEW_ITEM_ID_REQUEST);
+                    Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
+                    intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, true);
+                    startActivityForResult(intent, NEW_ITEM_ID_REQUEST);
                 }
             });
-        }else if(mDisplayedData.equals(PRODUCTS)){
+        } else if (mDisplayedData.equals(PRODUCTS)) {
             titleView.setText(R.string.item_list_select_products);
             newItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -143,11 +145,11 @@ public class ItemListDialogFragment extends DialogFragment {
                     saveCurrentItems(false);
                     mNewItemID = 0; //Set new item id to default
                     Intent intent = new Intent(getContext(), ProductActivityDetail.class);
-                    intent.putExtra(ProductActivityDetail.NEW_PRODUCT,true);
-                    startActivityForResult(intent,NEW_ITEM_ID_REQUEST);
+                    intent.putExtra(ProductActivityDetail.NEW_PRODUCT, true);
+                    startActivityForResult(intent, NEW_ITEM_ID_REQUEST);
                 }
             });
-        }else if (mDisplayedData.equals(ROUTINES)){
+        } else if (mDisplayedData.equals(ROUTINES)) {
             titleView.setText(R.string.item_list_select_routines);
             newItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -156,7 +158,7 @@ public class ItemListDialogFragment extends DialogFragment {
                     mNewItemID = 0; //set new item id to default
                     Intent intent = new Intent(getContext(), RoutineActivityDetail.class);
                     intent.putExtra(RoutineActivityDetail.NEW_ROUTINE, true);
-                    startActivityForResult(intent,NEW_ITEM_ID_REQUEST);
+                    startActivityForResult(intent, NEW_ITEM_ID_REQUEST);
                 }
             });
         }
@@ -165,13 +167,29 @@ public class ItemListDialogFragment extends DialogFragment {
     }
 
     /**
+     * Shows only the passed in view and sets other views to invisible.
+     * @param view the view to show
+     */
+    private void showLayout(View view) {
+        mEmptyTextView.setVisibility(View.INVISIBLE);
+        mListView.setVisibility(View.INVISIBLE);
+
+        view.setVisibility(View.VISIBLE);
+    }
+
+    /**
      * Saves the current items to the database.
      * @param closeOnFinish Whether the dialog should be closed when the save is completed.
      */
-    private void saveCurrentItems(boolean closeOnFinish){
+    private void saveCurrentItems(boolean closeOnFinish) {
         updateListModified();
         ItemListDialogArrayAdapter adapter = (ItemListDialogArrayAdapter) mListView.getAdapter();
-        new SaveDataTask().execute(adapter.getItems(), mDisplayedData, mPrimaryItemID, closeOnFinish);
+        if (adapter != null) { //There are records to save
+            new SaveDataTask().execute(adapter.getItems(), mDisplayedData, mPrimaryItemID, closeOnFinish);
+        }else if (closeOnFinish){ //Done pressed with empty list
+            ((DialogClosedListener) getActivity()).onEditListDialogClosed(mListModified);
+            getDialog().dismiss();
+        }
     }
 
     /**
@@ -179,18 +197,18 @@ public class ItemListDialogFragment extends DialogFragment {
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NEW_ITEM_ID_REQUEST){
-            if(resultCode == AppCompatActivity.RESULT_OK){
-                if(mDisplayedData.equals(INGREDIENTS)){
-                    if(data.hasExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID)){
+        if (requestCode == NEW_ITEM_ID_REQUEST) {
+            if (resultCode == AppCompatActivity.RESULT_OK) {
+                if (mDisplayedData.equals(INGREDIENTS)) {
+                    if (data.hasExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID)) {
                         mNewItemID = data.getExtras().getLong(IngredientActivityMain.INGREDIENT_FINISHED_ID);
                     }
-                }else if (mDisplayedData.equals(PRODUCTS)){
-                    if(data.hasExtra(ProductActivityMain.PRODUCT_FINISHED_ID)){
+                } else if (mDisplayedData.equals(PRODUCTS)) {
+                    if (data.hasExtra(ProductActivityMain.PRODUCT_FINISHED_ID)) {
                         mNewItemID = data.getExtras().getLong(ProductActivityMain.PRODUCT_FINISHED_ID);
                     }
-                }else if(mDisplayedData.equals(ROUTINES)){
-                    if(data.hasExtra(RoutineActivityMain.ROUTINE_FINISHED_ID)){
+                } else if (mDisplayedData.equals(ROUTINES)) {
+                    if (data.hasExtra(RoutineActivityMain.ROUTINE_FINISHED_ID)) {
                         mNewItemID = data.getExtras().getLong(RoutineActivityMain.ROUTINE_FINISHED_ID);
                     }
                 }
@@ -214,12 +232,15 @@ public class ItemListDialogFragment extends DialogFragment {
      * Checks the initial and current values of rows in the listview to see if the list
      * has been modified.
      */
-    private void updateListModified(){
-        ArrayList<ItemListDialogItem> items = ((ItemListDialogArrayAdapter) mListView.getAdapter()).getItems();
+    private void updateListModified() {
+        ItemListDialogArrayAdapter arrayAdapter = (ItemListDialogArrayAdapter) mListView.getAdapter();
+        if (arrayAdapter != null) {
+            ArrayList<ItemListDialogItem> items = arrayAdapter.getItems();
 
-        for (ItemListDialogItem entry: items){
-            if (entry.getInitialSelected() != entry.getFinalSelected()){
-                mListModified = true;
+            for (ItemListDialogItem entry : items) {
+                if (entry.getInitialSelected() != entry.getFinalSelected()) {
+                    mListModified = true;
+                }
             }
         }
     }
@@ -227,7 +248,7 @@ public class ItemListDialogFragment extends DialogFragment {
     /**
      * AsyncTask to fetch items from the database that this dialog fragment is displaying.
      */
-    private class FetchDataTask extends AsyncTask<Object,Void,Cursor>{
+    private class FetchDataTask extends AsyncTask<Object, Void, Cursor> {
 
         private String displayedData;
         private Long primaryItemID;
@@ -241,8 +262,8 @@ public class ItemListDialogFragment extends DialogFragment {
             try {
                 displayedData = (String) params[0];
                 primaryItemID = (Long) params[1];
-            }catch (ClassCastException exception){
-                Log.e("DATABASE_ERROR","Error parsing query arguments " + exception);
+            } catch (ClassCastException exception) {
+                Log.e("DATABASE_ERROR", "Error parsing query arguments " + exception);
             }
 
             //Example of this query at http://sqlfiddle.com/#!7/b38f9/5
@@ -250,30 +271,30 @@ public class ItemListDialogFragment extends DialogFragment {
             String sortOrder = null;
             SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
             //Construct database query to return all ingredients and any products they may be attached to.
-            if (displayedData.equals(INGREDIENTS)){
-                queryBuilder.setTables(DiaryContract.Ingredient.TABLE_NAME + " LEFT JOIN "+ DiaryContract.ProductIngredient.TABLE_NAME +" ON " +
+            if (displayedData.equals(INGREDIENTS)) {
+                queryBuilder.setTables(DiaryContract.Ingredient.TABLE_NAME + " LEFT JOIN " + DiaryContract.ProductIngredient.TABLE_NAME + " ON " +
                         DiaryContract.Ingredient.TABLE_NAME + "." + DiaryContract.Ingredient._ID + " = " +
                         DiaryContract.ProductIngredient.TABLE_NAME + "." + DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID);
-                columns = new String[] {DiaryContract.Ingredient._ID, DiaryContract.Ingredient.COLUMN_NAME,DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID};
+                columns = new String[]{DiaryContract.Ingredient._ID, DiaryContract.Ingredient.COLUMN_NAME, DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID};
                 sortOrder = DiaryContract.Ingredient.COLUMN_NAME + " ASC";
-            }else if (displayedData.equals(PRODUCTS)){
+            } else if (displayedData.equals(PRODUCTS)) {
                 //Set table and get columns for products and productsroutines table
-                queryBuilder.setTables(DiaryContract.Product.TABLE_NAME+ " LEFT JOIN "+ DiaryContract.RoutineProduct.TABLE_NAME + " ON "+
-                        DiaryContract.Product.TABLE_NAME+"."+ DiaryContract.Product._ID+ " = "+
-                        DiaryContract.RoutineProduct.TABLE_NAME+"."+ DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID);
-                columns = new String[] {DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME, DiaryContract.Product.COLUMN_BRAND, DiaryContract.Product.COLUMN_TYPE, DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID};
+                queryBuilder.setTables(DiaryContract.Product.TABLE_NAME + " LEFT JOIN " + DiaryContract.RoutineProduct.TABLE_NAME + " ON " +
+                        DiaryContract.Product.TABLE_NAME + "." + DiaryContract.Product._ID + " = " +
+                        DiaryContract.RoutineProduct.TABLE_NAME + "." + DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID);
+                columns = new String[]{DiaryContract.Product._ID, DiaryContract.Product.COLUMN_NAME, DiaryContract.Product.COLUMN_BRAND, DiaryContract.Product.COLUMN_TYPE, DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID};
                 sortOrder = DiaryContract.Product.COLUMN_NAME + " ASC";
-            }else if (mDisplayedData.equals(ROUTINES)){
-                queryBuilder.setTables(DiaryContract.Routine.TABLE_NAME + " LEFT JOIN "+ DiaryContract.DiaryEntryRoutine.TABLE_NAME + " ON "+
-                        DiaryContract.Routine.TABLE_NAME + "." + DiaryContract.Routine._ID+ " = "+
+            } else if (mDisplayedData.equals(ROUTINES)) {
+                queryBuilder.setTables(DiaryContract.Routine.TABLE_NAME + " LEFT JOIN " + DiaryContract.DiaryEntryRoutine.TABLE_NAME + " ON " +
+                        DiaryContract.Routine.TABLE_NAME + "." + DiaryContract.Routine._ID + " = " +
                         DiaryContract.DiaryEntryRoutine.TABLE_NAME + "." + DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID);
-                columns = new String[] {DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME, DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID};
+                columns = new String[]{DiaryContract.Routine._ID, DiaryContract.Routine.COLUMN_NAME, DiaryContract.Routine.COLUMN_TIME, DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID};
                 sortOrder = DiaryContract.Routine.COLUMN_NAME + " ASC";
             }
 
             try {
-                result = queryBuilder.query(db,columns,null,null,null,null,sortOrder);
-            }catch (SQLiteException e){
+                result = queryBuilder.query(db, columns, null, null, null, null, sortOrder);
+            } catch (SQLiteException e) {
                 Log.e("DATABASE ERROR", "Error processing database request. " + e);
             }
             return result;
@@ -287,101 +308,122 @@ public class ItemListDialogFragment extends DialogFragment {
         protected void onPostExecute(Cursor result) {
             ArrayList<ItemListDialogItem> itemList = new ArrayList<>();
 
-            if(result!= null) {
-                if (displayedData.equals(INGREDIENTS)) {
-                    //Build array list of result from cursor.
-                    if (result.moveToFirst()) {
-                        ItemListDialogItem item = new ItemListDialogItem();
-                        item.setId(result.getLong(result.getColumnIndex(DiaryContract.Ingredient._ID)));
-                        item.setName(result.getString(result.getColumnIndex(DiaryContract.Ingredient.COLUMN_NAME)));
-                        item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID)));
-                        if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Set this item to automatically selected since it was just created
-                        itemList.add(item);
-                        while(result.moveToNext()){
-                            item = new ItemListDialogItem();
+            if (result != null) {
+                if (result.getCount() > 0) { //Entries found, populate listview
+                    if (displayedData.equals(INGREDIENTS)) {
+                        //Build array list of result from cursor.
+                        if (result.moveToFirst()) {
+                            ItemListDialogItem item = new ItemListDialogItem();
                             item.setId(result.getLong(result.getColumnIndex(DiaryContract.Ingredient._ID)));
                             item.setName(result.getString(result.getColumnIndex(DiaryContract.Ingredient.COLUMN_NAME)));
                             item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID)));
-                            if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Set this item to automatically selected since it was just created
+                            if (mNewItemID != 0 && mNewItemID == item.getId())
+                                item.setFinalSelected(true); //Set this item to automatically selected since it was just created
                             itemList.add(item);
+                            while (result.moveToNext()) {
+                                item = new ItemListDialogItem();
+                                item.setId(result.getLong(result.getColumnIndex(DiaryContract.Ingredient._ID)));
+                                item.setName(result.getString(result.getColumnIndex(DiaryContract.Ingredient.COLUMN_NAME)));
+                                item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID)));
+                                if (mNewItemID != 0 && mNewItemID == item.getId())
+                                    item.setFinalSelected(true); //Set this item to automatically selected since it was just created
+                                itemList.add(item);
+                            }
+                            itemList = formatItemArray(itemList);
                         }
-                    itemList = formatItemArray(itemList);
-                    }
-                } else if (displayedData.equals(PRODUCTS)) {
-                    if(result.moveToFirst()){
-                        ItemListDialogItem item = new ItemListDialogItem();
-                        item.setId(result.getLong(result.getColumnIndex(DiaryContract.Product._ID)));
-                        item.setName(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_NAME)));
-                        item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_BRAND)));
-                        item.setExtraField2(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_TYPE)));
-                        item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID)));
-                        if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Set this item to automatically selected since it was just created
-                        itemList.add(item);
-                        while(result.moveToNext()){
-                            item = new ItemListDialogItem();
+                    } else if (displayedData.equals(PRODUCTS)) {
+                        if (result.moveToFirst()) {
+                            ItemListDialogItem item = new ItemListDialogItem();
                             item.setId(result.getLong(result.getColumnIndex(DiaryContract.Product._ID)));
                             item.setName(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_NAME)));
                             item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_BRAND)));
                             item.setExtraField2(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_TYPE)));
                             item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID)));
-                            if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Set this item to automatically selected since it was just created
+                            if (mNewItemID != 0 && mNewItemID == item.getId())
+                                item.setFinalSelected(true); //Set this item to automatically selected since it was just created
                             itemList.add(item);
+                            while (result.moveToNext()) {
+                                item = new ItemListDialogItem();
+                                item.setId(result.getLong(result.getColumnIndex(DiaryContract.Product._ID)));
+                                item.setName(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_NAME)));
+                                item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_BRAND)));
+                                item.setExtraField2(result.getString(result.getColumnIndex(DiaryContract.Product.COLUMN_TYPE)));
+                                item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID)));
+                                if (mNewItemID != 0 && mNewItemID == item.getId())
+                                    item.setFinalSelected(true); //Set this item to automatically selected since it was just created
+                                itemList.add(item);
+                            }
+                            itemList = formatItemArray(itemList);
                         }
-                        itemList = formatItemArray(itemList);
-                    }
-                }else if (displayedData.equals(ROUTINES)){
-                    if(result.moveToFirst()){
-                        ItemListDialogItem item = new ItemListDialogItem();
-                        item.setId(result.getLong(result.getColumnIndex(DiaryContract.Routine._ID)));
-                        item.setName(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
-                        item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
-                        item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID)));
-                        if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Item was just created, automatically select it
-                        itemList.add(item);
-                        while (result.moveToNext()){
-                            item = new ItemListDialogItem();
+                    } else if (displayedData.equals(ROUTINES)) {
+                        if (result.moveToFirst()) {
+                            ItemListDialogItem item = new ItemListDialogItem();
                             item.setId(result.getLong(result.getColumnIndex(DiaryContract.Routine._ID)));
                             item.setName(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
                             item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
                             item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID)));
-                            if(mNewItemID != 0 && mNewItemID == item.getId()) item.setFinalSelected(true); //Item was just created, automatically select it
+                            if (mNewItemID != 0 && mNewItemID == item.getId())
+                                item.setFinalSelected(true); //Item was just created, automatically select it
                             itemList.add(item);
+                            while (result.moveToNext()) {
+                                item = new ItemListDialogItem();
+                                item.setId(result.getLong(result.getColumnIndex(DiaryContract.Routine._ID)));
+                                item.setName(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_NAME)));
+                                item.setExtraField1(result.getString(result.getColumnIndex(DiaryContract.Routine.COLUMN_TIME)));
+                                item.setLinkedId(result.getLong(result.getColumnIndex(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID)));
+                                if (mNewItemID != 0 && mNewItemID == item.getId())
+                                    item.setFinalSelected(true); //Item was just created, automatically select it
+                                itemList.add(item);
+                            }
+                            itemList = formatItemArray(itemList);
                         }
-                        itemList = formatItemArray(itemList);
                     }
-                }
 
-                ItemListDialogArrayAdapter arrayAdapter = new ItemListDialogArrayAdapter(getContext(),R.layout.listview_item_item_list_dialog,itemList);
-                mListView.setAdapter(arrayAdapter);
+                    ItemListDialogArrayAdapter arrayAdapter = new ItemListDialogArrayAdapter(getContext(), R.layout.listview_item_item_list_dialog, itemList);
+                    mListView.setAdapter(arrayAdapter);
+                    showLayout(mListView);
+                } else {
+                    if (displayedData.equals(INGREDIENTS)) {
+                        String newText = mEmptyTextView.getText().toString() + " " + getResources().getString(R.string.item_list_no_entries_ingredient);
+                        mEmptyTextView.setText(newText);
+                    } else if (displayedData.equals(PRODUCTS)) {
+                        String newText = mEmptyTextView.getText().toString() + " " + getResources().getString(R.string.item_list_no_entries_products);
+                        mEmptyTextView.setText(newText);
+                    } else if (displayedData.equals(ROUTINES)) {
+                        String newText = mEmptyTextView.getText().toString() + " " + getResources().getString(R.string.item_list_no_entries_routines);
+                        mEmptyTextView.setText(newText);
+                    }
+                    showLayout(mEmptyTextView);
+                }
 
             }
         }
 
         /**
-          * Method to format the raw returned data from the cursor into the correct order and format
-          * to display in the listview rows. Each item will only appear in the list once, and
-          * the isSelected field of the checkbox will be true if the linkedID returned from the cursor
-          * matches the primaryItemID of the item this fragment was called from.
-          * @param list The raw data from cursor
-          * @return The formatted list of items.
+         * Method to format the raw returned data from the cursor into the correct order and format
+         * to display in the listview rows. Each item will only appear in the list once, and
+         * the isSelected field of the checkbox will be true if the linkedID returned from the cursor
+         * matches the primaryItemID of the item this fragment was called from.
+         * @param list The raw data from cursor
+         * @return The formatted list of items.
          */
-        private ArrayList<ItemListDialogItem> formatItemArray(ArrayList<ItemListDialogItem> list){
+        private ArrayList<ItemListDialogItem> formatItemArray(ArrayList<ItemListDialogItem> list) {
             ArrayList<ItemListDialogItem> newList = new ArrayList<>();
-            HashMap<String,Integer> entries = new HashMap<>(); //Hashmap of entry name and location in new arraylist
+            HashMap<String, Integer> entries = new HashMap<>(); //Hashmap of entry name and location in new arraylist
             int newListIndex = 0;
-            for (int i = 0; i < list.size(); i++){
+            for (int i = 0; i < list.size(); i++) {
                 ItemListDialogItem currItem = list.get(i);
                 String name = currItem.getName();
                 long linkedID = currItem.getLinkedId();
 
                 //If the item is already in the new list, see if the item should be selected.
-                if(entries.containsKey(name)){
-                    if(linkedID == primaryItemID){
+                if (entries.containsKey(name)) {
+                    if (linkedID == primaryItemID) {
                         newList.get(entries.get(name)).setInitialSelected(true);
                     }
-                }else{
-                    entries.put(name,newListIndex++);
-                    if(linkedID == primaryItemID) currItem.setInitialSelected(true);
+                } else {
+                    entries.put(name, newListIndex++);
+                    if (linkedID == primaryItemID) currItem.setInitialSelected(true);
                     newList.add(currItem);
                 }
             }
@@ -402,7 +444,7 @@ public class ItemListDialogFragment extends DialogFragment {
             itemList.addAll(objects);
         }
 
-        public ArrayList<ItemListDialogItem> getItems(){
+        public ArrayList<ItemListDialogItem> getItems() {
             return itemList;
         }
 
@@ -411,13 +453,13 @@ public class ItemListDialogFragment extends DialogFragment {
          * Called by listview to retrieve a view to place in the row for this item.
          */
         @Override
-        public View getView(int position, View convertView, ViewGroup parent){
+        public View getView(int position, View convertView, ViewGroup parent) {
 
             IngredientViewHolder holder = null;
 
-            if(convertView == null){
+            if (convertView == null) {
                 LayoutInflater inflater = getActivity().getLayoutInflater();
-                convertView = inflater.inflate(R.layout.listview_item_item_list_dialog,null);
+                convertView = inflater.inflate(R.layout.listview_item_item_list_dialog, null);
 
                 holder = new IngredientViewHolder();
                 holder.name = (TextView) convertView.findViewById(R.id.item_list_dialog_item_text);
@@ -444,7 +486,7 @@ public class ItemListDialogFragment extends DialogFragment {
                         dialogItem.setFinalSelected(viewHolder.checkBox.isChecked());
                     }
                 });
-            }else{
+            } else {
                 holder = (IngredientViewHolder) convertView.getTag();
             }
 
@@ -460,7 +502,7 @@ public class ItemListDialogFragment extends DialogFragment {
         /**
          * Helper class for setting tags to views for caching.
          */
-        private class IngredientViewHolder{
+        private class IngredientViewHolder {
             TextView name;
             CheckBox checkBox;
         }
@@ -469,7 +511,7 @@ public class ItemListDialogFragment extends DialogFragment {
     /**
      * AsyncTask for saving data when the user is finished with this dialog.
      */
-    private class SaveDataTask extends AsyncTask<Object,Void,Long>{
+    private class SaveDataTask extends AsyncTask<Object, Void, Long> {
 
         private String displayedData;
         private long primaryLinkedID;
@@ -486,16 +528,16 @@ public class ItemListDialogFragment extends DialogFragment {
 
 
             //TODO build single query to send to db.
-            for (ItemListDialogItem item: selected) {
+            for (ItemListDialogItem item : selected) {
                 long primaryID = item.getId();
                 boolean initialSelected = item.getInitialSelected();
                 boolean finalSelected = item.getFinalSelected();
 
                 //If entry was not originally selected but is now selected, add a new row to the linked table
-                if (!initialSelected && finalSelected){
+                if (!initialSelected && finalSelected) {
                     result = insertLinkedRow(db, primaryID);
                 } //If entry was initially selcted but now is not, delete the entry from the linked table
-                else if (initialSelected && !finalSelected){
+                else if (initialSelected && !finalSelected) {
                     result = deleteLinkedRow(db, primaryID);
                 }
             }
@@ -505,11 +547,11 @@ public class ItemListDialogFragment extends DialogFragment {
         }
 
         @Override
-        protected void onPostExecute(Long result){
-            if (result == -1){
-                Toast.makeText(getContext(),R.string.toast_save_failed,Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(Long result) {
+            if (result == -1) {
+                Toast.makeText(getContext(), R.string.toast_save_failed, Toast.LENGTH_SHORT).show();
             }
-            if(closeOnFinish) {
+            if (closeOnFinish) {
                 ((DialogClosedListener) getActivity()).onEditListDialogClosed(mListModified);
                 getDialog().dismiss();
             }
@@ -517,51 +559,51 @@ public class ItemListDialogFragment extends DialogFragment {
 
         /**
          * Adds a new entry to the given database.
-         * @param db The database to insert into
+         * @param db        The database to insert into
          * @param primaryID The id of the primary item to insert
          * @return the id of the inserted record
          */
-        private long insertLinkedRow(SQLiteDatabase db, long primaryID){
+        private long insertLinkedRow(SQLiteDatabase db, long primaryID) {
             Long result = (long) -1;
-            if(displayedData.equals(INGREDIENTS)){
+            if (displayedData.equals(INGREDIENTS)) {
                 ContentValues values = new ContentValues();
-                values.put(DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID,primaryID);
-                values.put(DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID,primaryLinkedID);
-                result = db.insert(DiaryContract.ProductIngredient.TABLE_NAME,null,values);
-            }else if(displayedData.equals(PRODUCTS)){
+                values.put(DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID, primaryID);
+                values.put(DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID, primaryLinkedID);
+                result = db.insert(DiaryContract.ProductIngredient.TABLE_NAME, null, values);
+            } else if (displayedData.equals(PRODUCTS)) {
                 ContentValues values = new ContentValues();
-                values.put(DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID,primaryID);
-                values.put(DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID,primaryLinkedID);
-                result = db.insert(DiaryContract.RoutineProduct.TABLE_NAME,null,values);
-            }else if(displayedData.equals(ROUTINES)){
+                values.put(DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID, primaryID);
+                values.put(DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID, primaryLinkedID);
+                result = db.insert(DiaryContract.RoutineProduct.TABLE_NAME, null, values);
+            } else if (displayedData.equals(ROUTINES)) {
                 ContentValues values = new ContentValues();
-                values.put(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID,primaryID);
-                values.put(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID,primaryLinkedID);
-                result = db.insert(DiaryContract.DiaryEntryRoutine.TABLE_NAME,null,values);
+                values.put(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID, primaryID);
+                values.put(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID, primaryLinkedID);
+                result = db.insert(DiaryContract.DiaryEntryRoutine.TABLE_NAME, null, values);
             }
             return result;
         }
 
         /**
          * Deletes the given record from the given databse.
-         * @param db The databse to remove the record from.
+         * @param db        The databse to remove the record from.
          * @param primaryID The primary item id of the record to remove
          * @return The number of rows affected by this deletion, will always be 1
          */
-        private long deleteLinkedRow(SQLiteDatabase db, long primaryID){
+        private long deleteLinkedRow(SQLiteDatabase db, long primaryID) {
             Long result = (long) -1;
-            if(displayedData.equals(INGREDIENTS)){
-                String where = DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + " = ? AND "+ DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + " = ?";
-                String[] whereArgs = {Long.toString(primaryID),Long.toString(primaryLinkedID)};
-                result = (long) db.delete(DiaryContract.ProductIngredient.TABLE_NAME,where,whereArgs);
-            }else if(displayedData.equals(PRODUCTS)){
-                String where = DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + " = ? AND " + DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID + " = ?";
-                String[] whereArgs = {Long.toString(primaryID),Long.toString(primaryLinkedID)};
-                result = (long) db.delete(DiaryContract.RoutineProduct.TABLE_NAME,where,whereArgs);
-            }else if (displayedData.equals(ROUTINES)){
-                String where = DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + " = ? AND "+ DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + " = ?";
+            if (displayedData.equals(INGREDIENTS)) {
+                String where = DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + " = ? AND " + DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + " = ?";
                 String[] whereArgs = {Long.toString(primaryID), Long.toString(primaryLinkedID)};
-                result = (long) db.delete(DiaryContract.DiaryEntryRoutine.TABLE_NAME,where,whereArgs);
+                result = (long) db.delete(DiaryContract.ProductIngredient.TABLE_NAME, where, whereArgs);
+            } else if (displayedData.equals(PRODUCTS)) {
+                String where = DiaryContract.RoutineProduct.COLUMN_PRODUCT_ID + " = ? AND " + DiaryContract.RoutineProduct.COLUMN_ROUTINE_ID + " = ?";
+                String[] whereArgs = {Long.toString(primaryID), Long.toString(primaryLinkedID)};
+                result = (long) db.delete(DiaryContract.RoutineProduct.TABLE_NAME, where, whereArgs);
+            } else if (displayedData.equals(ROUTINES)) {
+                String where = DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID + " = ? AND " + DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID + " = ?";
+                String[] whereArgs = {Long.toString(primaryID), Long.toString(primaryLinkedID)};
+                result = (long) db.delete(DiaryContract.DiaryEntryRoutine.TABLE_NAME, where, whereArgs);
             }
             return result;
         }
@@ -583,7 +625,7 @@ public class ItemListDialogFragment extends DialogFragment {
         private boolean mInitialSelected;
         private boolean mFinalSelected;
 
-        public ItemListDialogItem(){
+        public ItemListDialogItem() {
             mInitialSelected = false;
             mInitialSelected = false;
             mName = null;

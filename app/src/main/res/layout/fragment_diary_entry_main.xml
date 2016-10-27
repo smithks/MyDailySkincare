@@ -7,8 +7,8 @@
         android:id="@+id/diary_entry_loading_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:gravity="center">
+        android:gravity="center"
+        android:visibility="invisible">
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -101,25 +101,25 @@
                     android:id="@+id/diary_entry_show_more_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="@string/diary_entry_show_more_string"
                     android:textColor="@color/black"
-                    android:textSize="15sp"
-                    android:layout_centerVertical="true"/>
+                    android:textSize="15sp"/>
 
                 <ImageButton
                     android:id="@+id/diary_entry_show_more_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="10dp"
                     android:layout_toEndOf="@id/diary_entry_show_more_text"
                     android:layout_toRightOf="@id/diary_entry_show_more_text"
                     android:background="@drawable/ic_add_circle_black_24dp"
                     android:contentDescription="@string/diary_entry_show_more_content_description"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginEnd="20dp"
                     />
 
             </RelativeLayout>
@@ -129,18 +129,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/diary_entry_show_more_layout"
-                android:background="@drawable/rectangle_border"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:background="@drawable/rectangle_border"
                 android:visibility="invisible">
 
                 <RelativeLayout
                     android:id="@+id/diary_entry_skin_condition_forehead_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp">
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="20dp">
 
                     <TextView
                         android:id="@+id/diary_entry_forehead_condition_title"
@@ -342,21 +342,43 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/diary_entry_show_more_layout">
 
-                <TextView
-                    android:id="@+id/diary_entry_routines_text_view"
-                    style="@style/diary_entry_section_label"
+                <LinearLayout
+                    android:id="@+id/diary_entry_routines_text_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
-                    android:text="@string/diary_entry_routines_strings"/>
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/diary_entry_routines_text_view"
+                        style="@style/diary_entry_section_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/diary_entry_routines_strings"/>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                    <Button
+                        android:id="@+id/diary_entry_add_remove_routine_button"
+                        style="@style/primary_button_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_remove_string"
+                        />
+
+                </LinearLayout>
 
                 <View
                     android:id="@+id/diary_entry_routines_divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_below="@id/diary_entry_routines_text_view"
+                    android:layout_below="@id/diary_entry_routines_text_layout"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:background="@color/black"/>
@@ -366,20 +388,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_below="@id/diary_entry_routines_divider"
-                    android:background="@drawable/rectangle_border"
-                    android:layout_marginTop="15dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"/>
-
-                <Button
-                    android:id="@+id/diary_entry_add_remove_routine_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/add_remove_string"
-                    style="@style/primary_button_style"
-                    android:layout_below="@id/diary_entry_routines_listview"
-                    android:layout_centerHorizontal="true"
-                    />
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/rectangle_border"/>
 
             </RelativeLayout>
 
@@ -404,9 +416,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@id/diary_entry_lifestyle_text_view"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
                     android:background="@color/black"/>
 
                 <RelativeLayout
@@ -566,27 +578,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/diary_entry_lifestyle_water_layout"
+                    android:layout_marginBottom="20dp"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
-                    android:layout_marginBottom="20dp"
                     android:layout_marginTop="5dp">
 
                     <TextView
                         android:id="@+id/diary_entry_lifestyle_period_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
                         android:text="@string/diary_entry_lifestyle_on_period"
                         android:textColor="@color/black"
                         android:textSize="16sp"
-                        android:layout_centerVertical="true"
                         />
 
                     <CheckBox
                         android:id="@+id/diary_entry_lifestyle_period_check"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@id/diary_entry_lifestyle_period_text"
                         android:layout_toEndOf="@id/diary_entry_lifestyle_period_text"
+                        android:layout_toRightOf="@id/diary_entry_lifestyle_period_text"
                         />
 
                 </RelativeLayout>

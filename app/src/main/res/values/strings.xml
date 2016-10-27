@@ -165,6 +165,10 @@
     <string name="item_list_select_products">Select products</string>
     <string name="item_list_select_routines">Select routines</string>
     <string name="item_list_new_string">New</string>
+    <string name="item_list_no_entries_ingredient">an ingredient</string>
+    <string name="item_list_no_entries_products">a product</string>
+    <string name="item_list_no_entries_routines">a routine</string>
+    <string name="item_list_no_entries_found">press the NEW button to create</string>
 
     <!-- Analytics Strings -->
     <string name="analytics_menu_item_back">Back</string>
