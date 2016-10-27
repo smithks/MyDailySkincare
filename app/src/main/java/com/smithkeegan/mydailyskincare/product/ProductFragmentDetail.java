@@ -2,6 +2,7 @@ package com.smithkeegan.mydailyskincare.product;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,18 +18,21 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
@@ -52,6 +56,7 @@ public class ProductFragmentDetail extends Fragment {
     private ArrayAdapter<CharSequence> mSpinnerAdapter;
     private Button mEditIngredientsButton;
     private ListView mIngredientsList;
+    private TextView mNoIngredientsText;
 
     private Long mProductId;
     private String mInitialName;
@@ -189,6 +194,13 @@ public class ProductFragmentDetail extends Fragment {
         return (!mInitialName.equals(currentName) || (!mInitialBrand.equals(currentBrand)) || (!mInitialType.equals(currentType)) || mIngredientsListModified);
     }
 
+    private void showLayout(View view){
+        mIngredientsList.setVisibility(View.INVISIBLE);
+        mNoIngredientsText.setVisibility(View.INVISIBLE);
+
+        view.setVisibility(View.VISIBLE);
+    }
+
     /**
      * Checks if the required name field is a valid value.
      * @return true if the name field is valid
@@ -210,7 +222,12 @@ public class ProductFragmentDetail extends Fragment {
         if(mTypeSpinner.getSelectedItem() != null){
             mInitialType = mTypeSpinner.getSelectedItem().toString();
         }else {
-            mInitialType = "--";
+            mInitialType = getResources().getString(R.string.product_types_none);
+        }
+        if (mIngredientsList.getAdapter() != null && mIngredientsList.getCount() > 0){
+            showLayout(mIngredientsList);
+        }else {
+            showLayout(mNoIngredientsText);
         }
     }
 
@@ -321,6 +338,7 @@ public class ProductFragmentDetail extends Fragment {
         mBrandEditText = (EditText) rootView.findViewById(R.id.product_brand_edit);
         mEditIngredientsButton = (Button) rootView.findViewById(R.id.product_edit_ingredients);
         mIngredientsList = (ListView) rootView.findViewById(R.id.product_ingredient_list);
+        mNoIngredientsText = (TextView) rootView.findViewById(R.id.product_ingredient_empty_text);
 
         mTypeSpinner = (Spinner) rootView.findViewById(R.id.product_type_spinner);
         mSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),R.array.product_types_array,R.layout.product_spinner_layout);
@@ -366,6 +384,18 @@ public class ProductFragmentDetail extends Fragment {
                 intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false);
                 intent.putExtra(IngredientActivityDetail.ENTRY_ID,id);
                 startActivity(intent);
+            }
+        });
+
+        mTypeSpinner.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                View view = getActivity().getCurrentFocus();
+                InputMethodManager methodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (view != null) {
+                    methodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                return false;
             }
         });
     }
@@ -506,6 +536,11 @@ public class ProductFragmentDetail extends Fragment {
                 int[] toViews = {R.id.product_detail_ingredient_listview_item};
                 SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, result, fromColumns, toViews, 0);
                 mIngredientsList.setAdapter(ingredientAdapter);
+            }
+            if (mIngredientsList.getAdapter() != null && mIngredientsList.getCount() > 0){
+                showLayout(mIngredientsList);
+            }else {
+                showLayout(mNoIngredientsText);
             }
         }
     }

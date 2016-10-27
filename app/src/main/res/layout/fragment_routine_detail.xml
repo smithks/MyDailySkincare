@@ -244,6 +244,16 @@
                     android:background="@drawable/rectangle_border">
                 </com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView>
 
+                <TextView
+                    android:id="@+id/routine_no_products_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@drawable/rectangle_border"
+                    android:layout_below="@id/routine_product_title_layout"
+                    android:text="@string/routine_no_products_text_string"
+                    android:gravity="center"
+                    android:visibility="invisible"/>
+
             </RelativeLayout>
 
             <android.support.design.widget.TextInputLayout

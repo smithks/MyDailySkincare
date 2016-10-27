@@ -82,6 +82,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     private DiaryEntrySeekBar mSeekBarWaterIntake;
 
     private ListView mRoutinesListView;
+    private TextView mNoRoutinesTextView;
     private Button mAddRemoveRoutinesButton;
     private CheckBox mOnPeriodCheckBox;
 
@@ -204,6 +205,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /*
         Fetches properties to be used with the condition label's from xml resources.
+        Could use string-arrays instead of loading manually here.
          */
     private void setSliderArrays() {
         mConditionStrings = new String[7];
@@ -291,6 +293,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         mSeekBarWaterIntake = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_lifestyle_water_seek_bar);
 
         mRoutinesListView = (ListView) rootView.findViewById(R.id.diary_entry_routines_listview);
+        mNoRoutinesTextView = (TextView) rootView.findViewById(R.id.diary_entry_no_routines_text);
         mAddRemoveRoutinesButton = (Button) rootView.findViewById(R.id.diary_entry_add_remove_routine_button);
         mOnPeriodCheckBox = (CheckBox) rootView.findViewById(R.id.diary_entry_lifestyle_period_check);
     }
@@ -337,6 +340,13 @@ public class DiaryEntryFragmentMain extends Fragment {
         mInitialFieldValues = new DiaryEntryFieldCollection();
         mCurrentFieldValues = new DiaryEntryFieldCollection();
         mNewEntry = false;
+    }
+
+    private void showLayout(View view){
+        mRoutinesListView.setVisibility(View.INVISIBLE);
+        mNoRoutinesTextView.setVisibility(View.INVISIBLE);
+
+        view.setVisibility(View.VISIBLE);
     }
 
     /*
@@ -897,6 +907,11 @@ public class DiaryEntryFragmentMain extends Fragment {
                     }
                 });
                 mRoutinesListView.setAdapter(adapter);
+            }
+            if (mRoutinesListView.getAdapter() != null && mRoutinesListView.getAdapter().getCount() > 0){
+                showLayout(mRoutinesListView);
+            }else {
+                showLayout(mNoRoutinesTextView);
             }
             hideLoadingScreen();
         }

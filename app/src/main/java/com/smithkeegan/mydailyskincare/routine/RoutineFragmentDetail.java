@@ -53,6 +53,7 @@ public class RoutineFragmentDetail extends Fragment {
     private TableLayout mFrequencyTable;
     private TextView[] mFrequencyTableColumns;
     private ListView mProductsListView;
+    private TextView mNoProductsTextView;
     private EditText mCommentEditText;
     private Button mEditProductsButton;
 
@@ -119,6 +120,7 @@ public class RoutineFragmentDetail extends Fragment {
         mNameEditText = (EditText) rootView.findViewById(R.id.routine_name_edit);
         mTimeRadioGroup = (RadioGroup) rootView.findViewById(R.id.routine_time_radio_group);
         mProductsListView = (ListView) rootView.findViewById(R.id.routine_product_list_view);
+        mNoProductsTextView = (TextView) rootView.findViewById(R.id.routine_no_products_text);
         mCommentEditText = (EditText) rootView.findViewById(R.id.routine_comment_edit);
         mFrequencyRadioGroup = (RadioGroup) rootView.findViewById(R.id.routine_frequency_radio_group);
 
@@ -257,6 +259,19 @@ public class RoutineFragmentDetail extends Fragment {
         mInitialTime = ((RadioButton)mTimeRadioGroup.findViewById(mTimeRadioGroup.getCheckedRadioButtonId())).getText().toString();
         mInitialComment = mCommentEditText.getText().toString().trim();
         mInitialFrequency = getFrequencyString();
+
+        if (mProductsListView.getAdapter() != null && mProductsListView.getCount() > 0){
+            showLayout(mProductsListView);
+        }else {
+            showLayout(mNoProductsTextView);
+        }
+    }
+
+    private void showLayout(View view){
+        mProductsListView.setVisibility(View.INVISIBLE);
+        mNoProductsTextView.setVisibility(View.INVISIBLE);
+
+        view.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -711,6 +726,12 @@ public class RoutineFragmentDetail extends Fragment {
                     });
                     mProductsListView.setAdapter(adapter);
                 }
+            }
+
+            if (mProductsListView.getAdapter() != null && mProductsListView.getAdapter().getCount() > 0){
+                showLayout(mProductsListView);
+            }else {
+                showLayout(mNoProductsTextView);
             }
         }
     }

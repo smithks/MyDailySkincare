@@ -393,6 +393,19 @@
                     android:background="@drawable/rectangle_border"
                     android:nestedScrollingEnabled="true"/>
 
+                <TextView
+                    android:id="@+id/diary_entry_no_routines_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_below="@id/diary_entry_routines_divider"
+                    android:background="@drawable/rectangle_border"
+                    android:text="@string/diary_entry_no_routines_string"
+                    android:gravity="center"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="15dp"
+                    android:visibility="invisible"/>
+
 
             </RelativeLayout>
 

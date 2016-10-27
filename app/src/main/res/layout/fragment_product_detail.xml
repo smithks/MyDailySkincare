@@ -138,6 +138,16 @@
                     >
                 </com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView>
 
+                <TextView
+                    android:id="@+id/product_ingredient_empty_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_below="@id/product_ingredient_title_layout"
+                    android:background="@drawable/rectangle_border"
+                    android:text="@string/product_no_ingredients_to_display"
+                    android:gravity="center"
+                    android:visibility="invisible"/>
+
             </RelativeLayout>
 
         </RelativeLayout>
