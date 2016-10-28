@@ -394,6 +394,7 @@ public class ProductFragmentDetail extends Fragment {
                 InputMethodManager methodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (view != null) {
                     methodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    view.clearFocus();
                 }
                 return false;
             }
@@ -537,7 +538,7 @@ public class ProductFragmentDetail extends Fragment {
                 SimpleCursorAdapter ingredientAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_item_product_detail_ingredients, result, fromColumns, toViews, 0);
                 mIngredientsList.setAdapter(ingredientAdapter);
             }
-            if (mIngredientsList.getAdapter() != null && mIngredientsList.getCount() > 0){
+            if (mIngredientsList.getAdapter() != null && mIngredientsList.getAdapter().getCount() > 0){
                 showLayout(mIngredientsList);
             }else {
                 showLayout(mNoIngredientsText);

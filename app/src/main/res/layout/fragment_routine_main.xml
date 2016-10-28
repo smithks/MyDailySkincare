@@ -14,6 +14,17 @@
 
     </ListView>
 
+    <TextView
+        android:id="@+id/routine_main_no_routines_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/routine_main_new_button"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/rectangle_border"
+        android:visibility="invisible"
+        android:text="@string/routine_main_no_routines"
+        android:gravity="center"/>
+
     <Button
         android:id="@+id/routine_main_new_button"
         android:layout_width="wrap_content"

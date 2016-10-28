@@ -9,6 +9,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -17,12 +19,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.TypefaceSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
@@ -64,6 +68,7 @@ public class CalendarActivityMain extends AppCompatActivity {
     private DiaryDbHelper mDbHelper;
 
     private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
     private String[] mDrawerStrings;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -103,9 +108,6 @@ public class CalendarActivityMain extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if(mDrawerToggle.onOptionsItemSelected(item))
@@ -133,6 +135,25 @@ public class CalendarActivityMain extends AppCompatActivity {
         super.onResume();
         if(mDrawerLayout.isDrawerOpen(GravityCompat.START)){
             mDrawerLayout.closeDrawer(GravityCompat.START,false);
+        }
+        //Uncheck any checked items.
+        if (mNavigationView != null){
+            for (int i = 0; i < mNavigationView.getMenu().size(); i++){
+                mNavigationView.getMenu().getItem(i).setChecked(false);
+            }
+        }
+
+    }
+
+    /**
+     * Close the drawer on back press if it is open.
+     */
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)){
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        }else {
+            super.onBackPressed();
         }
     }
 
@@ -184,55 +205,61 @@ public class CalendarActivityMain extends AppCompatActivity {
     private void initializeDrawer(){
         mDrawerStrings = getResources().getStringArray(R.array.drawer_strings);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ListView drawerList = (ListView)findViewById(R.id.drawer);
-
-        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.listview_item_calendar_drawer, mDrawerStrings));
-        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                switch (item.getItemId()){
+                    case R.id.navigation_today:
+                        Date todaysDate = getTodayCalendarDate().getTime();
+                        Intent intent = new Intent(mContext,DiaryEntryActivityMain.class);
+                        intent.putExtra(DiaryEntryActivityMain.DATE_EXTRA,todaysDate.getTime());
+                        startActivityForResult(intent,CODE_DATE_RETURN);
+                        return true;
+                    case R.id.navigation_routines:
+                        Intent routineIntent = new Intent(mContext, RoutineActivityMain.class);
+                        startActivity(routineIntent);
+                        return true;
+                    case R.id.navigation_products:
+                        Intent productIntent = new Intent(mContext, ProductActivityMain.class);
+                        startActivity(productIntent);
+                        return true;
+                    case R.id.navigation_ingredients:
+                        Intent ingredientIntent = new Intent(mContext, IngredientActivityMain.class);
+                        startActivity(ingredientIntent);
+                        return true;
+                    case R.id.navigation_analytics:
+                        Intent analyticsIntent = new Intent(mContext, AnalyticsActivityMain.class);
+                        startActivity(analyticsIntent);
+                        return true;
+                    default:
+                        return false;
+                }
             }
         });
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-    }
-
-    /**
-     * Starts appropriate activity based on item pressed in drawer.
-     * @param position item pressed in drawer
-     */
-    private void selectItem(int position){
-        switch(position){
-            case 0: //Go to today's diary entry
-                Date todaysDate = getTodayCalendarDate().getTime();
-                Intent intent = new Intent(this,DiaryEntryActivityMain.class);
-                intent.putExtra(DiaryEntryActivityMain.DATE_EXTRA,todaysDate.getTime());
-                startActivityForResult(intent,CODE_DATE_RETURN);
-                break;
-            case 1: //Routines
-                Intent routineIntent = new Intent(this, RoutineActivityMain.class);
-                startActivity(routineIntent);
-                break;
-            case 2: //Products
-                Intent productIntent = new Intent(this, ProductActivityMain.class);
-                startActivity(productIntent);
-                break;
-            case 3: //Ingredients
-                Intent ingredientIntent = new Intent(this,IngredientActivityMain.class);
-                startActivity(ingredientIntent);
-                break;
-            case 4: //Analytics
-                Intent analyticsIntent = new Intent(this, AnalyticsActivityMain.class);
-                startActivity(analyticsIntent);
-                break;
-            case 5: //Settings
-                break;
-            case 6: //TODO REMOVE TESTING BLOCK
-                DiaryDbHelper helper = DiaryDbHelper.getInstance(this);
-                helper.dropTables(helper.getWritableDatabase());
-                break;
+        //Set the height of the navigation header based on the size of this screen.
+        RelativeLayout navHeader = (RelativeLayout) mNavigationView.getHeaderView(0);
+        if (navHeader != null) {
+            int newHeight = navHeader.getLayoutParams().height;
+            int identifier = getResources().getIdentifier("status_bar_height", "dimen", "android"); //Get the status bar id
+            if (identifier > 0) {
+                newHeight = newHeight + getResources().getDimensionPixelSize(identifier); //Add height to existing height.
+            }
+            navHeader.getLayoutParams().height = newHeight;
         }
+
+        //Set the font and text size of menu items
+        for (int i = 0; i < mNavigationView.getMenu().size(); i++) {
+            Spannable newTitle = new SpannableString(mNavigationView.getMenu().getItem(i).getTitle());
+            newTitle.setSpan(new TypefaceSpan(""), 0, newTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); //Use the default typeface to set the menu items font to default. This is a bit hacky
+            mNavigationView.getMenu().getItem(i).setTitle(newTitle);
+        }
+
     }
 
     /**

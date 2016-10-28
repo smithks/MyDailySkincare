@@ -29,6 +29,7 @@ public class ProductFragmentMain extends Fragment{
 
     private DiaryDbHelper mDbHelper;
     private ListView mProductsList;
+    private TextView mNoProductsTextView;
     private Button mNewProductButton;
 
     @Override
@@ -37,6 +38,7 @@ public class ProductFragmentMain extends Fragment{
 
         mDbHelper = DiaryDbHelper.getInstance(getContext());
         mProductsList = (ListView) rootView.findViewById(R.id.product_main_list_view);
+        mNoProductsTextView = (TextView) rootView.findViewById(R.id.product_main_no_products_text);
         mNewProductButton = (Button) rootView.findViewById(R.id.product_main_new_button);
         setButtonListener();
         return rootView;
@@ -57,6 +59,13 @@ public class ProductFragmentMain extends Fragment{
     public void onResume(){
         super.onResume();
         refreshProductList();
+    }
+
+    private void showLayout(View view){
+        mProductsList.setVisibility(View.INVISIBLE);
+        mNoProductsTextView.setVisibility(View.INVISIBLE);
+
+        view.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -156,6 +165,11 @@ public class ProductFragmentMain extends Fragment{
                     mIngredientsList.setSelection(highlightPosition); //Find way to highlight selected row
                 }
             }*/
+            if (mProductsList.getAdapter() != null && mProductsList.getAdapter().getCount() > 0){
+                showLayout(mProductsList);
+            }else {
+                showLayout(mNoProductsTextView);
+            }
         }
     }
 }

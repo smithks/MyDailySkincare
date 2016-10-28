@@ -72,5 +72,9 @@
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:layout_marginBottom">5dp</item>
     </style>
+
+    <style name="navigation_menu_style">
+        <item name="android:textSize">16sp</item>
+    </style>
     
 </resources>

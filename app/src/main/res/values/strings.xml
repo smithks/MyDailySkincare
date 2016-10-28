@@ -6,13 +6,17 @@
     <string name="action_go_to_date">Scroll to date…</string>
 
     <!-- Navigation Drawer Options -->
+    <string name="navigation_today_entry">Today\'s Diary Entry</string>
+    <string name="navigation_routines">Routines</string>
+    <string name="navigation_products">Products</string>
+    <string name="navigation_ingredients">Ingredients</string>
+    <string name="navigation_analytics">Analytics</string>
     <string-array name="drawer_strings">
         <item>Today\'s Diary Entry</item>
         <item>Routines</item>
         <item>Products</item>
         <item>Ingredients</item>
         <item>Analytics</item>
-        <item>Settings</item>
         <item>Clear Database *FOR TESTING*</item>
     </string-array>
     <string name="drawer_open">Open Drawer</string>
@@ -82,7 +86,7 @@
     <string name="diary_entry_no_routines_string">press ADD/REMOVE to add a routine to this diary entry</string>
 
     <!-- Ingredient Strings -->
-    <string name="ingredient_name_string">Ingredient Name</string>
+    <string name="ingredient_name_string">ingredient name</string>
     <string name="ingredients">Ingredients</string>
     <string name="ingredient_activity_title">Ingredient</string>
     <string name="ingredient_irritant">Skin irritant</string>
@@ -92,10 +96,11 @@
     <string name="ingredient_delete_alert_dialog_title">Delete ingredient?</string>
     <string name="ingredient_back_alert_dialog_title">Save ingredient?</string>
     <string name="ingredient_back_alert_dialog_message">Do you want to save this new ingredient?</string>
+    <string name="ingredient_main_no_ingredients">press the button below to add a new ingredient</string>
 
     <!-- Product Strings -->
-    <string name="product_name_string">product Name</string>
-    <string name="brand_string">brand</string>
+    <string name="product_name_string">product name</string>
+    <string name="brand_string">product brand</string>
     <string name="product_activity_title">Product</string>
     <string name="products">Products</string>
     <string name="new_product">New product</string>
@@ -106,6 +111,7 @@
     <string name="product_back_alert_dialog_title">Save product?</string>
     <string name="product_back_alert_dialog_message">Do you want to save this new product?</string>
     <string name="product_no_ingredients_to_display">press ADD/REMOVE to add an ingredient to this product</string>
+    <string name="product_main_no_products">press the button below to add a new product</string>
 
     <string name="product_types_none">--</string>
     <string name="product_types_cleanser">Cleanser</string>
@@ -162,6 +168,7 @@
     <string name="routine_back_alert_dialog_title">Save Changes?</string>
     <string name="routine_back_alert_dialog_message">Save changes made to this routine?</string>
     <string name="routine_no_products_text_string">press ADD/REMOVE to add a product to this routine</string>
+    <string name="routine_main_no_routines">press the button below to add a new routine</string>
 
     <!-- Item List Dialog Strings -->
     <string name="item_list_select_ingredients">Select ingredients</string>

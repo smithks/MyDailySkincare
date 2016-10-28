@@ -29,6 +29,7 @@ public class RoutineFragmentMain extends Fragment {
 
     private DiaryDbHelper mDbHelper;
     private ListView mRoutinesList;
+    private TextView mNoRoutinesTextView;
     private Button mNewRoutineButton;
 
     @Nullable
@@ -39,6 +40,7 @@ public class RoutineFragmentMain extends Fragment {
         mDbHelper = DiaryDbHelper.getInstance(getContext());
 
         mRoutinesList = (ListView) rootView.findViewById(R.id.routine_main_list_view);
+        mNoRoutinesTextView = (TextView) rootView.findViewById(R.id.routine_main_no_routines_text);
         mNewRoutineButton = (Button) rootView.findViewById(R.id.routine_main_new_button);
 
         setButtonListener();
@@ -65,6 +67,13 @@ public class RoutineFragmentMain extends Fragment {
     public void onResume() {
         super.onResume();
         refreshRoutineList();
+    }
+
+    private void showLayout(View view){
+        mRoutinesList.setVisibility(View.INVISIBLE);
+        mNoRoutinesTextView.setVisibility(View.INVISIBLE);
+
+        view.setVisibility(View.VISIBLE);
     }
 
     private void refreshRoutineList(){
@@ -113,6 +122,11 @@ public class RoutineFragmentMain extends Fragment {
                     startActivity(intent);
                 }
             });
+            if (mRoutinesList.getAdapter() != null && mRoutinesList.getAdapter().getCount() > 0){
+                showLayout(mRoutinesList);
+            }else {
+                showLayout(mNoRoutinesTextView);
+            }
         }
     }
 }

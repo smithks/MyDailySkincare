@@ -41,7 +41,7 @@
                     style="@style/header_name_text_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/field_name_string"
+                    android:hint="@string/product_name_string"
                     android:inputType="textNoSuggestions"
                     />
 

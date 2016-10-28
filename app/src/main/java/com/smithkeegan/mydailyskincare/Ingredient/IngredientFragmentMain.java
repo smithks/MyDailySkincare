@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
@@ -27,6 +28,7 @@ public class IngredientFragmentMain extends Fragment {
 
     private DiaryDbHelper mDbHelper;
     private ListView mIngredientsList;
+    private TextView mNoIngredientsTextView;
     private Button mNewIngredientButton;
 
     @Override
@@ -38,6 +40,7 @@ public class IngredientFragmentMain extends Fragment {
         setButtonListener();
 
         mIngredientsList = (ListView)rootView.findViewById(R.id.ingredient_main_list_view);
+        mNoIngredientsTextView = (TextView) rootView.findViewById(R.id.ingredient_main_no_ingredients_text);
         return rootView;
     }
 
@@ -45,6 +48,13 @@ public class IngredientFragmentMain extends Fragment {
     public void onResume(){
         super.onResume();
         refreshListView(); //Move this if highlighting from detail fragment
+    }
+
+    private void showLayout(View view){
+        mIngredientsList.setVisibility(View.INVISIBLE);
+        mNoIngredientsTextView.setVisibility(View.INVISIBLE);
+
+        view.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -144,6 +154,11 @@ public class IngredientFragmentMain extends Fragment {
                     mIngredientsList.setSelection(highlightPosition); //Find way to highlight selected row
                 }
             }*/
+            if (mIngredientsList.getAdapter() != null && mIngredientsList.getAdapter().getCount() > 0){
+                showLayout(mIngredientsList);
+            }else {
+                showLayout(mNoIngredientsTextView);
+            }
         }
     }
 }
