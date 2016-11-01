@@ -1,6 +1,7 @@
 package com.smithkeegan.mydailyskincare.diaryEntry;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -131,6 +133,11 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         setListeners();
 
+        //Show demo if this is the first launch of this fragment
+        //if (!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen),false)){
+            showDemo();
+        //}
+
         return rootView;
     }
 
@@ -201,6 +208,43 @@ public class DiaryEntryFragmentMain extends Fragment {
         updateFieldViews(mCurrentFieldValues);
 
         mInitialLoadFinished = true;
+    }
+
+    /**
+     * Shows the welcome demo on the first launch.
+     */
+    private void showDemo(){
+        final Dialog dialog = new Dialog(getContext(),android.R.style.Theme_Translucent_NoTitleBar);
+        dialog.setContentView(R.layout.demo_layout);
+
+        //Set preference value of main demo seen.
+        final TextView dialogText = (TextView) dialog.findViewById(R.id.demo_layout_text_view);
+        final Button dialogButton = (Button) dialog.findViewById(R.id.demo_layout_button_next_done);
+        dialogButton.setTag(1); //Use the view's tag to track the current displayed text phase
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPhase = (int) dialogButton.getTag();
+                switch (currentPhase){
+                    case 1:
+                        dialogButton.setTag(2);
+                        dialogText.setText(getResources().getString(R.string.diary_entry_demo_text_second));
+                        break;
+                    case 2:
+                        dialogButton.setTag(3);
+                        dialogText.setText(getResources().getString(R.string.diary_entry_demo_text_third));
+                        dialogButton.setText(getResources().getString(R.string.done_string));
+                        break;
+                    case 3:
+                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen),true).apply();
+                        dialog.dismiss();
+                        break;
+                }
+
+            }
+        });
+        dialogText.setText(getResources().getString(R.string.diary_entry_demo_text_first));
+        dialog.show();
     }
 
     /*

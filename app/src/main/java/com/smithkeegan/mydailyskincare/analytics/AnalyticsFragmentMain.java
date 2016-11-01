@@ -25,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -439,7 +440,7 @@ public class AnalyticsFragmentMain extends Fragment {
      */
     private Button getGridButton(String buttonText) {
         AnalyticsButton choiceButton = new AnalyticsButton(getContext());
-        choiceButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 250));
+        choiceButton.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 250));
 
         Drawable drawable = DrawableCompat.wrap(choiceButton.getBackground());
         DrawableCompat.setTint(drawable, ContextCompat.getColor(getContext(), R.color.colorPrimary));

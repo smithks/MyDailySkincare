@@ -4,6 +4,10 @@
     <!-- Calendar Activity Strings -->
     <string name="action_view_db">View Database</string>
     <string name="action_go_to_date">Scroll to date…</string>
+    <string name="main_demo_text_first">Welcome to My Daily Skincare! \n\n Manage and track your daily routines and skin condition!</string>
+    <string name="main_demo_text_second">Tap a date on the calendar to go to that date\'s diary entry.</string>
+    <string name="main_demo_text_third">Open the navigation menu at the top of the screen to manage your routines, products, ingredients and analytics tools.</string>
+    <string name="main_demo_get_started">GET STARTED</string>
 
     <!-- Navigation Drawer Options -->
     <string name="navigation_today_entry">Today\'s Diary Entry</string>
@@ -40,6 +44,15 @@
     <string name="add_remove_string">Add/Remove</string>
     <string name="toast_enter_valid_name">Please enter a name</string>
     <string name="field_name_string">name</string>
+    <string name="skip_string">SKIP</string>
+    <string name="next_string">NEXT</string>
+
+
+    <!-- Preferences -->
+    <string name="preference_main_demo_seen" translatable="false">main demo seen</string>
+    <string name="preference_diary_entry_demo_seen" translatable="false">diary entry demo seen</string>
+    <string name="preference_routine_demo_seen" translatable="false">routine demo seen</string>
+    <string name="preference_analytics_demo_seen" translatable="false">analytics demo seen</string>
 
     <!-- Diary Entry Strings -->
     <string name="diary_entry_condition_excellent">Excellent</string>
@@ -84,6 +97,9 @@
     <string name="diary_entry_back_alert_save_new_entry_title">Save entry?</string>
     <string name="diary_entry_back_alert_save_new_entry_message">Do you want to save this new entry?</string>
     <string name="diary_entry_no_routines_string">press ADD/REMOVE to add a routine to this diary entry</string>
+    <string name="diary_entry_demo_text_first">Here you can document the condition of your skin, the routines you applied and other lifestyle metrics for this date.</string>
+    <string name="diary_entry_demo_text_second">Routines specified to be applied daily or on this day of the week will be added automatically. \n\nPress the ADD/REMOVE button to include other routines or remove routines.</string>
+    <string name="diary_entry_demo_text_third">We recommend filling out your diary entry at the end of your day so you can accurately document your lifestyle levels!</string>
 
     <!-- Ingredient Strings -->
     <string name="ingredient_name_string">ingredient name</string>

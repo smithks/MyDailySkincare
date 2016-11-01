@@ -1,5 +1,6 @@
 package com.smithkeegan.mydailyskincare;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -9,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
@@ -26,7 +28,9 @@ import android.text.style.TypefaceSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
@@ -85,6 +89,11 @@ public class CalendarActivityMain extends AppCompatActivity {
 
         initializeDrawer();
         initializeCalendar(savedInstanceState);
+
+        //Show demo if this is the first launch
+        //if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getResources().getString(R.string.preference_main_demo_seen),false)){
+            showDemo();
+        //}
     }
 
     @Override
@@ -292,6 +301,43 @@ public class CalendarActivityMain extends AppCompatActivity {
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
         t.replace(calendar, mCaldroidFragment);
         t.commit();
+    }
+
+    /**
+     * Shows the welcome demo on the first launch.
+     */
+    private void showDemo(){
+        final Dialog dialog = new Dialog(this,android.R.style.Theme_Translucent_NoTitleBar);
+        dialog.setContentView(R.layout.demo_layout);
+
+        //Set preference value of main demo seen.
+        final TextView dialogText = (TextView) dialog.findViewById(R.id.demo_layout_text_view);
+        final Button dialogButton = (Button) dialog.findViewById(R.id.demo_layout_button_next_done);
+        dialogButton.setTag(1); //Use the view's tag to track the current displayed text phase
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPhase = (int) dialogButton.getTag();
+                switch (currentPhase){
+                    case 1:
+                        dialogButton.setTag(2);
+                        dialogText.setText(getResources().getString(R.string.main_demo_text_second));
+                        break;
+                    case 2:
+                        dialogButton.setTag(3);
+                        dialogText.setText(getResources().getString(R.string.main_demo_text_third));
+                        dialogButton.setText(getResources().getString(R.string.main_demo_get_started));
+                        break;
+                    case 3:
+                        PreferenceManager.getDefaultSharedPreferences(CalendarActivityMain.this).edit().putBoolean(getResources().getString(R.string.preference_main_demo_seen),true).apply();
+                        dialog.dismiss();
+                        break;
+                }
+
+            }
+        });
+        dialogText.setText(getResources().getString(R.string.main_demo_text_first));
+        dialog.show();
     }
 
     /**
