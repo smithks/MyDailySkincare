@@ -73,7 +73,6 @@ public class CalendarActivityMain extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private String[] mDrawerStrings;
     private ActionBarDrawerToggle mDrawerToggle;
 
 
@@ -212,7 +211,6 @@ public class CalendarActivityMain extends AppCompatActivity {
      * Initializes the drawer, setting adapters and click listeners.
      */
     private void initializeDrawer(){
-        mDrawerStrings = getResources().getStringArray(R.array.drawer_strings);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

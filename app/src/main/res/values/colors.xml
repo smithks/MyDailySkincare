@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
     <color name="colorPrimary">#3399ff</color>
     <color name="colorPrimaryDark">#0080ff</color>
     <color name="colorAccent">#FF4081</color>
+    -->
+
+    <color name="colorPrimary">#8BDAC6</color>
+    <color name="colorPrimaryDark">#52C7AA</color>
+    <color name="colorAccent">#FF66B5</color>
 
     <!-- Skin condition slider colors -->
     <color name="excellent">#68fd68</color>

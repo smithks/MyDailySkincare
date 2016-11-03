@@ -1,6 +1,7 @@
 package com.smithkeegan.mydailyskincare.routine;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -102,6 +104,9 @@ public class RoutineFragmentDetail extends Fragment {
         }
 
         setListeners();
+        if (!PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getResources().getString(R.string.preference_routine_demo_seen),false)){
+            showDemo();
+        }
 
         return rootView;
     }
@@ -382,6 +387,38 @@ public class RoutineFragmentDetail extends Fragment {
     }
 
     /**
+     * Shows the routine demo dialog the first time this fragment is loaded.
+     */
+    private void showDemo(){
+        final Dialog demoDialog = new Dialog(getContext(),android.R.style.Theme_Translucent_NoTitleBar);
+        demoDialog.setContentView(R.layout.demo_layout);
+
+        final TextView demoText = (TextView) demoDialog.findViewById(R.id.demo_layout_text_view);
+        final Button demoButton = (Button) demoDialog.findViewById(R.id.demo_layout_button_next_done);
+
+        demoText.setText(getResources().getString(R.string.routine_demo_text_first));
+        demoButton.setTag(1); //Track current text with this buttons tag
+        demoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int demoState = (int) demoButton.getTag();
+                switch (demoState){
+                    case 1:
+                        demoText.setText(getResources().getString(R.string.routine_demo_text_second));
+                        demoButton.setText(getResources().getString(R.string.main_demo_get_started));
+                        demoButton.setTag(2);
+                        break;
+                    case 2:
+                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getResources().getString(R.string.preference_routine_demo_seen),true).apply();
+                        demoDialog.dismiss();
+                        break;
+                }
+            }
+        });
+        demoDialog.show();
+    }
+
+    /**
      * Checks if fields are valid and if there have been any changes before saving
      * the current entry.
      */
@@ -597,7 +634,9 @@ public class RoutineFragmentDetail extends Fragment {
                         setSelectedRadioButton(getString(R.string.routine_radio_AM));
                     mCommentEditText.setText(comment);
 
-                    setFrequencyBlock(frequency);
+                    if (frequency != null) {
+                        setFrequencyBlock(frequency);
+                    }
                 }
             }
             if (result[1] != null) {
@@ -786,6 +825,8 @@ public class RoutineFragmentDetail extends Fragment {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(DiaryContract.Routine.COLUMN_NAME,"PlaceholderRoutine");
+            values.put(DiaryContract.Routine.COLUMN_TIME,getResources().getString(R.string.routine_radio_AM));
+            values.put(DiaryContract.Routine.COLUMN_FREQUENCY,getResources().getString(R.string.routine_radio_frequency_needed));
             return db.insert(DiaryContract.Routine.TABLE_NAME,null,values);
         }
 

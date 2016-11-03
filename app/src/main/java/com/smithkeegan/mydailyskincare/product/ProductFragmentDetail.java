@@ -583,7 +583,7 @@ public class ProductFragmentDetail extends Fragment {
     }
 
     /**
-     * Task to save a product and its ingredients to the database.
+     * Task to save a placeholder product so there is a product ID available to link ingredients to on initial creation.
      */
     private class SaveProductPlaceholderTask extends AsyncTask<Void,Void,Long>{
 
@@ -592,7 +592,7 @@ public class ProductFragmentDetail extends Fragment {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(DiaryContract.Product.COLUMN_NAME,"PlaceholderProduct");
-            values.put(DiaryContract.Product.COLUMN_TYPE,"--");
+            values.put(DiaryContract.Product.COLUMN_TYPE,getResources().getString(R.string.product_types_none));
             return db.insert(DiaryContract.Product.TABLE_NAME,null,values);
         }
 

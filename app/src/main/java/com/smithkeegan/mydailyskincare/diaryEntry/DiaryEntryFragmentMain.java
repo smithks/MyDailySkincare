@@ -134,9 +134,9 @@ public class DiaryEntryFragmentMain extends Fragment {
         setListeners();
 
         //Show demo if this is the first launch of this fragment
-        //if (!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen),false)){
+        if (!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen),false)){
             showDemo();
-        //}
+        }
 
         return rootView;
     }
@@ -796,9 +796,20 @@ public class DiaryEntryFragmentMain extends Fragment {
 
             Cursor rows = db.query(DiaryContract.DiaryEntry.TABLE_NAME, columns, selection, null, null, null, null);
 
-            if (rows != null && rows.getCount() == 0) { //No entry found for this date, create a new one.
+            if (rows != null && rows.getCount() == 0) { //No entry found for this date, create a new one and save default values for a placeholder.
                 ContentValues values = new ContentValues();
                 values.put(DiaryContract.DiaryEntry.COLUMN_DATE, epochTime);
+                values.put(DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION, 3);
+                values.put(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION, 3);
+                values.put(DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION, 3);
+                values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, 3);
+                values.put(DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION, 3);
+                values.put(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION, 3);
+                values.put(DiaryContract.DiaryEntry.COLUMN_EXERCISE, 0);
+                values.put(DiaryContract.DiaryEntry.COLUMN_DIET, 0);
+                values.put(DiaryContract.DiaryEntry.COLUMN_HYGIENE, 0);
+                values.put(DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE, 0);
+                values.put(DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, 0);
                 mDiaryEntryID = db.insert(DiaryContract.DiaryEntry.TABLE_NAME, null, values); //Set returned row ID to this diary entry's ID
 
                 //Create new lines in the diary_entry_routines table

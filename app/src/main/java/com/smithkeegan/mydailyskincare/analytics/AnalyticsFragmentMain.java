@@ -447,7 +447,7 @@ public class AnalyticsFragmentMain extends Fragment {
         choiceButton.setBackground(drawable);
 
         choiceButton.setText(buttonText);
-        choiceButton.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        choiceButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
 
         findButtonProperties(choiceButton); //Set the linked string to push onto the stack and other button properties
         choiceButton.setOnClickListener(getGridButtonListener()); //Set the buttons listener

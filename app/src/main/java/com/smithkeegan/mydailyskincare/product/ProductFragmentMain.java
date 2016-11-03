@@ -21,7 +21,6 @@ import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
 /**
  * Fragment class for the product list screen.
- * //TODO wrap all database access in try catch
  * @author Keegan Smith
  * @since 5/19/2016
  */
