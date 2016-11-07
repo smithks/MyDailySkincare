@@ -429,7 +429,6 @@ public class AnalyticsFragmentMain extends Fragment {
         }
 
         updateTextViewQueryString(resultsState);
-        //getActivity().invalidateOptionsMenu(); //refresh the options menu
         return buttonStrings;
     }
 
@@ -447,7 +446,7 @@ public class AnalyticsFragmentMain extends Fragment {
         choiceButton.setBackground(drawable);
 
         choiceButton.setText(buttonText);
-        choiceButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        choiceButton.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
         findButtonProperties(choiceButton); //Set the linked string to push onto the stack and other button properties
         choiceButton.setOnClickListener(getGridButtonListener()); //Set the buttons listener
@@ -512,6 +511,7 @@ public class AnalyticsFragmentMain extends Fragment {
 
         //Button for Days -> Contains Selected Routines
         else if (buttonTitle.equals(getResources().getString(R.string.analytics_days_button_routines))) {  //3rd level
+            stringBuilder.append(":");
             setButtonProperties(button, GridStackStates.STATE_DAYS_ROUTINES, null, null, stringBuilder, 0, 0);
         }
 
@@ -609,6 +609,7 @@ public class AnalyticsFragmentMain extends Fragment {
 
         //Button for Routines -> selected products
         else if (buttonTitle.equals(getResources().getString(R.string.analytics_routine_contains_product))) { //3rd level
+            stringBuilder.append(":");
             setButtonProperties(button, GridStackStates.STATE_ROUTINES_PRODUCTS, null, null, stringBuilder, 0, 0);
         }
 
@@ -650,6 +651,7 @@ public class AnalyticsFragmentMain extends Fragment {
 
         //Button for Product -> with ingredients
         else if (buttonTitle.equals(getResources().getString(R.string.analytics_products_with_ingredients))) {
+            stringBuilder.append(":");
             setButtonProperties(button, GridStackStates.STATE_PRODUCTS_INGREDIENTS, null, null, stringBuilder, 0, 0);
         }
 

@@ -23,8 +23,6 @@ public class RoutineActivityDetail extends AppCompatActivity implements DialogCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setTitle(R.string.routine_activity_title);
         setContentView(R.layout.activity_routine_detail);
 
         if (savedInstanceState == null) {

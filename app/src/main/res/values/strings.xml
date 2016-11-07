@@ -97,6 +97,7 @@
     <string name="ingredient_name_string">ingredient name</string>
     <string name="ingredients">Ingredients</string>
     <string name="ingredient_activity_title">Ingredient</string>
+    <string name="ingredient_activity_title_new">New Ingredient</string>
     <string name="ingredient_irritant">Skin irritant</string>
     <string name="ingredient_comment">comments</string>
     <string name="new_ingredient">New ingredient</string>
@@ -110,6 +111,7 @@
     <string name="product_name_string">product name</string>
     <string name="brand_string">product brand</string>
     <string name="product_activity_title">Product</string>
+    <string name="product_activity_title_new">New Product</string>
     <string name="products">Products</string>
     <string name="new_product">New product</string>
     <string name="product_ingredients">Ingredients</string>
@@ -154,6 +156,7 @@
     <string name="routine_new_routine">New routine</string>
     <string name="routine_name_string">routine name</string>
     <string name="routine_activity_title">Routine</string>
+    <string name="routine_activity_title_new">New Routine</string>
     <string name="routine_application_time">Time of application</string>
     <string name="routine_products">Products</string>
     <string name="routine_comment">comments</string>
@@ -313,7 +316,7 @@
     </string-array>
 
     <string name="analytics_products_of_type">of type</string>
-    <string name="analytics_products_with_ingredients">with ingredients</string>
+    <string name="analytics_products_with_ingredients">with ingredient</string>
     <string-array name="analytics_products_buttons">
         <item>@string/analytics_products_of_type</item>
         <item>@string/analytics_products_with_ingredients</item>

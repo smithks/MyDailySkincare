@@ -8,14 +8,15 @@
     <TextView
         android:id="@+id/analytics_query_text_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="@string/analytics_query_show_me"
         android:textColor="@color/black"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:background="@color/textBoxBackground"/>
 
     <GridView
         android:id="@+id/analytics_grid_view"

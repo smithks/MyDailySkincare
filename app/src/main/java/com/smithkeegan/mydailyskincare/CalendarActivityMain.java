@@ -90,9 +90,9 @@ public class CalendarActivityMain extends AppCompatActivity {
         initializeCalendar(savedInstanceState);
 
         //Show demo if this is the first launch
-        //if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getResources().getString(R.string.preference_main_demo_seen),false)){
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getResources().getString(R.string.preference_main_demo_seen),false)){
             showDemo();
-        //}
+        }
     }
 
     @Override

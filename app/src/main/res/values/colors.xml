@@ -6,8 +6,9 @@
     <color name="colorAccent">#FF4081</color>
     -->
 
-    <color name="colorPrimary">#8BDAC6</color>
-    <color name="colorPrimaryDark">#52C7AA</color>
+    <!-- <color name="colorPrimary">#8BDAC6</color> -->
+    <color name="colorPrimary">#3dc2a1</color>
+    <color name="colorPrimaryDark">#37ae91</color>
     <color name="colorAccent">#FF66B5</color>
 
     <!-- Skin condition slider colors -->
@@ -18,12 +19,6 @@
     <color name="poor">#ffff99</color>
     <color name="veryPoor">#fEA081</color>
     <color name="severe">#FE8080</color>
-
-    <!-- Text color highlighting today -->
-    <color name="todayText">#ffff00</color>
-
-    <!--Button Colors-->
-    <color name="deleteButton">#fe5d5d</color>
 
     <!-- General Use -->
     <color name="white">#ffffff</color>

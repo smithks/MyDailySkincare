@@ -23,7 +23,6 @@ public class ProductActivityDetail extends AppCompatActivity implements DialogCl
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        setTitle(R.string.product_activity_title);
 
         setContentView(R.layout.activity_product_detail);
 

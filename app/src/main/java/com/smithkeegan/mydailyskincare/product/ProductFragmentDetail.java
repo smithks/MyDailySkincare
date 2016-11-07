@@ -98,6 +98,12 @@ public class ProductFragmentDetail extends Fragment {
             restoreSavedInstance(savedInstance);
         }
 
+        if (mIsNewProduct){
+            getActivity().setTitle(R.string.product_activity_title_new);
+        }else {
+            getActivity().setTitle(R.string.product_activity_title);
+        }
+
         setListeners();
 
         return rootView;

@@ -22,7 +22,6 @@ public class IngredientActivityDetail extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        setTitle(R.string.ingredient_activity_title);
 
         setContentView(R.layout.activity_ingredient_detail);
 

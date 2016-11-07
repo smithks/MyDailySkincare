@@ -103,6 +103,12 @@ public class RoutineFragmentDetail extends Fragment {
             restoreSavedInstance(savedInstanceState);
         }
 
+        if (mIsNewRoutine){
+            getActivity().setTitle(R.string.routine_activity_title_new);
+        }else {
+            getActivity().setTitle(R.string.routine_activity_title);
+        }
+
         setListeners();
         if (!PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getResources().getString(R.string.preference_routine_demo_seen),false)){
             showDemo();

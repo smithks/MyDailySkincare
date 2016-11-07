@@ -75,6 +75,12 @@ public class IngredientFragmentDetail extends Fragment {
             restoreSavedState(savedInstance);
         }
 
+        if (mNewEntry){
+            getActivity().setTitle(R.string.ingredient_activity_title_new);
+        }else {
+            getActivity().setTitle(R.string.ingredient_activity_title);
+        }
+
         return rootView;
     }
 
