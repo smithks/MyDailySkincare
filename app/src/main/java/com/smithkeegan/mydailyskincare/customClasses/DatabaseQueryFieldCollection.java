@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Object to hold the fields that will be used in this database access
+ * Object to hold the fields that will be used in the analytics fragment when building a database query.
+ * @author Keegan
+ * @since 10/18/16
  */
 public class DatabaseQueryFieldCollection implements Parcelable {
     public String TABLE;

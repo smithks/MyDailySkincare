@@ -56,7 +56,6 @@ import static com.smithkeegan.mydailyskincare.R.id.calendar;
  * @author Keegan Smith
  * @since 5/3/2016
  */
-    //TODO support nested scrolling in listview for less than api 21
 public class CalendarActivityMain extends AppCompatActivity {
 
     public static final String APPTAG = "MyDailySkincare";
@@ -125,10 +124,6 @@ public class CalendarActivityMain extends AppCompatActivity {
             case R.id.action_go_to_date:
                 DialogFragment datePicker = new DatePickerDialogFragment();
                 datePicker.show(getSupportFragmentManager(), "date picker");
-                return true;
-            case R.id.action_view_db:
-                Intent intent = new Intent(this,AndroidDatabaseManager.class);
-                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

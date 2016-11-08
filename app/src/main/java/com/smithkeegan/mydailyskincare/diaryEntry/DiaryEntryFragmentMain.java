@@ -792,7 +792,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                     DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE,
                     DiaryContract.DiaryEntry.COLUMN_ON_PERIOD};
 
-            String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + epochTime; // TODO add date
+            String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + epochTime;
 
             Cursor rows = db.query(DiaryContract.DiaryEntry.TABLE_NAME, columns, selection, null, null, null, null);
 

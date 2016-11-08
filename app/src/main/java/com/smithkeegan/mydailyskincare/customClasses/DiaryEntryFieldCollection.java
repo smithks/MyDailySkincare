@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Helper class used to hold values of fields in this fragment for comparison.
+ * Helper class used to hold values of fields in the diary entry fragment for comparison.
  * @author Keegan Smith
  * @since 10/6/2016
  */

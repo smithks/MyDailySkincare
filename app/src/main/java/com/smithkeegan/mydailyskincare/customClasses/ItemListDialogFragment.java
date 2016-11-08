@@ -48,7 +48,6 @@ import java.util.List;
  * @author Keegan Smith
  * @since 7/12/2016
  */
-//TODO would be nice to have ripple effect in listview
 public class ItemListDialogFragment extends DialogFragment {
 
     //String constants to denote the data displayed in this fragment
@@ -526,8 +525,6 @@ public class ItemListDialogFragment extends DialogFragment {
             closeOnFinish = (boolean) params[3];
             Long result = (long) 1;
 
-
-            //TODO build single query to send to db.
             for (ItemListDialogItem item : selected) {
                 long primaryID = item.getId();
                 boolean initialSelected = item.getInitialSelected();

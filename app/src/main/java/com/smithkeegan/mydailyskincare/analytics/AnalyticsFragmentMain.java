@@ -48,10 +48,12 @@ import java.util.HashMap;
 import java.util.Stack;
 
 /**
+ * Fragment class for the analytics activity. Contains the decision tree analytics tool.
+ * This class populates a grid of buttons and manipulates the accompanying query string at the top of
+ * this fragment.
  * @author Keegan Smith
  * @since 10/18/2016
  */
-
 public class AnalyticsFragmentMain extends Fragment {
 
     private static final String SAVE_KEY_STATE_STACK = "SAVE_KEY_STATE_STACK";
@@ -246,7 +248,6 @@ public class AnalyticsFragmentMain extends Fragment {
             currentLayout = 0;
         }
         outState.putInt(SAVE_KEY_VISIBLE_LAYOUT,currentLayout);
-        //TODO save query builder status and curent displayed layout?
         super.onSaveInstanceState(outState);
     }
 
@@ -335,7 +336,6 @@ public class AnalyticsFragmentMain extends Fragment {
      * @return the list of strings to use as button text
      */
     private String[] checkStackState(String state) {
-        //TODO create a state for each group of buttons or listview of options
         String[] buttonStrings = null;
         //Spannable newQuerySpannable = null;
         boolean resultsState = false;
@@ -421,7 +421,7 @@ public class AnalyticsFragmentMain extends Fragment {
                 mQueryBuilder.ORDER_BY = DiaryContract.Ingredient.COLUMN_NAME + " ASC";
                 break;
 
-            case GridStackStates.STATE_FETCH_DATA: //final level //TODO fetch data from database and replace grid.
+            case GridStackStates.STATE_FETCH_DATA: //final level
                 resultsState = true;
                 showLayout(mLoadingView);
                 new FetchFromDatabase().execute(useMemberQuery);
@@ -460,8 +460,6 @@ public class AnalyticsFragmentMain extends Fragment {
      * @param button the button to set
      */
     private void findButtonProperties(AnalyticsButton button) {
-        String linkedState;
-
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 
         String buttonTitle = button.getText().toString();

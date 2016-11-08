@@ -41,8 +41,6 @@ import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
  * Fragment class of the detail screen for a product. Performs actions to manipulate a product.
  * @author Keegan Smith
  * @since 5/19/2016
- *
- * //TODO prompts for which field is required when attempting to save
  */
 public class ProductFragmentDetail extends Fragment {
 

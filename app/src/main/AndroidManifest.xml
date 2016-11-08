@@ -57,8 +57,6 @@
                   android:parentActivityName=".CalendarActivityMain">
 
         </activity>
-        <activity android:name="com.smithkeegan.mydailyskincare.AndroidDatabaseManager"
-                  android:theme="@style/Theme.AppCompat.Light"/>
 
     </application>
 

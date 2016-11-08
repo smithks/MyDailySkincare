@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.smithkeegan.mydailyskincare.R;
 
 /**
+ * This activity provides the user with various analytics tools for analyzing data.
  * @author Keegan Smith
  * @since 10/18/2016
  */

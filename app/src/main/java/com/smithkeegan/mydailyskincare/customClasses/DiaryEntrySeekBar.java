@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.widget.SeekBar;
 
 /**
- * Custom seekBar class that increments the seekbar based on steps.
+ * Custom seekBar class that increments the seekbars used in the diary entry fragment based on steps.
  * @author Keegan Smith
  * @since 9/12/2016
  */
