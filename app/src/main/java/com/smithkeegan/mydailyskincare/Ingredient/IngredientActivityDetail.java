@@ -12,7 +12,6 @@ import com.smithkeegan.mydailyskincare.R;
  * Activity class for the detail screen of ingredients.
  * @author Keegan Smith
  * @since 5/16/2016
- * //TODO set activity title
  */
 public class IngredientActivityDetail extends AppCompatActivity {
 
