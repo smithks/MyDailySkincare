@@ -14,7 +14,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
 
     private static DiaryDbHelper instance;
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2; //Updated to version 2 on 11/10/2016
     public static final String DATABASE_NAME = "Diary.db";
 
     private static final String TEXT_TYPE = " TEXT";
@@ -93,7 +93,8 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.Product._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
                     DiaryContract.Product.COLUMN_BRAND + TEXT_TYPE + COMMA_SEP +
                     DiaryContract.Product.COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
-                    DiaryContract.Product.COLUMN_TYPE + TEXT_TYPE +
+                    DiaryContract.Product.COLUMN_TYPE + TEXT_TYPE + COMMA_SEP +
+                    DiaryContract.Product.COLUMN_COMMENT + TEXT_TYPE +
                     " );";
 
     private static final String SQL_ROUTINE_PRODUCT_TABLE =
@@ -125,6 +126,9 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     "PRIMARY KEY (" + DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + COMMA_SEP + DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + ")" +
                     " );";
 
+    private static final String SQL_PRODUCT_ADD_COMMENT_COLUMN =
+            "ALTER TABLE " + DiaryContract.Product.TABLE_NAME + " ADD COLUMN "+ DiaryContract.Product.COLUMN_COMMENT + TEXT_TYPE;
+
 
     public DiaryDbHelper(Context context){
         super(context,DATABASE_NAME,null,DATABASE_VERSION );
@@ -151,11 +155,19 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Called when database needs to be updated
+     * @param db the database to update
+     * @param oldVersion the old version
+     * @param newVersion the new version
+     * 11/10/2016 - Added Comment column to Product table.
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        dropTables(db);
-        onCreate(db);
-
+        switch (oldVersion){
+            case 1: //Added 11/10/2016
+                db.execSQL(SQL_PRODUCT_ADD_COMMENT_COLUMN);
+        }
     }
 
     public void dropTables(SQLiteDatabase db){
@@ -168,6 +180,5 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Routine.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Product.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DiaryContract.Ingredient.TABLE_NAME);
-        onCreate(db);
     }
 }

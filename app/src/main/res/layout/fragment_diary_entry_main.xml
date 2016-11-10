@@ -104,7 +104,7 @@
                     android:layout_centerVertical="true"
                     android:text="@string/diary_entry_show_more_string"
                     android:textColor="@color/black"
-                    android:textSize="15sp"/>
+                    android:textSize="18sp"/>
 
                 <ImageButton
                     android:id="@+id/diary_entry_show_more_button"
@@ -118,7 +118,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_toEndOf="@id/diary_entry_show_more_text"
                     android:layout_toRightOf="@id/diary_entry_show_more_text"
-                    android:background="@drawable/ic_add_circle_black_24dp"
+                    android:background="@drawable/icon_add_circle"
                     android:contentDescription="@string/diary_entry_show_more_content_description"
                     />
 

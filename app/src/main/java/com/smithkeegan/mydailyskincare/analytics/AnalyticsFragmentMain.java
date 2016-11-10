@@ -39,6 +39,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
+import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
 import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
 
 import java.text.DateFormat;
@@ -990,9 +991,9 @@ public class AnalyticsFragmentMain extends Fragment {
                 mResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
-                        intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, false);
-                        intent.putExtra(IngredientActivityDetail.ENTRY_ID, id);
+                        Intent intent = new Intent(getContext(), ProductActivityDetail.class);
+                        intent.putExtra(ProductActivityDetail.NEW_PRODUCT, false);
+                        intent.putExtra(ProductActivityDetail.ENTRY_ID, id);
                         startActivity(intent);
                     }
                 });

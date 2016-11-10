@@ -592,7 +592,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         if (mAdditionalConditionsShown) {
             mAdditionalConditionsLayout.setVisibility(View.INVISIBLE);
-            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_circle_black_24dp));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_add_circle));
             //Move the layout below additional conditions up
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.BELOW, mShowMoreLayout.getId());
@@ -600,7 +600,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             mAdditionalConditionsShown = false;
         } else {
             mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
-            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_remove_circle_black_24dp));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_remove_circle));
             //Move the layout below the additional conditions down
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.BELOW, mAdditionalConditionsLayout.getId());
