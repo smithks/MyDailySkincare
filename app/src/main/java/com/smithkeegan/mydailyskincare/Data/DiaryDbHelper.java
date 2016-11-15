@@ -14,7 +14,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
 
     private static DiaryDbHelper instance;
 
-    public static final int DATABASE_VERSION = 3; //Updated to version 2 on 11/10/2016
+    public static final int DATABASE_VERSION = 3; //Updated to version 3 on 11/15/2016
     public static final String DATABASE_NAME = "Diary.db";
 
     private static final String TEXT_TYPE = " TEXT";

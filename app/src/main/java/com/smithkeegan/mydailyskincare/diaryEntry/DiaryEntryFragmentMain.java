@@ -888,8 +888,13 @@ public class DiaryEntryFragmentMain extends Fragment {
                 mCurrentFieldValues.chinCondition = chinStep;
 
                 String comment = result.getString(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_COMMENT));
-                mInitialFieldValues.comment = comment;
-                mCurrentFieldValues.comment = comment;
+                if (comment != null) {
+                    mInitialFieldValues.comment = comment;
+                    mCurrentFieldValues.comment = comment;
+                }else { //Loading from database and no data exists, insert empty string.
+                    mInitialFieldValues.comment = "";
+                    mCurrentFieldValues.comment = "";
+                }
 
                 long exercise = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_EXERCISE));
                 mInitialFieldValues.exercise = exercise;
