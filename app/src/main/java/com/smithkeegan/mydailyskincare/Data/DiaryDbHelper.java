@@ -14,7 +14,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
 
     private static DiaryDbHelper instance;
 
-    public static final int DATABASE_VERSION = 2; //Updated to version 2 on 11/10/2016
+    public static final int DATABASE_VERSION = 3; //Updated to version 2 on 11/10/2016
     public static final String DATABASE_NAME = "Diary.db";
 
     private static final String TEXT_TYPE = " TEXT";
@@ -42,6 +42,7 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION + INTEGER_TYPE + COMMA_SEP +
+                    DiaryContract.DiaryEntry.COLUMN_COMMENT + TEXT_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_EXERCISE + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_DIET + INTEGER_TYPE + COMMA_SEP +
                     DiaryContract.DiaryEntry.COLUMN_HYGIENE + INTEGER_TYPE + COMMA_SEP +
@@ -126,8 +127,13 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
                     "PRIMARY KEY (" + DiaryContract.ProductIngredient.COLUMN_PRODUCT_ID + COMMA_SEP + DiaryContract.ProductIngredient.COLUMN_INGREDIENT_ID + ")" +
                     " );";
 
+    //Added 11/10/2016
     private static final String SQL_PRODUCT_ADD_COMMENT_COLUMN =
             "ALTER TABLE " + DiaryContract.Product.TABLE_NAME + " ADD COLUMN "+ DiaryContract.Product.COLUMN_COMMENT + TEXT_TYPE;
+
+    //Added 11/15/2016
+    private static final String SQL_DIARY_ENTRY_ADD_COMMENT_COLUMN =
+            "ALTER TABLE " + DiaryContract.DiaryEntry.TABLE_NAME + " ADD COLUMN "+ DiaryContract.DiaryEntry.COLUMN_COMMENT + TEXT_TYPE;
 
 
     public DiaryDbHelper(Context context){
@@ -158,15 +164,18 @@ public class DiaryDbHelper extends SQLiteOpenHelper {
     /**
      * Called when database needs to be updated
      * @param db the database to update
-     * @param oldVersion the old version
+     * @param oldVersion the old version of the database
      * @param newVersion the new version
      * 11/10/2016 - Added Comment column to Product table.
+     * 11/15/2016 - Added Comment column to Diary Entry table.
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         switch (oldVersion){
             case 1: //Added 11/10/2016
                 db.execSQL(SQL_PRODUCT_ADD_COMMENT_COLUMN);
+            case 2: //Added 11/15/2016
+                db.execSQL(SQL_DIARY_ENTRY_ADD_COMMENT_COLUMN);
         }
     }
 

@@ -25,6 +25,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
             >
 
             <TextView
@@ -88,13 +89,35 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/diary_entry_show_more_layout"
-                android:layout_width="wrap_content"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/diary_entry_comment_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/diary_entry_skin_condition_general_layout"
                 android:layout_marginLeft="30dp"
-                android:layout_marginStart="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/diary_entry_comment_edit"
+                    style="@style/default_edit_text_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/diary_entry_comment"
+                    android:background="@color/textBoxBackground"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:id="@+id/diary_entry_show_more_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/diary_entry_comment_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 >
 
                 <TextView
@@ -102,9 +125,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
+                    android:gravity="center"
                     android:text="@string/diary_entry_show_more_string"
                     android:textColor="@color/black"
-                    android:textSize="18sp"/>
+                    android:textSize="15sp"/>
 
                 <ImageButton
                     android:id="@+id/diary_entry_show_more_button"
@@ -132,7 +156,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/rectangle_border"
-                android:visibility="invisible">
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:id="@+id/diary_entry_skin_condition_forehead_layout"
@@ -340,7 +364,7 @@
                 android:id="@+id/diary_entry_routines_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/diary_entry_show_more_layout">
+                android:layout_below="@id/diary_entry_additional_conditions_layout">
 
                 <LinearLayout
                     android:id="@+id/diary_entry_routines_text_layout"

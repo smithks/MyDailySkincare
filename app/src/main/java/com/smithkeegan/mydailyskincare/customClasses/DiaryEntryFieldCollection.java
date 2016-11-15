@@ -15,6 +15,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
     public long cheeksCondition;
     public long lipsCondition;
     public long chinCondition;
+    public String comment;
     public long exercise;
     public long diet;
     public long hygiene;
@@ -40,6 +41,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
         cheeksCondition = 3;
         lipsCondition = 3;
         chinCondition = 3;
+        comment = "";
         exercise = 0;
         diet = 0;
         hygiene = 0;
@@ -54,6 +56,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
         cheeksCondition = in.readLong();
         lipsCondition = in.readLong();
         chinCondition = in.readLong();
+        comment = in.readString();
         exercise = in.readLong();
         diet = in.readLong();
         hygiene = in.readLong();
@@ -69,6 +72,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
         dest.writeLong(cheeksCondition);
         dest.writeLong(lipsCondition);
         dest.writeLong(chinCondition);
+        dest.writeString(comment);
         dest.writeLong(exercise);
         dest.writeLong(diet);
         dest.writeLong(hygiene);

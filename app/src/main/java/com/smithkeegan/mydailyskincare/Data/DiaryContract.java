@@ -22,6 +22,7 @@ public final class DiaryContract {
         public static final String COLUMN_CHEEK_CONDITION = "CheekCondition";
         public static final String COLUMN_LIPS_CONDITION = "LipsCondition";
         public static final String COLUMN_CHIN_CONDITION = "ChinCondition";
+        public static final String COLUMN_COMMENT = "Comment";
         public static final String COLUMN_EXERCISE = "Exercise";
         public static final String COLUMN_DIET = "Diet";
         public static final String COLUMN_HYGIENE = "Hygiene";

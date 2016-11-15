@@ -68,12 +68,15 @@
     <string name="diary_entry_slider_water_ten_plus">10+ Glasses</string>
     <string name="diary_entry_skin_condition_string">My Skin Today</string>
     <string name="diary_entry_general_condition">Overall Condition</string>
+    <string name="diary_entry_status_modifier_label">Status</string>
     <string name="diary_entry_forehead_condition">Forehead</string>
     <string name="diary_entry_nose_condition">Nose</string>
     <string name="diary_entry_cheeks_condition">Cheeks</string>
     <string name="diary_entry_lips_condition">Lips</string>
     <string name="diary_entry_chin_condition">Chin</string>
     <string name="diary_entry_show_more_string">Show more</string>
+    <string name="diary_entry_show_less_string">Show less</string>
+    <string name="diary_entry_comment">comments</string>
     <string name="diary_entry_show_more_content_description">Show more skin condition sliders.</string>
     <string name="diary_entry_routines_strings">Today\'s Routines</string>
     <string name="diary_entry_lifestyle_strings">Today\'s Lifestyle</string>

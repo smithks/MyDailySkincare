@@ -26,6 +26,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
             >
 
             <TextView
@@ -33,7 +34,6 @@
                 style="@style/diary_entry_section_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/diary_entry_skin_condition_string"/>
@@ -89,13 +89,34 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/diary_entry_show_more_layout"
-                android:layout_width="wrap_content"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/diary_entry_comment_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/diary_entry_skin_condition_general_layout"
                 android:layout_marginLeft="30dp"
-                android:layout_marginStart="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/diary_entry_comment_edit"
+                    style="@style/default_edit_text_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/diary_entry_comment"
+                    android:background="@color/textBoxBackground"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:id="@+id/diary_entry_show_more_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/diary_entry_comment_layout"
+                android:layout_marginStart="20dp"
                 >
 
                 <TextView
@@ -105,7 +126,7 @@
                     android:layout_centerVertical="true"
                     android:text="@string/diary_entry_show_more_string"
                     android:textColor="@color/black"
-                    android:textSize="18sp"/>
+                    android:textSize="15sp"/>
 
                 <ImageButton
                     android:id="@+id/diary_entry_show_more_button"
@@ -113,12 +134,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="20dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="10dp"
                     android:layout_toEndOf="@id/diary_entry_show_more_text"
-                    android:layout_toRightOf="@id/diary_entry_show_more_text"
                     android:background="@drawable/icon_add_circle"
                     android:contentDescription="@string/diary_entry_show_more_content_description"
                     />
@@ -133,7 +151,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/rectangle_border"
-                android:visibility="invisible">
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:id="@+id/diary_entry_skin_condition_forehead_layout"
@@ -337,11 +355,58 @@
 
             </RelativeLayout>
 
+            <!-- TODO: Utilize status field -->
+            <LinearLayout
+                android:id="@+id/diary_entry_status_modifiers_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/diary_entry_status_modifier_label"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"/>
+
+                <TextView
+                    android:id="@+id/diary_entry_status_modifer_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:background="@color/textBoxBackground"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+
+            <!--
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/diary_entry_comment_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/diary_entry_additional_conditions_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/diary_entry_comment_edit"
+                    style="@style/default_edit_text_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/diary_entry_comment"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+            -->
+
             <RelativeLayout
                 android:id="@+id/diary_entry_routines_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/diary_entry_show_more_layout">
+                android:layout_below="@id/diary_entry_additional_conditions_layout">
 
                 <LinearLayout
                     android:id="@+id/diary_entry_routines_text_layout"
@@ -420,7 +485,6 @@
                     style="@style/diary_entry_section_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:text="@string/diary_entry_lifestyle_strings"/>
@@ -612,7 +676,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/diary_entry_lifestyle_period_text"
-                        android:layout_toRightOf="@id/diary_entry_lifestyle_period_text"
                         />
 
                 </RelativeLayout>

@@ -15,6 +15,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -58,7 +61,6 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     private RelativeLayout mShowMoreLayout;
     private RelativeLayout mAdditionalConditionsLayout;
-    private RelativeLayout mRoutinesLayout;
     private RelativeLayout mOnPeriodLayout;
 
     private TextView mTextViewOverallCondition;
@@ -71,6 +73,8 @@ public class DiaryEntryFragmentMain extends Fragment {
     private TextView mTextViewDiet;
     private TextView mTextViewHygiene;
     private TextView mTextViewWaterIntake;
+
+    private EditText mCommentEditText;
 
     private DiaryEntrySeekBar mSeekBarOverallCondition;
     private DiaryEntrySeekBar mSeekBarForeheadCondition;
@@ -293,7 +297,6 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         mWaterIntakeStrings = new String[5];
         mWaterIntakeStrings[0] = getResources().getString(R.string.diary_entry_slider_not_specified);
-        //mWaterIntakeStrings[1] = getResources().getString(R.string.diary_entry_slider_exercise_none);
         mWaterIntakeStrings[1] = getResources().getString(R.string.diary_entry_slider_water_one_three);
         mWaterIntakeStrings[2] = getResources().getString(R.string.diary_entry_slider_water_four_six);
         mWaterIntakeStrings[3] = getResources().getString(R.string.diary_entry_slider_water_seven_nine);
@@ -310,7 +313,6 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         mShowMoreLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_show_more_layout);
         mAdditionalConditionsLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_additional_conditions_layout);
-        mRoutinesLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_routines_layout);
         mOnPeriodLayout = (RelativeLayout) rootView.findViewById(R.id.diary_entry_lifestyle_period_layout);
 
         mTextViewOverallCondition = (TextView) rootView.findViewById(R.id.diary_entry_general_condition_text);
@@ -323,6 +325,8 @@ public class DiaryEntryFragmentMain extends Fragment {
         mTextViewDiet = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_diet_text);
         mTextViewHygiene = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_hygiene_text);
         mTextViewWaterIntake = (TextView) rootView.findViewById(R.id.diary_entry_lifestyle_water_text);
+
+        mCommentEditText = (EditText) rootView.findViewById(R.id.diary_entry_comment_edit);
 
         mSeekBarOverallCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_general_condition_seek_bar);
         mSeekBarForeheadCondition = (DiaryEntrySeekBar) rootView.findViewById(R.id.diary_entry_forehead_condition_seek_bar);
@@ -386,6 +390,10 @@ public class DiaryEntryFragmentMain extends Fragment {
         mNewEntry = false;
     }
 
+    /**
+     * Shows or hides the routines listview or empty listview textview.
+     * @param view the view to set visibility of to visible
+     */
     private void showLayout(View view){
         mRoutinesListView.setVisibility(View.INVISIBLE);
         mNoRoutinesTextView.setVisibility(View.INVISIBLE);
@@ -458,6 +466,20 @@ public class DiaryEntryFragmentMain extends Fragment {
                 intent.putExtra(RoutineActivityDetail.ENTRY_ID, id);
                 startActivity(intent);
             }
+        });
+
+        //Set the text change listener of the comment edit text
+        mCommentEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mCurrentFieldValues.comment = charSequence.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
         });
     }
 
@@ -590,21 +612,15 @@ public class DiaryEntryFragmentMain extends Fragment {
      */
     private void toggleAdditionalConditions() {
 
-        if (mAdditionalConditionsShown) {
-            mAdditionalConditionsLayout.setVisibility(View.INVISIBLE);
+        if (mAdditionalConditionsShown) { //Hide layout if shown
+            mAdditionalConditionsLayout.setVisibility(View.GONE);
             ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_add_circle));
-            //Move the layout below additional conditions up
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW, mShowMoreLayout.getId());
-            mRoutinesLayout.setLayoutParams(layoutParams);
+            ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_more_string));
             mAdditionalConditionsShown = false;
-        } else {
+        } else { //Show layout if hidden
             mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
             ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_remove_circle));
-            //Move the layout below the additional conditions down
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW, mAdditionalConditionsLayout.getId());
-            mRoutinesLayout.setLayoutParams(layoutParams);
+            ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_less_string));
             mAdditionalConditionsShown = true;
         }
     }
@@ -620,6 +636,8 @@ public class DiaryEntryFragmentMain extends Fragment {
         updateConditionBlock(mTextViewCheeksCondition, mSeekBarCheeksCondition, values.cheeksCondition);
         updateConditionBlock(mTextViewLipsCondition, mSeekBarLipsCondition, values.lipsCondition);
         updateConditionBlock(mTextViewChinCondition, mSeekBarChinCondition, values.chinCondition);
+
+        mCommentEditText.setText(values.comment);
 
         updateSliderLabel(mTextViewExercise, (int) values.exercise, mExerciseStrings);
         mSeekBarExercise.setProgressToStep((int) values.exercise);
@@ -677,6 +695,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 || mInitialFieldValues.noseCondition != mCurrentFieldValues.noseCondition
                 || mInitialFieldValues.cheeksCondition != mCurrentFieldValues.cheeksCondition
                 || mInitialFieldValues.chinCondition != mCurrentFieldValues.chinCondition
+                || !mInitialFieldValues.comment.equals(mCurrentFieldValues.comment)
                 || mInitialFieldValues.exercise != mCurrentFieldValues.exercise
                 || mInitialFieldValues.diet != mCurrentFieldValues.diet
                 || mInitialFieldValues.hygiene != mCurrentFieldValues.hygiene
@@ -720,13 +739,14 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Calls to the saveDiaryEntry async task to save this diary entry.
      */
     private void saveCurrentDiaryEntry() {
-        Long[] args = {mEpochTime,
+        Object[] args = {mEpochTime,
                 mCurrentFieldValues.overallCondition,
                 mCurrentFieldValues.foreheadCondition,
                 mCurrentFieldValues.noseCondition,
                 mCurrentFieldValues.cheeksCondition,
                 mCurrentFieldValues.lipsCondition,
                 mCurrentFieldValues.chinCondition,
+                mCurrentFieldValues.comment,
                 mCurrentFieldValues.exercise,
                 mCurrentFieldValues.diet,
                 mCurrentFieldValues.hygiene,
@@ -786,6 +806,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                     DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION,
                     DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION,
                     DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION,
+                    DiaryContract.DiaryEntry.COLUMN_COMMENT,
                     DiaryContract.DiaryEntry.COLUMN_DIET,
                     DiaryContract.DiaryEntry.COLUMN_EXERCISE,
                     DiaryContract.DiaryEntry.COLUMN_HYGIENE,
@@ -865,6 +886,10 @@ public class DiaryEntryFragmentMain extends Fragment {
                 long chinStep = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION));
                 mInitialFieldValues.chinCondition = chinStep;
                 mCurrentFieldValues.chinCondition = chinStep;
+
+                String comment = result.getString(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_COMMENT));
+                mInitialFieldValues.comment = comment;
+                mCurrentFieldValues.comment = comment;
 
                 long exercise = result.getLong(result.getColumnIndex(DiaryContract.DiaryEntry.COLUMN_EXERCISE));
                 mInitialFieldValues.exercise = exercise;
@@ -977,7 +1002,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * AsyncTask for saving this diary entry to the database. Called when the user explicitly presses the save button or when the
      * user chooses to save changes when leaving the fragment.
      */
-    private class SaveDiaryEntryTask extends AsyncTask<Long, Void, Long> {
+    private class SaveDiaryEntryTask extends AsyncTask<Object, Void, Long> {
 
         /**
          * @param params params[0] - todays date as milliseconds from epoch
@@ -987,29 +1012,31 @@ public class DiaryEntryFragmentMain extends Fragment {
          *               params[4] - cheeks condition
          *               params[5] - lips condition
          *               params[6] - chin condition
-         *               params[7] - exercise
-         *               params[8] - diet
-         *               params[9] - hygiene
-         *               params[10] - water intake
-         *               params[11] - on period
+         *               params[7] - comment
+         *               params[8] - exercise
+         *               params[9] - diet
+         *               params[10] - hygiene
+         *               params[11] - water intake
+         *               params[12] - on period
          */
         @Override
-        protected Long doInBackground(Long... params) {
+        protected Long doInBackground(Object... params) {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
 
-            values.put(DiaryContract.DiaryEntry.COLUMN_DATE, params[0]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION, params[1]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION, params[2]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION, params[3]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, params[4]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION, params[5]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION, params[6]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_EXERCISE, params[7]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_DIET, params[8]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_HYGIENE, params[9]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE, params[10]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, params[11]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_DATE, (Long) params[0]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_OVERALL_CONDITION, (Long) params[1]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_FOREHEAD_CONDITION, (Long) params[2]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_NOSE_CONDITION, (Long) params[3]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, (Long) params[4]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION, (Long) params[5]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION, (Long) params[6]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_COMMENT,(String) params[7]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_EXERCISE, (Long) params[8]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_DIET, (Long) params[9]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_HYGIENE, (Long) params[10]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_WATER_INTAKE, (Long) params[11]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_ON_PERIOD, (Long) params[12]);
 
             String selection = DiaryContract.DiaryEntry.COLUMN_DATE + " = " + mEpochTime;
             return (long) db.update(DiaryContract.DiaryEntry.TABLE_NAME, values, selection, null);
