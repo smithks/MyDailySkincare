@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.routine;
+package com.smithkeegan.mydailyskincare.ui.routine;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -36,7 +36,7 @@ import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
-import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.product.ProductActivityDetail;
 
 /**
  * Fragment class for the product detail screen. Handles actions to manipulate

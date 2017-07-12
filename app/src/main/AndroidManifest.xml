@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CalendarActivityMain"
+            android:name=".ui.CalendarActivityMain"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -18,43 +18,43 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".diaryEntry.DiaryEntryActivityMain"
+        <activity android:name=".ui.diaryEntry.DiaryEntryActivityMain"
                   android:label="Entry"
-                  android:parentActivityName=".CalendarActivityMain"
+                  android:parentActivityName=".ui.CalendarActivityMain"
                   >
         </activity>
-        <activity android:name=".product.ProductActivityMain"
+        <activity android:name=".ui.product.ProductActivityMain"
                   android:label="@string/products"
-                  android:parentActivityName=".CalendarActivityMain">
+                  android:parentActivityName=".ui.CalendarActivityMain">
 
         </activity>
-        <activity android:name=".routine.RoutineActivityMain"
+        <activity android:name=".ui.routine.RoutineActivityMain"
                   android:label="Routines"
-                    android:parentActivityName=".CalendarActivityMain">
+                    android:parentActivityName=".ui.CalendarActivityMain">
 
         </activity>
-        <activity android:name=".routine.RoutineActivityDetail"
+        <activity android:name=".ui.routine.RoutineActivityDetail"
                   android:windowSoftInputMode="adjustPan"
-                  android:parentActivityName=".routine.RoutineActivityMain">
+                  android:parentActivityName=".ui.routine.RoutineActivityMain">
 
         </activity>
-        <activity android:name=".product.ProductActivityDetail"
+        <activity android:name=".ui.product.ProductActivityDetail"
                   android:windowSoftInputMode="adjustPan"
-                  android:parentActivityName=".product.ProductActivityMain">
+                  android:parentActivityName=".ui.product.ProductActivityMain">
 
         </activity>
-        <activity android:name=".ingredient.IngredientActivityMain"
+        <activity android:name=".ui.ingredient.IngredientActivityMain"
                   android:label="Ingredients"
-                  android:parentActivityName=".CalendarActivityMain">
+                  android:parentActivityName=".ui.CalendarActivityMain">
 
         </activity>
-        <activity android:name=".ingredient.IngredientActivityDetail"
+        <activity android:name=".ui.ingredient.IngredientActivityDetail"
                   android:windowSoftInputMode="adjustPan"
-                  android:parentActivityName=".ingredient.IngredientActivityMain">
+                  android:parentActivityName=".ui.ingredient.IngredientActivityMain">
 
         </activity>
-        <activity android:name=".analytics.AnalyticsActivityMain"
-                  android:parentActivityName=".CalendarActivityMain">
+        <activity android:name=".ui.analytics.AnalyticsActivityMain"
+                  android:parentActivityName=".ui.CalendarActivityMain">
 
         </activity>
     </application>

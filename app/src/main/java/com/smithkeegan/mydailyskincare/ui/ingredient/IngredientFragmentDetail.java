@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.ingredient;
+package com.smithkeegan.mydailyskincare.ui.ingredient;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;

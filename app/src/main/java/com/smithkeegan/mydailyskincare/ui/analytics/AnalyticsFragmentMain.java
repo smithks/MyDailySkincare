@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.analytics;
+package com.smithkeegan.mydailyskincare.ui.analytics;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -37,10 +37,10 @@ import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DatabaseQueryFieldCollection;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
-import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
-import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
-import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
-import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.diaryEntry.DiaryEntryActivityMain;
+import com.smithkeegan.mydailyskincare.ui.ingredient.IngredientActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.product.ProductActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.routine.RoutineActivityDetail;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

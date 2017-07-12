@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.ingredient;
+package com.smithkeegan.mydailyskincare.ui.ingredient;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;

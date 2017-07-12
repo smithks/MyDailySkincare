@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.diaryEntry;
+package com.smithkeegan.mydailyskincare.ui.diaryEntry;
 
 import android.content.Intent;
 import android.os.Bundle;

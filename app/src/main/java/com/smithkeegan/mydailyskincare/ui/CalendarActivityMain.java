@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare;
+package com.smithkeegan.mydailyskincare.ui;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -34,14 +34,15 @@ import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
-import com.smithkeegan.mydailyskincare.analytics.AnalyticsActivityMain;
+import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.ui.analytics.AnalyticsActivityMain;
 import com.smithkeegan.mydailyskincare.customClasses.DatePickerDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
-import com.smithkeegan.mydailyskincare.diaryEntry.DiaryEntryActivityMain;
-import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityMain;
-import com.smithkeegan.mydailyskincare.product.ProductActivityMain;
-import com.smithkeegan.mydailyskincare.routine.RoutineActivityMain;
+import com.smithkeegan.mydailyskincare.ui.diaryEntry.DiaryEntryActivityMain;
+import com.smithkeegan.mydailyskincare.ui.ingredient.IngredientActivityMain;
+import com.smithkeegan.mydailyskincare.ui.product.ProductActivityMain;
+import com.smithkeegan.mydailyskincare.ui.routine.RoutineActivityMain;
 
 import java.util.Calendar;
 import java.util.Date;

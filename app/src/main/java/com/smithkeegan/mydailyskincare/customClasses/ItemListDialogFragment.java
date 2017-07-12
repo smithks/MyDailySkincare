@@ -31,12 +31,12 @@ import android.widget.Toast;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
-import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
-import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityMain;
-import com.smithkeegan.mydailyskincare.product.ProductActivityDetail;
-import com.smithkeegan.mydailyskincare.product.ProductActivityMain;
-import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
-import com.smithkeegan.mydailyskincare.routine.RoutineActivityMain;
+import com.smithkeegan.mydailyskincare.ui.ingredient.IngredientActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.ingredient.IngredientActivityMain;
+import com.smithkeegan.mydailyskincare.ui.product.ProductActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.product.ProductActivityMain;
+import com.smithkeegan.mydailyskincare.ui.routine.RoutineActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.routine.RoutineActivityMain;
 
 import java.util.ArrayList;
 import java.util.HashMap;

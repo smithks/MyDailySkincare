@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.diaryEntry;
+package com.smithkeegan.mydailyskincare.ui.diaryEntry;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -34,14 +34,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.smithkeegan.mydailyskincare.CalendarActivityMain;
+import com.smithkeegan.mydailyskincare.ui.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DiaryEntryFieldCollection;
 import com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar;
 import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
-import com.smithkeegan.mydailyskincare.routine.RoutineActivityDetail;
+import com.smithkeegan.mydailyskincare.ui.routine.RoutineActivityDetail;
 
 import java.util.Calendar;
 import java.util.Date;

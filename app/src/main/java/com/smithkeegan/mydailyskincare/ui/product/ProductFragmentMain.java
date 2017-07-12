@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.product;
+package com.smithkeegan.mydailyskincare.ui.product;
 
 import android.content.Intent;
 import android.database.Cursor;

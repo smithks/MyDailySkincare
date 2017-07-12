@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.analytics;
+package com.smithkeegan.mydailyskincare.ui.analytics;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
