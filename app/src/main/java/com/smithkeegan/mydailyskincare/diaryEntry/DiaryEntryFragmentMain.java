@@ -614,12 +614,12 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         if (mAdditionalConditionsShown) { //Hide layout if shown
             mAdditionalConditionsLayout.setVisibility(View.GONE);
-            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_add_circle));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_24dp));
             ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_more_string));
             mAdditionalConditionsShown = false;
         } else { //Show layout if hidden
             mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
-            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_remove_circle));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_24dp));
             ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_less_string));
             mAdditionalConditionsShown = true;
         }
