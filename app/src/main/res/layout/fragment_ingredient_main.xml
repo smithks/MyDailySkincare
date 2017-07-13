@@ -5,6 +5,18 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/ingredient_main_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ingredient_main_new_button"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/rectangle_border"
+        />
+
+
+<!--
     <ListView
         android:id="@+id/ingredient_main_list_view"
         android:layout_width="wrap_content"
@@ -13,6 +25,7 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/rectangle_border"
         />
+-->
 
     <TextView
         android:id="@+id/ingredient_main_no_ingredients_text"

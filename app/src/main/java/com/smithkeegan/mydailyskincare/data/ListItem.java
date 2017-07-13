@@ -1,7 +1,9 @@
 package com.smithkeegan.mydailyskincare.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an item in a list.
@@ -10,26 +12,22 @@ import java.util.List;
 
 public class ListItem {
 
-    String name;
-    ArrayList<String> extras;
+    int id;
+    Map<String, String> extras = new HashMap<>();
 
-    public String getName() {
-        return name;
+    public int getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void addExtra(String extra){
-        extras.add(extra);
-    }
-
-    public ArrayList<String> getExtras() {
+    public Map<String, String> getExtras() {
         return extras;
     }
 
-    public void setExtras(ArrayList<String> extras) {
+    public void setExtras(Map<String, String> extras) {
         this.extras = extras;
     }
 }

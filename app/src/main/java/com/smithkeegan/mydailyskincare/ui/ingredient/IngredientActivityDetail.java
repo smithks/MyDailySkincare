@@ -29,8 +29,11 @@ public class IngredientActivityDetail extends AppCompatActivity {
             //Set flags to send up to fragment. Existing ingredient id and new ingredient status.
             Bundle bundle = new Bundle();
             Intent thisIntent = getIntent();
+
             if (thisIntent.hasExtra(NEW_INGREDIENT)) {
                 //Check new ingredient flag and entry id flag. Error occurred if new_ingredient is false and entry_id is -1. Open new ingredient.
+                boolean newIngredient = thisIntent.getBooleanExtra(NEW_INGREDIENT,true);
+                long id = thisIntent.getLongExtra(ENTRY_ID,-1);
                 if (thisIntent.getBooleanExtra(NEW_INGREDIENT, true) || thisIntent.getLongExtra(ENTRY_ID, -1) < 0) {
                     bundle.putBoolean(NEW_INGREDIENT, true);
                 } else {

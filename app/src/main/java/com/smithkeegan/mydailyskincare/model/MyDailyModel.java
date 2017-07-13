@@ -2,6 +2,7 @@ package com.smithkeegan.mydailyskincare.model;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.view.GestureDetector;
 
 import com.smithkeegan.mydailyskincare.data.DatabaseRepository;
@@ -9,6 +10,7 @@ import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.data.ListItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,13 +33,39 @@ public class MyDailyModel implements DataSubscriber {
         databaseRepository.getData(tableName,columns,where);
     }
 
+    public void register(ItemListSubscriber subscriber){
+        this.subscriber = subscriber;
+    }
+
+    public void unregister(){
+        subscriber = null;
+    }
+
     @Override
     public void onDataRetrieved(Cursor data) {
         databaseRepository.unregister(this); //Stop listening for data
-        //Process data
+        subscriber.onListReceived(formatListData(data));
+    }
+
+    /**
+     * Parses the data from the cursor into view friendly format.
+     * @param data the data to parse
+     * @return a list of listitems
+     */
+    private List<ListItem> formatListData(Cursor data){
+        List<ListItem> items = new ArrayList<>();
+        int columnCount = data.getColumnCount();
         data.moveToFirst();
         do {
-            String name = data.getString(data.getColumnIndex(DiaryContract.Ingredient.COLUMN_NAME));
+            ListItem newItem = new ListItem();
+            newItem.setId(data.getInt(data.getColumnIndex(BaseColumns._ID)));
+            for (int i = 0; i < columnCount; i++){
+                if (i != data.getColumnIndex(BaseColumns._ID)){
+                    newItem.getExtras().put(data.getColumnName(i),data.getString(i));
+                }
+            }
+            items.add(newItem);
         }while (data.moveToNext());
+        return items;
     }
 }
