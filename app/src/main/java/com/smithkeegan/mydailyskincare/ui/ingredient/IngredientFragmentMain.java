@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -66,6 +67,8 @@ public class IngredientFragmentMain extends Fragment {
 
         mIngredientsList.setHasFixedSize(true);
         mIngredientsList.setLayoutManager(new LinearLayoutManager(getContext()));
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(mIngredientsList.getContext(), new LinearLayoutManager(getContext()).getOrientation());
+        mIngredientsList.addItemDecoration(itemDecoration);
     }
 
     private void populateIngredientList(){
@@ -137,60 +140,6 @@ public class IngredientFragmentMain extends Fragment {
         }
     }
 
-    //        private DiaryDbHelper mDbHelper;
-//    private ListView mIngredientsList;
-//    private TextView mNoIngredientsTextView;
-//    private Button mNewIngredientButton;
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstance){
-//        View rootView = inflater.inflate(R.layout.fragment_ingredient_main, container, false);
-//
-//        mDbHelper = DiaryDbHelper.getInstance(getContext());
-//        mNewIngredientButton = (Button) rootView.findViewById(R.id.ingredient_main_new_button);
-//        setButtonListener();
-//
-//        mIngredientsList = (ListView)rootView.findViewById(R.id.ingredient_main_list_view);
-//        mNoIngredientsTextView = (TextView) rootView.findViewById(R.id.ingredient_main_no_ingredients_text);
-//        return rootView;
-//    }
-//
-//    @Override
-//    public void onResume(){
-//        super.onResume();
-//        refreshListView(); //Move this if highlighting from detail fragment
-//    }
-//
-//    private void showLayout(View view){
-//        mIngredientsList.setVisibility(View.INVISIBLE);
-//        mNoIngredientsTextView.setVisibility(View.INVISIBLE);
-//
-//        view.setVisibility(View.VISIBLE);
-//    }
-//
-//    /**
-//     * Called from the ingredient fragment detail when the user updates an existing entry or creates a new entry.
-//     * Scrolls the listview to the edited entry.
-//     * TODO: uncomment if scrolling and highlighting new entries
-//     */
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data){
-//        /*if (requestCode == IngredientActivityMain.INGREDIENT_FINISHED){
-//            if (resultCode == AppCompatActivity.RESULT_OK){
-//                if(data.hasExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID)){
-//                    Long newIngId = data.getLongExtra(IngredientActivityMain.INGREDIENT_FINISHED_ID,-1);
-//                    refreshListView(newIngId.intValue());
-//                }
-//            }
-//        }*/
-//    }
-//
-//    //Called on initial load
-//    private void refreshListView(){ new FetchIngredientsTask().execute();}
-//
-//    //Called when a new entry has been added or updated, scrolls the listview to the entry
-//    private void refreshListView(int highlightId){ new FetchIngredientsTask(highlightId).execute(); }
-//
     /**
      * Sets listener for the new ingredient button.
      */
@@ -204,72 +153,4 @@ public class IngredientFragmentMain extends Fragment {
             }
         });
     }
-//
-//
-//    /**
-//     * Background process to fetch and populate the listview of ingredients.
-//     */
-//    private class FetchIngredientsTask extends AsyncTask<Void,Void,Cursor> {
-//
-//        int highlightId;
-//
-//        public FetchIngredientsTask(){
-//            highlightId = -1;
-//        }
-//
-//        public FetchIngredientsTask(int highlightId){
-//            this.highlightId =  highlightId;
-//        }
-//
-//        @Override
-//        protected Cursor doInBackground(Void... params) {
-//
-//            SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//            String[] columns = {DiaryContract.Ingredient._ID,DiaryContract.Ingredient.COLUMN_NAME};
-//            String sortOrder = DiaryContract.Ingredient.COLUMN_NAME + " ASC";
-//            return db.query(DiaryContract.Ingredient.TABLE_NAME,columns,null,null,null,null,sortOrder);
-//        }
-//
-//        @Override
-//        protected void onPostExecute(final Cursor result){
-//            String[] fromColumns = {DiaryContract.Ingredient.COLUMN_NAME};
-//            int[] toViews = {R.id.ingredient_list_view_item};
-//            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),R.layout.listview_item_ingredient_main,result,fromColumns,toViews,0);
-//            mIngredientsList.setAdapter(adapter);
-//            mIngredientsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//                /*
-//                 * Called when a user clicks on an entry in the ingredient listview. Opens the ingredient detail
-//                 * for that ingredient.
-//                 */
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
-//                    intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false); //Not a new ingredient
-//                    intent.putExtra(IngredientActivityDetail.ENTRY_ID,id); //ID of ingredient
-//                    startActivity(intent); //TODO use startActivityForResult if highlighting
-//                }
-//            });
-//            //TODO highlight edited field on return from detail activity.
-//            /*if (highlightId > -1) {
-//                int highlightPosition = -1;
-//                boolean done = false;
-//                result.moveToFirst();
-//                do {
-//                    if (highlightId == result.getInt(result.getColumnIndex(DiaryContract.Ingredient._ID))){
-//                        highlightPosition = result.getPosition();
-//                        done = true;
-//                    }
-//                } while (result.moveToNext() || !done);
-//                if (highlightPosition > -1){
-//                    mIngredientsList.setSelection(highlightPosition); //Find way to highlight selected row
-//                }
-//            }*/
-//            if (mIngredientsList.getAdapter() != null && mIngredientsList.getAdapter().getCount() > 0){
-//                showLayout(mIngredientsList);
-//            }else {
-//                showLayout(mNoIngredientsTextView);
-//            }
-//        }
-//    }
 }
