@@ -2,6 +2,7 @@ package com.smithkeegan.mydailyskincare.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 
 import com.smithkeegan.mydailyskincare.model.DataSubscriber;
@@ -24,9 +25,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class DatabaseRepository {
 
-    private BriteDatabase briteDatabase;
+    private DiaryDbHelper databaseHelper;
     private static DatabaseRepository repository;
-    private ArrayList<DataSubscriber> subscribers;
 
     public static synchronized DatabaseRepository getDatabaseRepository(Context appContext){
         if (repository == null){
@@ -37,41 +37,12 @@ public class DatabaseRepository {
     }
 
     private DatabaseRepository(Context appContext){
-        SqlBrite sqlBrite = new SqlBrite.Builder().build();
-        subscribers = new ArrayList<>();
-        briteDatabase = sqlBrite.wrapDatabaseHelper(DiaryDbHelper.getInstance(appContext), Schedulers.io());
+        databaseHelper = DiaryDbHelper.getInstance(appContext);
     }
 
-    public void register(DataSubscriber subscriber){
-        if (!subscribers.contains(subscriber)) {
-            subscribers.add(subscriber);
-        }
-    }
-
-    public void unregister(DataSubscriber subscriber){
-        if (subscribers.contains(subscriber)){
-            subscribers.remove(subscriber);
-        }
-    }
-
-    public void getData(String table, String[] columns, String where){
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(table);
-        String query = builder.buildQuery(columns,where,null,null,null,null);
-        final Observable<Query> items = briteDatabase.createQuery(table,query);
-        items.subscribe(new Consumer<Query>() {
-            @Override
-            public void accept(@NonNull Query query) throws Exception {
-                Cursor result = query.run();
-                alertSubscribers(result);
-            }
-        });
-    }
-
-    private void alertSubscribers(Cursor cursor){
-        for (DataSubscriber subscriber : subscribers){
-            subscriber.onDataRetrieved(cursor);
-        }
+    public Cursor getData(String table, String[] columns, String where){
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        return db.query(table,columns,where,null,null,null,null);
     }
 
 }

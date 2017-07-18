@@ -26,6 +26,7 @@
     <string name="no_changes_string">No changes to save</string>
     <string name="toast_save_success">Save successful</string>
     <string name="toast_save_failed">Error saving entry</string>
+    <string name="error_loading">Error loading data</string>
     <string name="toast_delete_successful">Entry deleted</string>
     <string name="toast_delete_failed">Error deleting entry</string>
     <string name="toast_create_failed">Error creating entry</string>

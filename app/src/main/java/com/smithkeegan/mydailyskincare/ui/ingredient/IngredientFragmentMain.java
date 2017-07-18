@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +23,16 @@ import com.smithkeegan.mydailyskincare.model.ItemListViewModel;
 import java.util.List;
 import java.util.zip.Inflater;
 
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Fragment class of the ingredient main screen. Contains the users ingredients displayed in a list view.
+ *
  * @author Keegan Smith
  * @since 5/10/2016
  */
@@ -44,7 +48,7 @@ public class IngredientFragmentMain extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_ingredient_main,container,false);
+        View rootView = inflater.inflate(R.layout.fragment_ingredient_main, container, false);
 
         setMemberVariables(rootView);
         setButtonListener();
@@ -59,7 +63,7 @@ public class IngredientFragmentMain extends Fragment {
 
     }
 
-    private void setMemberVariables(View rootView){
+    private void setMemberVariables(View rootView) {
         mIngredientsList = (RecyclerView) rootView.findViewById(R.id.ingredient_main_recycler_view);
         mNoIngredientsTextView = (TextView) rootView.findViewById(R.id.ingredient_main_no_ingredients_text);
         mNewIngredientButton = (Button) rootView.findViewById(R.id.ingredient_main_new_button);
@@ -71,19 +75,27 @@ public class IngredientFragmentMain extends Fragment {
         mIngredientsList.addItemDecoration(itemDecoration);
     }
 
-    private void populateIngredientList(){
-        disposable = viewModel.getItemObservable()
+    /**
+     * Requests a list of ingredients to display to the user.
+     */
+    private void populateIngredientList() {
+        disposable = viewModel.getItemObservable(ItemListViewModel.RequestType.INGREDIENTS)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ListItem>>() {
-            @Override
-            public void accept(@NonNull List<ListItem> list) throws Exception {
-                displayItems(list);
-            }
-        });
-        viewModel.requestList(ItemListViewModel.RequestType.INGREDIENTS);
+                    @Override
+                    public void accept(@NonNull List<ListItem> list) throws Exception {
+                        displayItems(list);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Log.e(this.getClass().getSimpleName(),getResources().getString(R.string.error_loading));
+                    }
+                });
     }
 
-    private void displayItems(List<ListItem> items){
+    private void displayItems(List<ListItem> items) {
         ItemListRecyclerAdapter adapter = new ItemListRecyclerAdapter(items);
         mIngredientsList.setAdapter(adapter);
     }
@@ -91,7 +103,7 @@ public class IngredientFragmentMain extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (!disposable.isDisposed()){
+        if (!disposable.isDisposed()) {
             disposable.dispose();
         }
     }
@@ -99,13 +111,13 @@ public class IngredientFragmentMain extends Fragment {
     public class ItemListRecyclerAdapter extends RecyclerView.Adapter<IngredientViewHolder> {
         List<ListItem> data;
 
-        public ItemListRecyclerAdapter(List<ListItem> data){
+        public ItemListRecyclerAdapter(List<ListItem> data) {
             this.data = data;
         }
 
         @Override
         public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            TextView view = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item_ingredient_main,parent,false);
+            TextView view = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item_ingredient_main, parent, false);
             return new IngredientViewHolder(view);
         }
 
@@ -116,8 +128,8 @@ public class IngredientFragmentMain extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
-                    intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false);
-                    intent.putExtra(IngredientActivityDetail.ENTRY_ID,(long)data.get(position).getId());
+                    intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, false);
+                    intent.putExtra(IngredientActivityDetail.ENTRY_ID, (long) data.get(position).getId());
                     startActivity(intent);
                 }
             });
@@ -130,7 +142,7 @@ public class IngredientFragmentMain extends Fragment {
         }
     }
 
-    public class IngredientViewHolder extends RecyclerView.ViewHolder{
+    public class IngredientViewHolder extends RecyclerView.ViewHolder {
 
         TextView itemName;
 
@@ -143,13 +155,13 @@ public class IngredientFragmentMain extends Fragment {
     /**
      * Sets listener for the new ingredient button.
      */
-    public void setButtonListener(){
+    public void setButtonListener() {
         mNewIngredientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
-                intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,true);
-                startActivityForResult(intent,IngredientActivityMain.INGREDIENT_FINISHED);
+                Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
+                intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, true);
+                startActivityForResult(intent, IngredientActivityMain.INGREDIENT_FINISHED);
             }
         });
     }

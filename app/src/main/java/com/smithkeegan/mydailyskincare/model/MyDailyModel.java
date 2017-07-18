@@ -19,32 +19,17 @@ import java.util.List;
  * Created by keegansmith on 7/12/17.
  */
 
-public class MyDailyModel implements DataSubscriber {
+public class MyDailyModel {
 
-    DatabaseRepository databaseRepository;
-    ItemListSubscriber subscriber;
+    private DatabaseRepository databaseRepository;
 
     public MyDailyModel(Context appContext){
         databaseRepository = DatabaseRepository.getDatabaseRepository(appContext);
     }
 
-    public void getListOfItems(String tableName, String[] columns, String where){
-        databaseRepository.register(this); //Register with the repository to receive data
-        databaseRepository.getData(tableName,columns,where);
-    }
-
-    public void register(ItemListSubscriber subscriber){
-        this.subscriber = subscriber;
-    }
-
-    public void unregister(){
-        subscriber = null;
-    }
-
-    @Override
-    public void onDataRetrieved(Cursor data) {
-        databaseRepository.unregister(this); //Stop listening for data
-        subscriber.onListReceived(formatListData(data));
+    public List<ListItem> getListOfItems(String tableName, String[] columns, String where){
+        Cursor result = databaseRepository.getData(tableName,columns,where);
+        return formatListData(result);
     }
 
     /**
