@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 import com.smithkeegan.mydailyskincare.analytics.AnalyticsActivityMain;
@@ -74,12 +75,16 @@ public class CalendarActivityMain extends AppCompatActivity {
     private NavigationView mNavigationView;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDbHelper = DiaryDbHelper.getInstance(this);
         mContext = this;
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(mContext);
 
         setContentView(R.layout.activity_calendar_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -129,8 +134,22 @@ public class CalendarActivityMain extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Called when the user has selected a date to scroll to in the scroll to date dialog.
+     * @param date the date to scroll to
+     */
     public void scrollToDate(Date date){
         mCaldroidFragment.moveToDate(date);
+
+        //Log the use of scroll to date to firebase
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        String dateID = (calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.DAY_OF_MONTH)+"/"+calendar.get(Calendar.YEAR);
+        Bundle analyticsBundle = new Bundle();
+        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY,"Calendar Activity");
+        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME,"Scroll to Date Used");
+        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_ID,dateID);
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM,analyticsBundle);
     }
 
     @Override

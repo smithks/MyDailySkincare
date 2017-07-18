@@ -44,6 +44,8 @@ public class DiaryEntryActivityMain extends AppCompatActivity implements DialogC
         }
         setTitle(activityTitle);
 
+
+
         if (savedInstance == null) {
             //Place date in bundle and send to fragment
             Bundle bundle = new Bundle();

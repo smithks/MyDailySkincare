@@ -33,6 +33,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DatabaseQueryFieldCollection;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
@@ -46,6 +47,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -62,6 +64,8 @@ public class AnalyticsFragmentMain extends Fragment {
     private static final String SAVE_KEY_QUERY_BUILDER = "SAVE_KEY_QUERY_BUILDER";
     private static final String SAVE_KEY_VISIBLE_LAYOUT = "SAVE_KEY_VISIBLE_LAYOUT";
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     private TextView mQueryTextView;
     private GridView mButtonGridView;
     private View mLoadingView;
@@ -77,6 +81,13 @@ public class AnalyticsFragmentMain extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //Log view event to firebase
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY,"MyDailySkincareAnalytics");
+        params.putString(FirebaseAnalytics.Param.ITEM_NAME,"Viewed Activity");
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM,params);
     }
 
     @Nullable

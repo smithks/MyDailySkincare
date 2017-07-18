@@ -34,6 +34,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DiaryEntryFieldCollection;
@@ -109,10 +110,13 @@ public class DiaryEntryFragmentMain extends Fragment {
     private String[] mHygieneStrings;
     private String[] mWaterIntakeStrings;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
     }
 
     @Override
@@ -136,6 +140,15 @@ public class DiaryEntryFragmentMain extends Fragment {
         }
 
         setListeners();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        String dateID = (calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.DAY_OF_MONTH)+"/"+calendar.get(Calendar.YEAR);
+        Bundle analyticsBundle = new Bundle();
+        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY,"Diary Entry");
+        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME,"Viewed Activity");
+        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_ID,dateID);
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM,analyticsBundle);
 
         //Show demo if this is the first launch of this fragment
         if (!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen),false)){
@@ -614,12 +627,12 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         if (mAdditionalConditionsShown) { //Hide layout if shown
             mAdditionalConditionsLayout.setVisibility(View.GONE);
-            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_add_circle));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_24dp));
             ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_more_string));
             mAdditionalConditionsShown = false;
         } else { //Show layout if hidden
             mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
-            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_remove_circle));
+            ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_24dp));
             ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_less_string));
             mAdditionalConditionsShown = true;
         }
