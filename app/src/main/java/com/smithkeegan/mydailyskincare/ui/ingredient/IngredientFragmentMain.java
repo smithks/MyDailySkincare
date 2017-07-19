@@ -1,9 +1,12 @@
 package com.smithkeegan.mydailyskincare.ui.ingredient;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -90,14 +93,20 @@ public class IngredientFragmentMain extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-                        Log.e(this.getClass().getSimpleName(),getResources().getString(R.string.error_loading));
+                        Log.e(this.getClass().getSimpleName(), getResources().getString(R.string.error_loading));
                     }
                 });
     }
 
     private void displayItems(List<ListItem> items) {
+        mNoIngredientsTextView.setVisibility(View.GONE);
         ItemListRecyclerAdapter adapter = new ItemListRecyclerAdapter(items);
         mIngredientsList.setAdapter(adapter);
+
+        //Show no items layout if adapter is empty.
+        if (adapter.getItemCount() == 0){
+            mNoIngredientsTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -117,23 +126,22 @@ public class IngredientFragmentMain extends Fragment {
 
         @Override
         public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            TextView view = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item_ingredient_main, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item_ingredient_main, parent, false);
             return new IngredientViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(IngredientViewHolder holder, final int position) {
+        public void onBindViewHolder(final IngredientViewHolder holder, final int position) {
             holder.itemName.setText(data.get(position).getExtras().get(DiaryContract.Ingredient.COLUMN_NAME));
-            holder.itemName.setOnClickListener(new View.OnClickListener() {
+            holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
                     intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, false);
-                    intent.putExtra(IngredientActivityDetail.ENTRY_ID, (long) data.get(position).getId());
+                    intent.putExtra(IngredientActivityDetail.ENTRY_ID, (long) data.get(holder.getAdapterPosition()).getId());
                     startActivity(intent);
                 }
             });
-
         }
 
         @Override
@@ -144,11 +152,13 @@ public class IngredientFragmentMain extends Fragment {
 
     public class IngredientViewHolder extends RecyclerView.ViewHolder {
 
+        View view;
         TextView itemName;
 
         public IngredientViewHolder(View itemView) {
             super(itemView);
-            itemName = (TextView) itemView;
+            view = itemView;
+            itemName = (TextView) itemView.findViewById(R.id.ingredient_list_view_item_text_view);
         }
     }
 

@@ -40,17 +40,19 @@ public class MyDailyModel {
     private List<ListItem> formatListData(Cursor data){
         List<ListItem> items = new ArrayList<>();
         int columnCount = data.getColumnCount();
-        data.moveToFirst();
-        do {
-            ListItem newItem = new ListItem();
-            newItem.setId(data.getInt(data.getColumnIndex(BaseColumns._ID)));
-            for (int i = 0; i < columnCount; i++){
-                if (i != data.getColumnIndex(BaseColumns._ID)){
-                    newItem.getExtras().put(data.getColumnName(i),data.getString(i));
+        if (data.getCount() > 0) {
+            data.moveToFirst();
+            do {
+                ListItem newItem = new ListItem();
+                newItem.setId(data.getInt(data.getColumnIndex(BaseColumns._ID)));
+                for (int i = 0; i < columnCount; i++) {
+                    if (i != data.getColumnIndex(BaseColumns._ID)) {
+                        newItem.getExtras().put(data.getColumnName(i), data.getString(i));
+                    }
                 }
-            }
-            items.add(newItem);
-        }while (data.moveToNext());
+                items.add(newItem);
+            } while (data.moveToNext());
+        }
         return items;
     }
 }
