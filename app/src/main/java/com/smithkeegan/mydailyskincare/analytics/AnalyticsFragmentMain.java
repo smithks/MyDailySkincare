@@ -851,6 +851,11 @@ public class AnalyticsFragmentMain extends Fragment {
         @Override
         protected void onPostExecute(Cursor cursor) {
 
+            Bundle bundle = new Bundle();
+            bundle.putString("Action","User used analytics!");
+            bundle.putString("CUSTOM_PARAMETER","Woo firebase!");
+            firebaseAnalytics.logEvent("CUSTOM_FIREBASE_EVENT",bundle);
+
             if (cursor != null) {
                 if (cursor.getCount() > 0) {
                     mResultsListView.setAdapter(null);
