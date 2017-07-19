@@ -36,9 +36,9 @@ import android.widget.Toast;
 
 import com.smithkeegan.mydailyskincare.ui.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
-import com.smithkeegan.mydailyskincare.customClasses.DiaryEntryFieldCollection;
-import com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar;
-import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
+import com.smithkeegan.mydailyskincare.core.model.DiaryEntry;
+import com.smithkeegan.mydailyskincare.util.DiaryEntrySeekBar;
+import com.smithkeegan.mydailyskincare.util.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ui.routine.RoutineActivityDetail;
@@ -92,8 +92,8 @@ public class DiaryEntryFragmentMain extends Fragment {
     private Button mAddRemoveRoutinesButton;
     private CheckBox mOnPeriodCheckBox;
 
-    private DiaryEntryFieldCollection mInitialFieldValues;
-    private DiaryEntryFieldCollection mCurrentFieldValues;
+    private DiaryEntry mInitialFieldValues;
+    private DiaryEntry mCurrentFieldValues;
 
     private long mDiaryEntryID;
     private long mEpochTime; //Number of milliseconds since January 1, 1970 00:00:00.00. Value stored in database for this date.
@@ -385,8 +385,8 @@ public class DiaryEntryFragmentMain extends Fragment {
         mAdditionalConditionsShown = false;
         mInitialLoadFinished = false;
 
-        mInitialFieldValues = new DiaryEntryFieldCollection();
-        mCurrentFieldValues = new DiaryEntryFieldCollection();
+        mInitialFieldValues = new DiaryEntry();
+        mCurrentFieldValues = new DiaryEntry();
         mNewEntry = false;
     }
 
@@ -629,7 +629,7 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Sets the views of this fragment to correspond with the passed in collection of values.
      * @param values values for each view
      */
-    private void updateFieldViews(DiaryEntryFieldCollection values) {
+    private void updateFieldViews(DiaryEntry values) {
         updateConditionBlock(mTextViewOverallCondition, mSeekBarOverallCondition, values.overallCondition);
         updateConditionBlock(mTextViewForeheadCondition, mSeekBarForeheadCondition, values.foreheadCondition);
         updateConditionBlock(mTextViewNoseCondition, mSeekBarNoseCondition, values.noseCondition);

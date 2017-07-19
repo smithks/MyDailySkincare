@@ -1,14 +1,12 @@
-package com.smithkeegan.mydailyskincare.model;
+package com.smithkeegan.mydailyskincare.core;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.BaseColumns;
-import android.view.GestureDetector;
+import android.support.annotation.WorkerThread;
 
 import com.smithkeegan.mydailyskincare.data.DatabaseRepository;
-import com.smithkeegan.mydailyskincare.data.DiaryContract;
-import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
-import com.smithkeegan.mydailyskincare.data.ListItem;
+import com.smithkeegan.mydailyskincare.core.model.MDSItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +25,8 @@ public class MyDailyModel {
         databaseRepository = DatabaseRepository.getDatabaseRepository(appContext);
     }
 
-    public List<ListItem> getListOfItems(String tableName, String[] columns, String where){
+    @WorkerThread
+    public List<MDSItem> getListOfItems(String tableName, String[] columns, String where){
         Cursor result = databaseRepository.getData(tableName,columns,where);
         return formatListData(result);
     }
@@ -37,14 +36,14 @@ public class MyDailyModel {
      * @param data the data to parse
      * @return a list of listitems
      */
-    private List<ListItem> formatListData(Cursor data){
-        List<ListItem> items = new ArrayList<>();
+    private List<MDSItem> formatListData(Cursor data){
+        List<MDSItem> items = new ArrayList<>();
         int columnCount = data.getColumnCount();
         if (data.getCount() > 0) {
             data.moveToFirst();
             do {
-                ListItem newItem = new ListItem();
-                newItem.setId(data.getInt(data.getColumnIndex(BaseColumns._ID)));
+                MDSItem newItem = new MDSItem();
+                newItem.setId(data.getLong(data.getColumnIndex(BaseColumns._ID)));
                 for (int i = 0; i < columnCount; i++) {
                     if (i != data.getColumnIndex(BaseColumns._ID)) {
                         newItem.getExtras().put(data.getColumnName(i), data.getString(i));

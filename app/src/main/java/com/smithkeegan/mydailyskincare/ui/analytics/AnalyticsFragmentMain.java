@@ -34,7 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.smithkeegan.mydailyskincare.R;
-import com.smithkeegan.mydailyskincare.customClasses.DatabaseQueryFieldCollection;
+import com.smithkeegan.mydailyskincare.util.DatabaseQueryFieldCollection;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ui.diaryEntry.DiaryEntryActivityMain;

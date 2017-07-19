@@ -1,12 +1,9 @@
 package com.smithkeegan.mydailyskincare.ui.ingredient;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,18 +12,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.core.model.Ingredient;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
-import com.smithkeegan.mydailyskincare.data.ListItem;
-import com.smithkeegan.mydailyskincare.model.ItemListViewModel;
+import com.smithkeegan.mydailyskincare.core.model.MDSItem;
+import com.smithkeegan.mydailyskincare.core.ItemListViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -34,7 +30,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Fragment class of the ingredient main screen. Contains the users ingredients displayed in a list view.
+ * Fragment class of the ingredient main screen. Contains the users ingredients displayed in a recycler view.
  *
  * @author Keegan Smith
  * @since 5/10/2016
@@ -79,16 +75,35 @@ public class IngredientFragmentMain extends Fragment {
     }
 
     /**
+     * Sets listener for the new ingredient button.
+     */
+    public void setButtonListener() {
+        mNewIngredientButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
+                intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, true);
+                startActivityForResult(intent, IngredientActivityMain.INGREDIENT_FINISHED);
+            }
+        });
+    }
+
+    /**
      * Requests a list of ingredients to display to the user.
      */
     private void populateIngredientList() {
         disposable = viewModel.getItemObservable(ItemListViewModel.RequestType.INGREDIENTS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<ListItem>>() {
+                .subscribe(new Consumer<List<MDSItem>>() {
                     @Override
-                    public void accept(@NonNull List<ListItem> list) throws Exception {
-                        displayItems(list);
+                    public void accept(@NonNull List<MDSItem> list) throws Exception {
+                        //Translate the list of MDS items to Ingredients.
+                        List<Ingredient> ingredients = new ArrayList<Ingredient>();
+                        for (MDSItem item : list){
+                            ingredients.add((Ingredient)item);
+                        }
+                        displayItems(ingredients);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -98,7 +113,7 @@ public class IngredientFragmentMain extends Fragment {
                 });
     }
 
-    private void displayItems(List<ListItem> items) {
+    private void displayItems(List<Ingredient> items) {
         mNoIngredientsTextView.setVisibility(View.GONE);
         ItemListRecyclerAdapter adapter = new ItemListRecyclerAdapter(items);
         mIngredientsList.setAdapter(adapter);
@@ -118,9 +133,9 @@ public class IngredientFragmentMain extends Fragment {
     }
 
     public class ItemListRecyclerAdapter extends RecyclerView.Adapter<IngredientViewHolder> {
-        List<ListItem> data;
+        List<Ingredient> data;
 
-        public ItemListRecyclerAdapter(List<ListItem> data) {
+        public ItemListRecyclerAdapter(List<Ingredient> data) {
             this.data = data;
         }
 
@@ -132,13 +147,14 @@ public class IngredientFragmentMain extends Fragment {
 
         @Override
         public void onBindViewHolder(final IngredientViewHolder holder, final int position) {
-            holder.itemName.setText(data.get(position).getExtras().get(DiaryContract.Ingredient.COLUMN_NAME));
+            holder.itemName.setText(data.get(position).getName());
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
                     intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, false);
-                    intent.putExtra(IngredientActivityDetail.ENTRY_ID, (long) data.get(holder.getAdapterPosition()).getId());
+                    intent.putExtra(IngredientActivityDetail.ENTRY_ID, data.get(holder.getAdapterPosition()).getId());
+                    intent.putExtra(IngredientActivityDetail.INGREDIENT,data.get(holder.getAdapterPosition())); //Pass ingredient to fragment
                     startActivity(intent);
                 }
             });
@@ -162,17 +178,5 @@ public class IngredientFragmentMain extends Fragment {
         }
     }
 
-    /**
-     * Sets listener for the new ingredient button.
-     */
-    public void setButtonListener() {
-        mNewIngredientButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
-                intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, true);
-                startActivityForResult(intent, IngredientActivityMain.INGREDIENT_FINISHED);
-            }
-        });
-    }
+
 }

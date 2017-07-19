@@ -17,6 +17,7 @@ public class IngredientActivityDetail extends AppCompatActivity {
 
     public final static String NEW_INGREDIENT = "NEW_INGREDIENT"; //Key to new ingredient indicator value
     public final static String ENTRY_ID = "ID";  //Key to ingredient id value passed to ingredient detail fragment.
+    public final static String INGREDIENT = "INGREDIENT";
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -26,23 +27,7 @@ public class IngredientActivityDetail extends AppCompatActivity {
 
         if (savedInstance == null) { //Create a new fragment if one isn't being restored
             IngredientFragmentDetail fragmentDetail = new IngredientFragmentDetail();
-            //Set flags to send up to fragment. Existing ingredient id and new ingredient status.
-            Bundle bundle = new Bundle();
-            Intent thisIntent = getIntent();
-
-            if (thisIntent.hasExtra(NEW_INGREDIENT)) {
-                //Check new ingredient flag and entry id flag. Error occurred if new_ingredient is false and entry_id is -1. Open new ingredient.
-                boolean newIngredient = thisIntent.getBooleanExtra(NEW_INGREDIENT,true);
-                long id = thisIntent.getLongExtra(ENTRY_ID,-1);
-                if (thisIntent.getBooleanExtra(NEW_INGREDIENT, true) || thisIntent.getLongExtra(ENTRY_ID, -1) < 0) {
-                    bundle.putBoolean(NEW_INGREDIENT, true);
-                } else {
-                    bundle.putBoolean(NEW_INGREDIENT, false);
-                    bundle.putLong(ENTRY_ID, thisIntent.getLongExtra(ENTRY_ID, -1));
-                }
-                fragmentDetail.setArguments(bundle);
-            }
-
+            fragmentDetail.setArguments(getIntent().getExtras());
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.add(R.id.ingredient_activity_detail, fragmentDetail);

@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.customClasses;
+package com.smithkeegan.mydailyskincare.core.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,7 +8,7 @@ import android.os.Parcelable;
  * @author Keegan Smith
  * @since 10/6/2016
  */
-public class DiaryEntryFieldCollection implements Parcelable {
+public class DiaryEntry implements Parcelable {
     public long overallCondition;
     public long foreheadCondition;
     public long noseCondition;
@@ -22,19 +22,19 @@ public class DiaryEntryFieldCollection implements Parcelable {
     public long waterIntake;
     public long onPeriod;
 
-    public static final Creator<DiaryEntryFieldCollection> CREATOR = new Creator<DiaryEntryFieldCollection>() {
+    public static final Creator<DiaryEntry> CREATOR = new Creator<DiaryEntry>() {
         @Override
-        public DiaryEntryFieldCollection createFromParcel(Parcel in) {
-            return new DiaryEntryFieldCollection(in);
+        public DiaryEntry createFromParcel(Parcel in) {
+            return new DiaryEntry(in);
         }
 
         @Override
-        public DiaryEntryFieldCollection[] newArray(int size) {
-            return new DiaryEntryFieldCollection[size];
+        public DiaryEntry[] newArray(int size) {
+            return new DiaryEntry[size];
         }
     };
 
-    public DiaryEntryFieldCollection(){
+    public DiaryEntry(){
         overallCondition = 3;
         foreheadCondition = 3;
         noseCondition = 3;
@@ -49,7 +49,7 @@ public class DiaryEntryFieldCollection implements Parcelable {
         onPeriod = 0;
     }
 
-    public DiaryEntryFieldCollection(Parcel in) {
+    public DiaryEntry(Parcel in) {
         overallCondition = in.readLong();
         foreheadCondition = in.readLong();
         noseCondition = in.readLong();

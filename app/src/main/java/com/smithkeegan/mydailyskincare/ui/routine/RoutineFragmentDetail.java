@@ -33,7 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.smithkeegan.mydailyskincare.R;
-import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
+import com.smithkeegan.mydailyskincare.util.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ui.product.ProductActivityDetail;

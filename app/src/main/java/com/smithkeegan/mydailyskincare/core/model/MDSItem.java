@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.data;
+package com.smithkeegan.mydailyskincare.core.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,16 +10,25 @@ import java.util.Map;
  * Created by keegansmith on 7/12/17.
  */
 
-public class ListItem {
+public class MDSItem {
 
-    int id;
+    long id;
+    String itemType;
     Map<String, String> extras = new HashMap<>();
 
-    public int getId() {
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

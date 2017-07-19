@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.customClasses;
+package com.smithkeegan.mydailyskincare.util;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

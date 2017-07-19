@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.customClasses;
+package com.smithkeegan.mydailyskincare.util;
 
 /**
  * Interface used for callbacks between fragments and activities.

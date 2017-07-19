@@ -36,7 +36,7 @@ import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.ui.analytics.AnalyticsActivityMain;
-import com.smithkeegan.mydailyskincare.customClasses.DatePickerDialogFragment;
+import com.smithkeegan.mydailyskincare.util.DatePickerDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ui.diaryEntry.DiaryEntryActivityMain;

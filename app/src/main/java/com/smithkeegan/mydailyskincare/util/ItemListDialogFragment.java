@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.customClasses;
+package com.smithkeegan.mydailyskincare.util;
 
 import android.app.Dialog;
 import android.content.ContentValues;

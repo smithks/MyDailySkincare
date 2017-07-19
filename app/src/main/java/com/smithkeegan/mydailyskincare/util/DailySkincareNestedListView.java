@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.customClasses;
+package com.smithkeegan.mydailyskincare.util;
 
 import android.content.Context;
 import android.support.v4.view.NestedScrollingChild;

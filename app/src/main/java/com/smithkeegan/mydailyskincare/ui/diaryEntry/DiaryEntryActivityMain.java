@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.smithkeegan.mydailyskincare.R;
-import com.smithkeegan.mydailyskincare.customClasses.DialogClosedListener;
+import com.smithkeegan.mydailyskincare.util.DialogClosedListener;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.smithkeegan.mydailyskincare.customClasses;
+package com.smithkeegan.mydailyskincare.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;

@@ -236,13 +236,13 @@
 
                 </LinearLayout>
 
-                <com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView
+                <com.smithkeegan.mydailyskincare.util.DailySkincareNestedListView
                     android:id="@+id/routine_product_list_view"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_below="@id/routine_product_title_layout"
                     android:background="@drawable/rectangle_border">
-                </com.smithkeegan.mydailyskincare.customClasses.DailySkincareNestedListView>
+                </com.smithkeegan.mydailyskincare.util.DailySkincareNestedListView>
 
                 <TextView
                     android:id="@+id/routine_no_products_text"
