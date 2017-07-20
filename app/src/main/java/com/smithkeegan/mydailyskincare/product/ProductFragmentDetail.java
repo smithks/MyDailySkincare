@@ -31,7 +31,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.analytics.MDSAnalytics;
 import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
@@ -64,10 +66,13 @@ public class ProductFragmentDetail extends Fragment {
     private boolean mIsNewProduct;
     private boolean mIngredientsListModified;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
     }
 
     @Override
@@ -116,6 +121,9 @@ public class ProductFragmentDetail extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_action_save:
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_SAVE_BUTTON_PRESSED);
+                logFirebaseEvent(MDSAnalytics.EVENT_PRODUCT_SAVE_EXIT,analyticsBundle);
                 saveCurrentProduct();
                 return true;
             case R.id.menu_action_delete:
@@ -136,6 +144,15 @@ public class ProductFragmentDetail extends Fragment {
         if (mInitialLoadComplete){
             refreshIngredients();
         }
+    }
+
+    /**
+     * Logs a firebase event to Firebase Analytics.
+     * @param event the event name
+     * @param extras the extra params if any
+     */
+    private void logFirebaseEvent(String event,@Nullable Bundle extras){
+        firebaseAnalytics.logEvent(event,extras);
     }
 
     /**
@@ -309,6 +326,9 @@ public class ProductFragmentDetail extends Fragment {
                         .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Bundle analyticsBundle = new Bundle();
+                                analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_BACK_PRESSED);
+                                logFirebaseEvent(MDSAnalytics.EVENT_PRODUCT_SAVE_EXIT,analyticsBundle);
                                 saveCurrentProduct();
                             }
                         })
@@ -324,6 +344,9 @@ public class ProductFragmentDetail extends Fragment {
                     }
                 }).show();
             }else {
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_BACK_PRESSED);
+                logFirebaseEvent(MDSAnalytics.EVENT_PRODUCT_SAVE_EXIT,analyticsBundle);
                 saveCurrentProduct();
             }
         } else if (mIsNewProduct) {
@@ -384,6 +407,9 @@ public class ProductFragmentDetail extends Fragment {
         mIngredientsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_INGREDIENT_ORIGIN_PRODUCT);
+                logFirebaseEvent(MDSAnalytics.EVENT_INGREDIENT_OPENED,analyticsBundle);
                 Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
                 intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false);
                 intent.putExtra(IngredientActivityDetail.ENTRY_ID,id);

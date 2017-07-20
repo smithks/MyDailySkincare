@@ -34,8 +34,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.CalendarActivityMain;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.analytics.MDSAnalytics;
 import com.smithkeegan.mydailyskincare.customClasses.DiaryEntryFieldCollection;
 import com.smithkeegan.mydailyskincare.customClasses.DiaryEntrySeekBar;
 import com.smithkeegan.mydailyskincare.customClasses.ItemListDialogFragment;
@@ -49,6 +51,7 @@ import java.util.Date;
 /**
  * Fragment class representing a Diary Entry corresponding to a date. Contains fields and views for
  * each slider or control within the Diary Entry.
+ *
  * @author Keegan Smith
  * @since 8/26/2016
  */
@@ -109,10 +112,13 @@ public class DiaryEntryFragmentMain extends Fragment {
     private String[] mHygieneStrings;
     private String[] mWaterIntakeStrings;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
     }
 
     @Override
@@ -138,7 +144,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         setListeners();
 
         //Show demo if this is the first launch of this fragment
-        if (!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen),false)){
+        if (!PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen), false)) {
             showDemo();
         }
 
@@ -154,6 +160,9 @@ public class DiaryEntryFragmentMain extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_action_save:
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_SAVE_BUTTON_PRESSED);
+                logFirebaseEvent(MDSAnalytics.EVENT_DIARY_ENTRY_SAVE_EXIT,analyticsBundle);
                 saveCurrentDiaryEntry();
                 return true;
             case R.id.menu_action_delete:
@@ -178,6 +187,7 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Saves the current fields when the activity is destroyed by a system process to be restored
      * later.
+     *
      * @param outState bundle that will contain this fragments current fields.
      */
     @Override
@@ -194,6 +204,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /**
      * Restores fields of this fragment from the restored instance state.
+     *
      * @param savedInstance the restored state
      */
     public void restoreSavedInstance(Bundle savedInstance) {
@@ -217,8 +228,8 @@ public class DiaryEntryFragmentMain extends Fragment {
     /**
      * Shows the welcome demo on the first launch.
      */
-    private void showDemo(){
-        final Dialog dialog = new Dialog(getContext(),android.R.style.Theme_Translucent_NoTitleBar);
+    private void showDemo() {
+        final Dialog dialog = new Dialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar);
         dialog.setContentView(R.layout.demo_layout);
 
         //Set preference value of main demo seen.
@@ -229,7 +240,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             @Override
             public void onClick(View v) {
                 int currentPhase = (int) dialogButton.getTag();
-                switch (currentPhase){
+                switch (currentPhase) {
                     case 1:
                         dialogButton.setTag(2);
                         dialogText.setText(getResources().getString(R.string.diary_entry_demo_text_second));
@@ -240,7 +251,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                         dialogButton.setText(getResources().getString(R.string.done_string));
                         break;
                     case 3:
-                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen),true).apply();
+                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getResources().getString(R.string.preference_diary_entry_demo_seen), true).apply();
                         dialog.dismiss();
                         break;
                 }
@@ -305,6 +316,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /**
      * Retrieves the views for this fragment.
+     *
      * @param rootView the rootview of this fragment
      */
     private void setMemberViews(View rootView) {
@@ -392,9 +404,10 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /**
      * Shows or hides the routines listview or empty listview textview.
+     *
      * @param view the view to set visibility of to visible
      */
-    private void showLayout(View view){
+    private void showLayout(View view) {
         mRoutinesListView.setVisibility(View.INVISIBLE);
         mNoRoutinesTextView.setVisibility(View.INVISIBLE);
 
@@ -461,6 +474,9 @@ public class DiaryEntryFragmentMain extends Fragment {
         mRoutinesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_ROUTINE_ORIGIN_DIARY_ENTRY);
+                logFirebaseEvent(MDSAnalytics.EVENT_ROUTINE_OPENED,analyticsBundle);
                 Intent intent = new Intent(getContext(), RoutineActivityDetail.class);
                 intent.putExtra(RoutineActivityDetail.NEW_ROUTINE, false);
                 intent.putExtra(RoutineActivityDetail.ENTRY_ID, id);
@@ -471,7 +487,8 @@ public class DiaryEntryFragmentMain extends Fragment {
         //Set the text change listener of the comment edit text
         mCommentEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -479,7 +496,8 @@ public class DiaryEntryFragmentMain extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
     }
 
@@ -554,16 +572,17 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /**
      * Returns the day of the week as a abbreviated string.
+     *
      * @return the day of the week: Sun,Mon,Tue,Wed,Thu,Fri,Sat
      */
-    private String getDayOfWeek(){
+    private String getDayOfWeek() {
         Calendar today = Calendar.getInstance();
         today.setTime(new Date(mEpochTime));
         int day = today.get(Calendar.DAY_OF_WEEK);
 
         String dayOfWeek = "";
 
-        switch (day){
+        switch (day) {
             case Calendar.SUNDAY:
                 dayOfWeek = getResources().getString(R.string.routine_frequency_sunday);
                 break;
@@ -588,6 +607,10 @@ public class DiaryEntryFragmentMain extends Fragment {
         }
 
         return dayOfWeek;
+    }
+
+    private void logFirebaseEvent(String event, Bundle data) {
+        firebaseAnalytics.logEvent(event, data);
     }
 
     /**
@@ -615,18 +638,20 @@ public class DiaryEntryFragmentMain extends Fragment {
         if (mAdditionalConditionsShown) { //Hide layout if shown
             mAdditionalConditionsLayout.setVisibility(View.GONE);
             ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_add_circle));
-            ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_more_string));
+            ((TextView) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_more_string));
             mAdditionalConditionsShown = false;
         } else { //Show layout if hidden
+            logFirebaseEvent(MDSAnalytics.EVENT_DIARY_ENTRY_SHOW_MORE, null);
             mAdditionalConditionsLayout.setVisibility(View.VISIBLE);
             ((ImageButton) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_button)).setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_remove_circle));
-            ((TextView)mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_less_string));
+            ((TextView) mShowMoreLayout.findViewById(R.id.diary_entry_show_more_text)).setText(getResources().getString(R.string.diary_entry_show_less_string));
             mAdditionalConditionsShown = true;
         }
     }
 
     /**
      * Sets the views of this fragment to correspond with the passed in collection of values.
+     *
      * @param values values for each view
      */
     private void updateFieldViews(DiaryEntryFieldCollection values) {
@@ -664,6 +689,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /**
      * Updates the passed in textView with the appropriate label and background color.
+     *
      * @param view the view to update
      * @param step the step of the slider to set the text and color too
      */
@@ -675,6 +701,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /**
      * Sets a condition block to the provided step.
+     *
      * @param view    The textview to update
      * @param seekbar The seekbar to update
      * @param step    The step to set to.
@@ -687,6 +714,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
     /**
      * Checks if the current values of any field is different from its value at creation.
+     *
      * @return true if this entry has changed
      */
     private boolean entryHasChanged() {
@@ -711,18 +739,23 @@ public class DiaryEntryFragmentMain extends Fragment {
      * Called by parent activity.
      */
     public void onBackButtonPressed() {
-        if (entryHasChanged() || mNewEntry)
+        if (entryHasChanged() || mNewEntry) {
+            Bundle analyticsBundle = new Bundle();
+            analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_BACK_PRESSED);
+            logFirebaseEvent(MDSAnalytics.EVENT_DIARY_ENTRY_SAVE_EXIT,analyticsBundle);
             saveCurrentDiaryEntry();
-        else
+        } else {
             getActivity().finish();
+        }
     }
 
     /**
      * Called by parent activity when the edit list dialog is closed.
+     *
      * @param listModified true if the list of routines was modified.
      */
-    public void onEditDialogClosed(boolean listModified){
-        if (listModified){
+    public void onEditDialogClosed(boolean listModified) {
+        if (listModified) {
             refreshRoutinesList();
         }
     }
@@ -837,17 +870,17 @@ public class DiaryEntryFragmentMain extends Fragment {
                 //Get routines that have a frequency of daily or include today's day of the week in their frequency
                 String[] routineColumns = {DiaryContract.Routine._ID};
                 String routineWhere = DiaryContract.Routine.COLUMN_FREQUENCY + " = '" + RoutineActivityDetail.ROUTINE_DAILY + "'";
-                String dayOfWeek = "'%"+getDayOfWeek()+"%'"; //Format regex for like clause
-                routineWhere = routineWhere + " OR "+ DiaryContract.Routine.COLUMN_FREQUENCY + " LIKE " + dayOfWeek;
-                Cursor routinesFromFrequency = db.query(DiaryContract.Routine.TABLE_NAME,routineColumns,routineWhere,null,null,null,null);
-                if (routinesFromFrequency != null && routinesFromFrequency.moveToFirst()){
+                String dayOfWeek = "'%" + getDayOfWeek() + "%'"; //Format regex for like clause
+                routineWhere = routineWhere + " OR " + DiaryContract.Routine.COLUMN_FREQUENCY + " LIKE " + dayOfWeek;
+                Cursor routinesFromFrequency = db.query(DiaryContract.Routine.TABLE_NAME, routineColumns, routineWhere, null, null, null, null);
+                if (routinesFromFrequency != null && routinesFromFrequency.moveToFirst()) {
                     do {
                         long routineID = routinesFromFrequency.getLong(routinesFromFrequency.getColumnIndex(DiaryContract.Routine._ID));
                         ContentValues routineValues = new ContentValues();
-                        routineValues.put(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID,routineID);
-                        routineValues.put(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID,mDiaryEntryID);
-                        db.insert(DiaryContract.DiaryEntryRoutine.TABLE_NAME,null,routineValues);
-                    }while (routinesFromFrequency.moveToNext());
+                        routineValues.put(DiaryContract.DiaryEntryRoutine.COLUMN_ROUTINE_ID, routineID);
+                        routineValues.put(DiaryContract.DiaryEntryRoutine.COLUMN_DIARY_ENTRY_ID, mDiaryEntryID);
+                        db.insert(DiaryContract.DiaryEntryRoutine.TABLE_NAME, null, routineValues);
+                    } while (routinesFromFrequency.moveToNext());
                 }
             }
 
@@ -856,6 +889,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         /**
          * Set values of views and fields based on result returned form query.
+         *
          * @param result cursor that contains this entry from the Diary Entry table
          */
         @Override
@@ -891,7 +925,7 @@ public class DiaryEntryFragmentMain extends Fragment {
                 if (comment != null) {
                     mInitialFieldValues.comment = comment;
                     mCurrentFieldValues.comment = comment;
-                }else { //Loading from database and no data exists, insert empty string.
+                } else { //Loading from database and no data exists, insert empty string.
                     mInitialFieldValues.comment = "";
                     mCurrentFieldValues.comment = "";
                 }
@@ -933,6 +967,7 @@ public class DiaryEntryFragmentMain extends Fragment {
         /**
          * Grabs this diary entry's routines from the DiaryEntryRoutines table and
          * returns them via a cursor.
+         *
          * @param params params[0] - this diary entry's _ID
          * @return cursor object containing routines
          */
@@ -967,6 +1002,7 @@ public class DiaryEntryFragmentMain extends Fragment {
 
         /**
          * Populates the listview with the results from the table query
+         *
          * @param cursor contains rows to insert into listview
          */
         @Override
@@ -993,9 +1029,9 @@ public class DiaryEntryFragmentMain extends Fragment {
                 });
                 mRoutinesListView.setAdapter(adapter);
             }
-            if (mRoutinesListView.getAdapter() != null && mRoutinesListView.getAdapter().getCount() > 0){
+            if (mRoutinesListView.getAdapter() != null && mRoutinesListView.getAdapter().getCount() > 0) {
                 showLayout(mRoutinesListView);
-            }else {
+            } else {
                 showLayout(mNoRoutinesTextView);
             }
             hideLoadingScreen();
@@ -1036,7 +1072,7 @@ public class DiaryEntryFragmentMain extends Fragment {
             values.put(DiaryContract.DiaryEntry.COLUMN_CHEEK_CONDITION, (Long) params[4]);
             values.put(DiaryContract.DiaryEntry.COLUMN_LIPS_CONDITION, (Long) params[5]);
             values.put(DiaryContract.DiaryEntry.COLUMN_CHIN_CONDITION, (Long) params[6]);
-            values.put(DiaryContract.DiaryEntry.COLUMN_COMMENT,(String) params[7]);
+            values.put(DiaryContract.DiaryEntry.COLUMN_COMMENT, (String) params[7]);
             values.put(DiaryContract.DiaryEntry.COLUMN_EXERCISE, (Long) params[8]);
             values.put(DiaryContract.DiaryEntry.COLUMN_DIET, (Long) params[9]);
             values.put(DiaryContract.DiaryEntry.COLUMN_HYGIENE, (Long) params[10]);

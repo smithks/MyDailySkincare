@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1035063313635",
+    "firebase_url": "https://my-daily-skincare.firebaseio.com",
+    "project_id": "my-daily-skincare",
+    "storage_bucket": "my-daily-skincare.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035063313635:android:caa7930e0fce5299",
+        "android_client_info": {
+          "package_name": "com.smithkeegan.mydailyskincare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035063313635-ep3mgrju8335v3spofk2n1ikffqk026v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smithkeegan.mydailyskincare",
+            "certificate_hash": "502552516bf946e6de0070be0be2ee351c832547"
+          }
+        },
+        {
+          "client_id": "1035063313635-4ndgl8d8pr930spn2pqj4sp96bo9n5tg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTAenf0zbOo3zFAUcTDA_fv9bONrJsJAY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035063313635-4ndgl8d8pr930spn2pqj4sp96bo9n5tg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -21,7 +21,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.analytics.MDSAnalytics;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
@@ -44,9 +46,12 @@ public class IngredientFragmentDetail extends Fragment {
     private String mInitialComment;
     private Long mExistingId;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         setHasOptionsMenu(true);
     }
 
@@ -98,6 +103,9 @@ public class IngredientFragmentDetail extends Fragment {
                         .setPositiveButton(R.string.save_button_string, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Bundle analyticsBundle = new Bundle();
+                                analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_BACK_PRESSED);
+                                logFirebaseEvent(MDSAnalytics.EVENT_INGREDIENT_SAVE_EXIT,analyticsBundle);
                                 saveCurrentIngredient();
                             }
                         })
@@ -114,11 +122,23 @@ public class IngredientFragmentDetail extends Fragment {
                             }
                 }).show();
             } else {
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_BACK_PRESSED);
+                logFirebaseEvent(MDSAnalytics.EVENT_INGREDIENT_SAVE_EXIT,analyticsBundle);
                 saveCurrentIngredient();
             }
         } else {
             getActivity().finish();
         }
+    }
+
+    /**
+     * Logs a firebase event to Firebase Analytics.
+     * @param event the event name
+     * @param extras the extra params if any
+     */
+    private void logFirebaseEvent(String event,@Nullable Bundle extras){
+        firebaseAnalytics.logEvent(event,extras);
     }
 
     @Override
@@ -130,6 +150,9 @@ public class IngredientFragmentDetail extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_action_save:
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_EXIT_METHOD,MDSAnalytics.VALUE_EXIT_SAVE_BUTTON_PRESSED);
+                logFirebaseEvent(MDSAnalytics.EVENT_INGREDIENT_SAVE_EXIT,analyticsBundle);
                 saveCurrentIngredient();
                 return true;
             case R.id.menu_action_delete:

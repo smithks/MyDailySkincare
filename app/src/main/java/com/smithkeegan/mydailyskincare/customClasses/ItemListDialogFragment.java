@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,7 +29,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.analytics.MDSAnalytics;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 import com.smithkeegan.mydailyskincare.ingredient.IngredientActivityDetail;
@@ -68,10 +71,13 @@ public class ItemListDialogFragment extends DialogFragment {
 
     private boolean mListModified;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     public void onStart() {
         super.onStart();
         Dialog dialog = getDialog();
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         if (dialog != null) { //Set dimensions of this dialog.
             Point size = new Point();
             Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -130,6 +136,9 @@ public class ItemListDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     saveCurrentItems(false);
+                    Bundle analyticsBundle = new Bundle();
+                    analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_INGREDIENT_ORIGIN_PRODUCT);
+                    logFirebaseEvent(MDSAnalytics.EVENT_INGREDIENT_OPENED,analyticsBundle);
                     mNewItemID = 0; //Set newitemid to default 0
                     Intent intent = new Intent(getContext(), IngredientActivityDetail.class);
                     intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT, true);
@@ -142,6 +151,9 @@ public class ItemListDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     saveCurrentItems(false);
+                    Bundle analyticsBundle = new Bundle();
+                    analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_PRODUCT_ORIGIN_ROUTINE);
+                    logFirebaseEvent(MDSAnalytics.EVENT_PRODUCT_OPENED,analyticsBundle);
                     mNewItemID = 0; //Set new item id to default
                     Intent intent = new Intent(getContext(), ProductActivityDetail.class);
                     intent.putExtra(ProductActivityDetail.NEW_PRODUCT, true);
@@ -154,6 +166,9 @@ public class ItemListDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     saveCurrentItems(false);
+                    Bundle analyticsBundle = new Bundle();
+                    analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_ROUTINE_ORIGIN_DIARY_ENTRY);
+                    logFirebaseEvent(MDSAnalytics.EVENT_ROUTINE_OPENED,analyticsBundle);
                     mNewItemID = 0; //set new item id to default
                     Intent intent = new Intent(getContext(), RoutineActivityDetail.class);
                     intent.putExtra(RoutineActivityDetail.NEW_ROUTINE, true);
@@ -163,6 +178,15 @@ public class ItemListDialogFragment extends DialogFragment {
         }
 
         return v;
+    }
+
+    /**
+     * Logs a firebase event to Firebase Analytics.
+     * @param event the event name
+     * @param extras the extra params if any
+     */
+    private void logFirebaseEvent(String event,@Nullable Bundle extras){
+        firebaseAnalytics.logEvent(event,extras);
     }
 
     /**

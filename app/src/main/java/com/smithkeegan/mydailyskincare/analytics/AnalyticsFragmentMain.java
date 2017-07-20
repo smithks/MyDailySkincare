@@ -33,6 +33,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.R;
 import com.smithkeegan.mydailyskincare.customClasses.DatabaseQueryFieldCollection;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
@@ -46,6 +47,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -62,6 +64,8 @@ public class AnalyticsFragmentMain extends Fragment {
     private static final String SAVE_KEY_QUERY_BUILDER = "SAVE_KEY_QUERY_BUILDER";
     private static final String SAVE_KEY_VISIBLE_LAYOUT = "SAVE_KEY_VISIBLE_LAYOUT";
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     private TextView mQueryTextView;
     private GridView mButtonGridView;
     private View mLoadingView;
@@ -77,6 +81,9 @@ public class AnalyticsFragmentMain extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+        logFirebaseEvent(MDSAnalytics.EVENT_MDS_ANALYTICS_OPENED,null);
     }
 
     @Nullable
@@ -184,6 +191,15 @@ public class AnalyticsFragmentMain extends Fragment {
         mLoadingView = rootView.findViewById(R.id.analytics_loading_view);
         mResultsListView = (ListView) rootView.findViewById(R.id.analytics_results_list_view);
         mResultsEmptyText = (TextView) rootView.findViewById(R.id.analytics_list_view_empty_text);
+    }
+
+    /**
+     * Logs a firebase event to Firebase Analytics.
+     * @param event the event name
+     * @param extras the extra params if any
+     */
+    private void logFirebaseEvent(String event,@Nullable Bundle extras){
+        firebaseAnalytics.logEvent(event,extras);
     }
 
     /**
@@ -425,6 +441,9 @@ public class AnalyticsFragmentMain extends Fragment {
             case GridStackStates.STATE_FETCH_DATA: //final level
                 resultsState = true;
                 showLayout(mLoadingView);
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_MDS_ANALYTICS_QUERY,getQueryPath());
+                logFirebaseEvent(MDSAnalytics.EVENT_MDS_ANALYTICS_USED,analyticsBundle);
                 new FetchFromDatabase().execute(useMemberQuery);
                 break;
         }
@@ -789,6 +808,8 @@ public class AnalyticsFragmentMain extends Fragment {
         protected Cursor doInBackground(Object... params) {
             SQLiteDatabase db = DiaryDbHelper.getInstance(getContext()).getReadableDatabase();
 
+            String queryPath = getQueryPath();
+
             boolean useMemberQuery = true;
             if (params[0] != null) {
                 useMemberQuery = (boolean) params[0];
@@ -839,7 +860,6 @@ public class AnalyticsFragmentMain extends Fragment {
 
         @Override
         protected void onPostExecute(Cursor cursor) {
-
             if (cursor != null) {
                 if (cursor.getCount() > 0) {
                     mResultsListView.setAdapter(null);
@@ -1121,6 +1141,20 @@ public class AnalyticsFragmentMain extends Fragment {
         public static final String STATE_INGREDIENTS = "STATE_INGREDIENTS";
 
         public static final String STATE_FETCH_DATA = "STATE_FETCH_DATA";
+    }
+
+    /**
+     * Returns the query path of the current query. Used in firebase analytics.
+     * @return a string representation of the users selection
+     */
+    private String getQueryPath(){
+        Spannable[] query = new Spannable[mQueryStringStack.size()];
+        mQueryStringStack.copyInto(query);
+        String result = "";
+        for (Spannable queryItem : query){
+            result += " "+ queryItem.toString();
+        }
+        return result;
     }
 
     /**
