@@ -137,7 +137,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="10dp"
                     android:layout_toEndOf="@id/diary_entry_show_more_text"
-                    android:background="@drawable/ic_warning_black_24dp"
+                    android:background="@drawable/icon_add_circle"
                     android:contentDescription="@string/diary_entry_show_more_content_description"
                     />
 

@@ -82,12 +82,8 @@ public class AnalyticsFragmentMain extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        //Log view event to firebase
         firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
-        Bundle params = new Bundle();
-        params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY,"MyDailySkincareAnalytics");
-        params.putString(FirebaseAnalytics.Param.ITEM_NAME,"Viewed Activity");
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM,params);
+        logFirebaseEvent(MDSAnalytics.EVENT_MDS_ANALYTICS_OPENED,null);
     }
 
     @Nullable
@@ -195,6 +191,15 @@ public class AnalyticsFragmentMain extends Fragment {
         mLoadingView = rootView.findViewById(R.id.analytics_loading_view);
         mResultsListView = (ListView) rootView.findViewById(R.id.analytics_results_list_view);
         mResultsEmptyText = (TextView) rootView.findViewById(R.id.analytics_list_view_empty_text);
+    }
+
+    /**
+     * Logs a firebase event to Firebase Analytics.
+     * @param event the event name
+     * @param extras the extra params if any
+     */
+    private void logFirebaseEvent(String event,@Nullable Bundle extras){
+        firebaseAnalytics.logEvent(event,extras);
     }
 
     /**
@@ -436,6 +441,9 @@ public class AnalyticsFragmentMain extends Fragment {
             case GridStackStates.STATE_FETCH_DATA: //final level
                 resultsState = true;
                 showLayout(mLoadingView);
+                Bundle analyticsBundle = new Bundle();
+                analyticsBundle.putString(MDSAnalytics.PARAM_MDS_ANALYTICS_QUERY,getQueryPath());
+                logFirebaseEvent(MDSAnalytics.EVENT_MDS_ANALYTICS_USED,analyticsBundle);
                 new FetchFromDatabase().execute(useMemberQuery);
                 break;
         }
@@ -800,6 +808,8 @@ public class AnalyticsFragmentMain extends Fragment {
         protected Cursor doInBackground(Object... params) {
             SQLiteDatabase db = DiaryDbHelper.getInstance(getContext()).getReadableDatabase();
 
+            String queryPath = getQueryPath();
+
             boolean useMemberQuery = true;
             if (params[0] != null) {
                 useMemberQuery = (boolean) params[0];
@@ -850,12 +860,6 @@ public class AnalyticsFragmentMain extends Fragment {
 
         @Override
         protected void onPostExecute(Cursor cursor) {
-
-            Bundle bundle = new Bundle();
-            bundle.putString("Action","User used analytics!");
-            bundle.putString("CUSTOM_PARAMETER","Woo firebase!");
-            firebaseAnalytics.logEvent("CUSTOM_FIREBASE_EVENT",bundle);
-
             if (cursor != null) {
                 if (cursor.getCount() > 0) {
                     mResultsListView.setAdapter(null);
@@ -1137,6 +1141,20 @@ public class AnalyticsFragmentMain extends Fragment {
         public static final String STATE_INGREDIENTS = "STATE_INGREDIENTS";
 
         public static final String STATE_FETCH_DATA = "STATE_FETCH_DATA";
+    }
+
+    /**
+     * Returns the query path of the current query. Used in firebase analytics.
+     * @return a string representation of the users selection
+     */
+    private String getQueryPath(){
+        Spannable[] query = new Spannable[mQueryStringStack.size()];
+        mQueryStringStack.copyInto(query);
+        String result = "";
+        for (Spannable queryItem : query){
+            result += " "+ queryItem.toString();
+        }
+        return result;
     }
 
     /**

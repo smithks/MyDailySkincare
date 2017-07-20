@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
@@ -36,6 +37,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 import com.smithkeegan.mydailyskincare.analytics.AnalyticsActivityMain;
+import com.smithkeegan.mydailyskincare.analytics.MDSAnalytics;
 import com.smithkeegan.mydailyskincare.customClasses.DatePickerDialogFragment;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
@@ -127,11 +129,21 @@ public class CalendarActivityMain extends AppCompatActivity {
 
         switch (id){
             case R.id.action_go_to_date:
+                logFirebaseEvent(MDSAnalytics.EVENT_SCROLL_TO_DATE_OPENED,null);
                 DialogFragment datePicker = new DatePickerDialogFragment();
                 datePicker.show(getSupportFragmentManager(), "date picker");
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Logs a firebase event to Firebase Analytics.
+     * @param event the event name
+     * @param extras the extra params if any
+     */
+    private void logFirebaseEvent(String event,@Nullable Bundle extras){
+        firebaseAnalytics.logEvent(event,extras);
     }
 
     /**
@@ -146,10 +158,8 @@ public class CalendarActivityMain extends AppCompatActivity {
         calendar.setTime(date);
         String dateID = (calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.DAY_OF_MONTH)+"/"+calendar.get(Calendar.YEAR);
         Bundle analyticsBundle = new Bundle();
-        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY,"Calendar Activity");
-        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME,"Scroll to Date Used");
-        analyticsBundle.putString(FirebaseAnalytics.Param.ITEM_ID,dateID);
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM,analyticsBundle);
+        analyticsBundle.putString(MDSAnalytics.PARAM_DATE,dateID);
+        logFirebaseEvent(MDSAnalytics.EVENT_SCROLL_TO_DATE_USED,analyticsBundle);
     }
 
     @Override
@@ -233,6 +243,9 @@ public class CalendarActivityMain extends AppCompatActivity {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 switch (item.getItemId()){
                     case R.id.navigation_today:
+                        Bundle analyticsBundle = new Bundle();
+                        analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_DIARY_ENTRY_ORIGIN_DRAWER);
+                        logFirebaseEvent(MDSAnalytics.EVENT_DIARY_ENTRY_OPENED,analyticsBundle);
                         Date todaysDate = getTodayCalendarDate().getTime();
                         Intent intent = new Intent(mContext,DiaryEntryActivityMain.class);
                         intent.putExtra(DiaryEntryActivityMain.DATE_EXTRA,todaysDate.getTime());
@@ -359,6 +372,9 @@ public class CalendarActivityMain extends AppCompatActivity {
 
         @Override
         public void onSelectDate(Date date, View view) {
+            Bundle analyticsBundle = new Bundle();
+            analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_DIARY_ENTRY_ORIGIN_CALENDAR);
+            logFirebaseEvent(MDSAnalytics.EVENT_DIARY_ENTRY_OPENED,analyticsBundle);
             Intent intent = new Intent(getApplicationContext(),DiaryEntryActivityMain.class);
             intent.putExtra(DiaryEntryActivityMain.DATE_EXTRA,date.getTime());
             startActivityForResult(intent,CODE_DATE_RETURN);

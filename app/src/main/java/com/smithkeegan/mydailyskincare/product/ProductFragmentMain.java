@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
@@ -15,7 +16,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.analytics.MDSAnalytics;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
@@ -31,9 +34,13 @@ public class ProductFragmentMain extends Fragment{
     private TextView mNoProductsTextView;
     private Button mNewProductButton;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
         View rootView = inflater.inflate(R.layout.fragment_product_main, container,false);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
         mDbHelper = DiaryDbHelper.getInstance(getContext());
         mProductsList = (ListView) rootView.findViewById(R.id.product_main_list_view);
@@ -47,11 +54,21 @@ public class ProductFragmentMain extends Fragment{
         mNewProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                logProductFirebaseEvent();
                 Intent intent = new Intent(getContext(),ProductActivityDetail.class);
                 intent.putExtra(ProductActivityDetail.NEW_PRODUCT,true);
                 startActivityForResult(intent, ProductActivityMain.PRODUCT_FINISHED);
             }
         });
+    }
+
+    /**
+     * Logs a firebase event to Firebase Analytics.
+     */
+    private void logProductFirebaseEvent(){
+        Bundle analyticsBundle = new Bundle();
+        analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_PRODUCT_ORIGIN_PRODUCT_LIST);
+        firebaseAnalytics.logEvent(MDSAnalytics.EVENT_PRODUCT_OPENED,analyticsBundle);
     }
 
     @Override
@@ -143,6 +160,7 @@ public class ProductFragmentMain extends Fragment{
                  */
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    logProductFirebaseEvent();
                     Intent intent = new Intent(getContext(),ProductActivityDetail.class);
                     intent.putExtra(ProductActivityDetail.NEW_PRODUCT,false); //Not a new ingredient
                     intent.putExtra(ProductActivityDetail.ENTRY_ID,id); //ID of ingredient

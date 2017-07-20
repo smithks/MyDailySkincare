@@ -15,7 +15,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smithkeegan.mydailyskincare.R;
+import com.smithkeegan.mydailyskincare.analytics.MDSAnalytics;
 import com.smithkeegan.mydailyskincare.data.DiaryContract;
 import com.smithkeegan.mydailyskincare.data.DiaryDbHelper;
 
@@ -31,9 +33,13 @@ public class IngredientFragmentMain extends Fragment {
     private TextView mNoIngredientsTextView;
     private Button mNewIngredientButton;
 
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstance){
         View rootView = inflater.inflate(R.layout.fragment_ingredient_main, container, false);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
         mDbHelper = DiaryDbHelper.getInstance(getContext());
         mNewIngredientButton = (Button) rootView.findViewById(R.id.ingredient_main_new_button);
@@ -55,6 +61,15 @@ public class IngredientFragmentMain extends Fragment {
         mNoIngredientsTextView.setVisibility(View.INVISIBLE);
 
         view.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Log the ingredient opened event from the ingredient list.
+     */
+    private void logIngredientFirebaseEvent(){
+        Bundle analyticsBundle = new Bundle();
+        analyticsBundle.putString(MDSAnalytics.PARAM_REQUEST_ORIGIN,MDSAnalytics.VALUE_INGREDIENT_ORIGIN_INGREDIENT_LIST);
+        firebaseAnalytics.logEvent(MDSAnalytics.EVENT_INGREDIENT_OPENED,analyticsBundle);
     }
 
     /**
@@ -87,6 +102,7 @@ public class IngredientFragmentMain extends Fragment {
         mNewIngredientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                logIngredientFirebaseEvent();
                 Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
                 intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,true);
                 startActivityForResult(intent,IngredientActivityMain.INGREDIENT_FINISHED);
@@ -133,6 +149,7 @@ public class IngredientFragmentMain extends Fragment {
                  */
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    logIngredientFirebaseEvent();
                     Intent intent = new Intent(getContext(),IngredientActivityDetail.class);
                     intent.putExtra(IngredientActivityDetail.NEW_INGREDIENT,false); //Not a new ingredient
                     intent.putExtra(IngredientActivityDetail.ENTRY_ID,id); //ID of ingredient
