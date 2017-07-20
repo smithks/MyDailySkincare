@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.smithkeegan.mydailyskincare"
           xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--
-        TODO: missing app icons and plus icon used to expand additional locations in diary entry
-        -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/icon_launcher"
