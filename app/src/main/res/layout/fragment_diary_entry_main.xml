@@ -49,6 +49,8 @@
                 android:background="@color/black"/>
 
 
+
+
             <RelativeLayout
                 android:id="@+id/diary_entry_skin_condition_general_layout"
                 android:layout_width="match_parent"
